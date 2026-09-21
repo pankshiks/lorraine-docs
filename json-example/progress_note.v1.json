@@ -1,0 +1,335 @@
+{
+  "form": "progress_note",
+  "version": 1,
+  "sections": [
+    {
+      "key": "pain_type",
+      "title": "Type of pain",
+      "per": "visit",
+      "fields": [
+        {
+          "key": "shooting",
+          "label": "Shooting",
+          "type": "checkbox"
+        },
+        {
+          "key": "throbbing",
+          "label": "Throbbing",
+          "type": "checkbox"
+        },
+        {
+          "key": "numbness",
+          "label": "Numbness",
+          "type": "checkbox"
+        },
+        {
+          "key": "sharp",
+          "label": "Sharp",
+          "type": "checkbox"
+        },
+        {
+          "key": "tingling",
+          "label": "Tingling",
+          "type": "checkbox"
+        },
+        {
+          "key": "burning",
+          "label": "Burning",
+          "type": "checkbox"
+        },
+        {
+          "key": "dull",
+          "label": "Dull",
+          "type": "checkbox"
+        },
+        {
+          "key": "aching",
+          "label": "Aching",
+          "type": "checkbox"
+        },
+        {
+          "key": "stiffness",
+          "label": "Stiffness",
+          "type": "checkbox"
+        },
+        {
+          "key": "cramps",
+          "label": "Cramps",
+          "type": "checkbox"
+        },
+        {
+          "key": "swelling",
+          "label": "Swelling",
+          "type": "checkbox"
+        }
+      ]
+    },
+    {
+      "key": "activities",
+      "title": "Painful activities",
+      "per": "visit",
+      "fields": [
+        {
+          "key": "sitting",
+          "label": "Sitting",
+          "type": "checkbox"
+        },
+        {
+          "key": "bending",
+          "label": "Bending",
+          "type": "checkbox"
+        },
+        {
+          "key": "standing",
+          "label": "Standing",
+          "type": "checkbox"
+        },
+        {
+          "key": "lying_down",
+          "label": "Lying Down",
+          "type": "checkbox"
+        },
+        {
+          "key": "walking",
+          "label": "Walking",
+          "type": "checkbox"
+        },
+        {
+          "key": "lifting",
+          "label": "Lifting",
+          "type": "checkbox"
+        },
+        {
+          "key": "other",
+          "label": "Other",
+          "type": "checkbox"
+        },
+        {
+          "key": "other_text",
+          "label": "Other (describe)",
+          "type": "text",
+          "show_if": "activities.other"
+        }
+      ]
+    },
+    {
+      "key": "interferes",
+      "title": "Interferes with",
+      "per": "visit",
+      "fields": [
+        {
+          "key": "sleeping",
+          "label": "Sleeping",
+          "type": "checkbox"
+        },
+        {
+          "key": "dressing",
+          "label": "Dressing",
+          "type": "checkbox"
+        },
+        {
+          "key": "tying_shoes",
+          "label": "Tying Shoes",
+          "type": "checkbox"
+        },
+        {
+          "key": "work_performance",
+          "label": "Work Performance",
+          "type": "checkbox"
+        },
+        {
+          "key": "bathing",
+          "label": "Bathing",
+          "type": "checkbox"
+        },
+        {
+          "key": "toileting",
+          "label": "Toileting",
+          "type": "checkbox"
+        },
+        {
+          "key": "preparing_food",
+          "label": "Preparing Food",
+          "type": "checkbox"
+        },
+        {
+          "key": "eating",
+          "label": "Eating",
+          "type": "checkbox"
+        },
+        {
+          "key": "taking_medicine",
+          "label": "Taking Medicine",
+          "type": "checkbox"
+        },
+        {
+          "key": "walking",
+          "label": "Walking",
+          "type": "checkbox"
+        },
+        {
+          "key": "exercising",
+          "label": "Exercising",
+          "type": "checkbox"
+        }
+      ]
+    },
+    {
+      "key": "pain",
+      "title": "Pain level",
+      "per": "visit",
+      "fields": [
+        {
+          "key": "pain_level",
+          "label": "Pain level",
+          "type": "number",
+          "min": 0,
+          "max": 10,
+          "required": true
+        }
+      ]
+    },
+    {
+      "key": "prognosis",
+      "title": "Prognosis",
+      "per": "template",
+      "editable": false,
+      "fields": [
+        {
+          "key": "excellent",
+          "label": "Excellent",
+          "type": "checkbox"
+        },
+        {
+          "key": "good",
+          "label": "Good",
+          "type": "checkbox"
+        },
+        {
+          "key": "fair",
+          "label": "Fair",
+          "type": "checkbox"
+        }
+      ]
+    },
+    {
+      "key": "plan",
+      "title": "Plan",
+      "per": "template",
+      "editable": false,
+      "fields": [
+        {
+          "key": "acute",
+          "label": "Acute",
+          "type": "checkbox"
+        },
+        {
+          "key": "subacute",
+          "label": "Subacute",
+          "type": "checkbox"
+        },
+        {
+          "key": "rehabilitation",
+          "label": "Rehabilitation",
+          "type": "checkbox"
+        },
+        {
+          "key": "exacerbation",
+          "label": "Exacerbation",
+          "type": "checkbox"
+        }
+      ]
+    },
+    {
+      "key": "treatment",
+      "title": "Treatment",
+      "per": "template",
+      "editable": false,
+      "fields": [
+        {
+          "key": "acupuncture_treatment",
+          "label": "Acupuncture treatment",
+          "type": "checkbox"
+        },
+        {
+          "key": "w_manual_stimulation",
+          "label": "w/ Manual Stimulation",
+          "type": "checkbox"
+        },
+        {
+          "key": "w_electrical_stimulation",
+          "label": "w/ Electrical Stimulation",
+          "type": "checkbox"
+        }
+      ]
+    },
+    {
+      "key": "response",
+      "title": "Response to today's treatment",
+      "per": "template",
+      "editable": false,
+      "fields": [
+        {
+          "key": "excellent",
+          "label": "Excellent",
+          "type": "checkbox"
+        },
+        {
+          "key": "good",
+          "label": "Good",
+          "type": "checkbox"
+        },
+        {
+          "key": "fair",
+          "label": "Fair",
+          "type": "checkbox"
+        },
+        {
+          "key": "poor",
+          "label": "Poor",
+          "type": "checkbox"
+        }
+      ],
+      "rule": "excellent_on_last_page"
+    },
+    {
+      "key": "progress",
+      "title": "Progress",
+      "per": "template",
+      "editable": false,
+      "fields": [
+        {
+          "key": "improving",
+          "label": "Improving",
+          "type": "checkbox"
+        },
+        {
+          "key": "no_change",
+          "label": "No change",
+          "type": "checkbox"
+        },
+        {
+          "key": "exacerbation",
+          "label": "Exacerbation",
+          "type": "checkbox"
+        }
+      ]
+    },
+    {
+      "key": "post_treatment",
+      "title": "Post treatment severity",
+      "per": "template",
+      "editable": false,
+      "rule": "always_1_of_10",
+      "fields": [
+        {
+          "key": "severity",
+          "label": "Severity",
+          "type": "number",
+          "min": 0,
+          "max": 10
+        }
+      ]
+    }
+  ]
+}

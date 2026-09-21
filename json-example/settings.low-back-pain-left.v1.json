@@ -1,0 +1,278 @@
+{
+  "template": "low_back_pain_left",
+  "display_name": "Low Back Pain – Left",
+  "printed_wording": "LOW BACK PAIN",
+  "form": "progress_note@1",
+  "scan": "scan.pdf",
+  "clean_background": "clean_background.png",
+  "scan_version": 1,
+  "hidden": [],
+  "defaults": {
+    "pain_type.throbbing": true,
+    "pain_type.dull": true,
+    "pain_type.aching": true,
+    "pain_type.stiffness": true,
+    "activities.bending": true,
+    "activities.lying_down": true,
+    "activities.lifting": true,
+    "interferes.exercising": true
+  },
+  "print": {
+    "units": "PDF points from the top-left of a 608 x 792 page",
+    "text": {
+      "patient_name": {
+        "x": 24,
+        "y": 78,
+        "w": 200,
+        "size": 18
+      },
+      "visit_date_top": {
+        "x": 272,
+        "y": 82,
+        "w": 130,
+        "size": 18
+      },
+      "pain_level": {
+        "x": 327,
+        "y": 136,
+        "w": 42,
+        "size": 11,
+        "format": "{pain}/10"
+      },
+      "visit_label": {
+        "x": 246,
+        "y": 354,
+        "w": 356,
+        "size": 17,
+        "pages": [
+          "first",
+          "last"
+        ]
+      },
+      "va_auth_number": {
+        "x": 360,
+        "y": 398,
+        "w": 200,
+        "size": 22
+      },
+      "ssn_last_four": {
+        "x": 455,
+        "y": 448,
+        "w": 80,
+        "size": 22
+      },
+      "physician_note": {
+        "x": 358,
+        "y": 526,
+        "w": 238,
+        "h": 44,
+        "size": 9.5,
+        "pages": [
+          "first",
+          "last"
+        ]
+      },
+      "visit_date_bottom": {
+        "x": 396,
+        "y": 706,
+        "w": 130,
+        "size": 18,
+        "same_as": "visit_date_top"
+      }
+    },
+    "checkboxes": {
+      "pain_type.shooting": {
+        "x": 39.0,
+        "y": 170.0,
+        "box": 7.4
+      },
+      "pain_type.throbbing": {
+        "x": 78.1,
+        "y": 170.3,
+        "box": 7.4
+      },
+      "pain_type.numbness": {
+        "x": 119.2,
+        "y": 170.9,
+        "box": 7.4
+      },
+      "pain_type.sharp": {
+        "x": 161.7,
+        "y": 171.0,
+        "box": 7.4
+      },
+      "pain_type.tingling": {
+        "x": 191.0,
+        "y": 171.2,
+        "box": 7.4
+      },
+      "pain_type.burning": {
+        "x": 226.4,
+        "y": 171.5,
+        "box": 7.4
+      },
+      "pain_type.dull": {
+        "x": 261.2,
+        "y": 172.0,
+        "box": 7.4
+      },
+      "pain_type.aching": {
+        "x": 285.2,
+        "y": 171.9,
+        "box": 7.4
+      },
+      "pain_type.stiffness": {
+        "x": 39.2,
+        "y": 181.0,
+        "box": 7.4
+      },
+      "pain_type.cramps": {
+        "x": 77.1,
+        "y": 181.5,
+        "box": 7.4
+      },
+      "pain_type.swelling": {
+        "x": 111.4,
+        "y": 181.5,
+        "box": 7.4
+      },
+      "activities.sitting": {
+        "x": 39.3,
+        "y": 206.1,
+        "box": 7.4
+      },
+      "activities.bending": {
+        "x": 71.7,
+        "y": 206.3,
+        "box": 7.4
+      },
+      "activities.standing": {
+        "x": 107.1,
+        "y": 206.8,
+        "box": 7.4
+      },
+      "activities.lying_down": {
+        "x": 145.2,
+        "y": 206.9,
+        "box": 7.4
+      },
+      "activities.walking": {
+        "x": 190.1,
+        "y": 207.2,
+        "box": 7.4
+      },
+      "activities.lifting": {
+        "x": 225.8,
+        "y": 207.5,
+        "box": 7.4
+      },
+      "activities.other": {
+        "x": 255.9,
+        "y": 208.0,
+        "box": 7.4
+      },
+      "interferes.sleeping": {
+        "x": 184.6,
+        "y": 220.5,
+        "box": 7.4
+      },
+      "interferes.dressing": {
+        "x": 222.5,
+        "y": 221.0,
+        "box": 7.4
+      },
+      "interferes.tying_shoes": {
+        "x": 260.0,
+        "y": 221.1,
+        "box": 7.4
+      },
+      "interferes.work_performance": {
+        "x": 306.1,
+        "y": 221.4,
+        "box": 7.4
+      },
+      "interferes.bathing": {
+        "x": 41.2,
+        "y": 230.6,
+        "box": 7.4
+      },
+      "interferes.toileting": {
+        "x": 76.8,
+        "y": 230.9,
+        "box": 7.4
+      },
+      "interferes.preparing_food": {
+        "x": 112.8,
+        "y": 231.2,
+        "box": 7.4
+      },
+      "interferes.eating": {
+        "x": 167.8,
+        "y": 231.6,
+        "box": 7.4
+      },
+      "interferes.taking_medicine": {
+        "x": 198.2,
+        "y": 232.1,
+        "box": 7.4
+      },
+      "interferes.walking": {
+        "x": 255.5,
+        "y": 232.5,
+        "box": 7.4
+      },
+      "interferes.exercising": {
+        "x": 290.9,
+        "y": 232.6,
+        "box": 7.4
+      }
+    },
+    "response": {
+      "excellent": {
+        "x": 411.1,
+        "y": 687.0,
+        "box": 7.4
+      },
+      "good": {
+        "x": 451.3,
+        "y": 687.5,
+        "box": 7.4
+      },
+      "fair": {
+        "x": 480.6,
+        "y": 687.5,
+        "box": 7.4
+      },
+      "poor": {
+        "x": 505.4,
+        "y": 687.7,
+        "box": 7.4
+      }
+    }
+  },
+  "cover": [
+    {
+      "x": 326,
+      "y": 136,
+      "w": 30,
+      "h": 17,
+      "reason": "pre_printed_pain_8_of_10"
+    },
+    {
+      "x": 450.3,
+      "y": 686.5,
+      "w": 9.4,
+      "h": 9.4,
+      "pages": [
+        "last"
+      ],
+      "reason": "untick_good_on_last_page"
+    }
+  ],
+  "page_text": {
+    "first_label": "INITIAL VISIT IN AUTHORIZATION",
+    "last_label": "Last Visit in authorization",
+    "first_note": "Discussed tx plan & no show policy w/ pt.\nPt responded well to tx. Rx: conti tx plan.",
+    "last_note": "Pt responded well to tx. Pt had an excellent outcome w/ acupuncture"
+  }
+}

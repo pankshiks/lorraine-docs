@@ -1,0 +1,81 @@
+{
+  "visit_1": {
+    "visit_id": "V-101",
+    "authorization_id": "A-3",
+    "patient_id": "P-7",
+    "visit_date": "2026-04-01",
+    "sequence_no": 1,
+    "pain_level": 8,
+    "is_final": false,
+    "form_version": "progress_note@1",
+    "template_version": "low-back-pain-left@1",
+    "answers": {
+      "pain_type": {
+        "dull": true,
+        "aching": true,
+        "stiffness": true,
+        "sharp": true,
+        "numbness": true
+      },
+      "activities": {
+        "bending": true,
+        "lying_down": true,
+        "lifting": true
+      },
+      "interferes": {
+        "exercising": true
+      }
+    },
+    "answer_source": {
+      "pain_type.throbbing": "changed",
+      "pain_type.dull": "default",
+      "pain_type.aching": "default",
+      "pain_type.stiffness": "default",
+      "pain_type.sharp": "doctor_note",
+      "pain_type.numbness": "doctor_note",
+      "activities.bending": "default",
+      "activities.lying_down": "default",
+      "activities.lifting": "default",
+      "interferes.exercising": "default"
+    },
+    "version": 1
+  },
+  "visit_7": {
+    "visit_id": "V-107",
+    "authorization_id": "A-3",
+    "patient_id": "P-7",
+    "visit_date": "2026-04-21",
+    "sequence_no": 7,
+    "pain_level": 5,
+    "is_final": false,
+    "form_version": "progress_note@1",
+    "template_version": "low-back-pain-left@1",
+    "answers": {
+      "pain_type": {
+        "dull": true,
+        "aching": true,
+        "stiffness": true,
+        "sharp": true
+      },
+      "activities": {
+        "bending": true,
+        "lifting": true
+      },
+      "interferes": {
+        "exercising": true
+      }
+    },
+    "answer_source": {
+      "pain_type.dull": "previous_visit",
+      "pain_type.aching": "previous_visit",
+      "pain_type.stiffness": "previous_visit",
+      "pain_type.sharp": "previous_visit",
+      "pain_type.numbness": "changed",
+      "activities.bending": "previous_visit",
+      "activities.lying_down": "changed",
+      "activities.lifting": "previous_visit",
+      "interferes.exercising": "previous_visit"
+    },
+    "version": 2
+  }
+}
