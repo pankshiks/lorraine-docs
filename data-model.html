@@ -1,0 +1,426 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Packet Tool Data Model</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Serif:wght@500;600&display=swap">
+<style>
+  :root {
+    --paper:#f6f4ef; --card:#fffefb; --ink:#1e2124; --ink-soft:#565c5f; --ink-faint:#868c8e;
+    --rule:#ddd8cd; --rule-soft:#ebe6dc;
+    --navy:#2d4a63; --navy-wash:#e5ebf0;
+    --amber:#a4602a; --amber-wash:#f4e9dd;
+    --moss:#4c6a4f; --moss-wash:#e5ece3;
+    --plum:#6a4a63; --plum-wash:#eee7ed;
+    --sans:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+    --serif:"IBM Plex Serif",Georgia,"Times New Roman",serif;
+    --mono:"IBM Plex Mono",ui-monospace,"SF Mono",Menlo,monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper:#16181a; --card:#1e2124; --ink:#e8e5de; --ink-soft:#a8aeb0; --ink-faint:#7d8385;
+      --rule:#33383b; --rule-soft:#282c2e; --navy:#8fb6d4; --navy-wash:#1f2f3c;
+      --amber:#d9995f; --amber-wash:#33261a; --moss:#8fb394; --moss-wash:#1f2a20; --plum:#bb9ab4; --plum-wash:#2b2230;
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper:#16181a; --card:#1e2124; --ink:#e8e5de; --ink-soft:#a8aeb0; --ink-faint:#7d8385;
+    --rule:#33383b; --rule-soft:#282c2e; --navy:#8fb6d4; --navy-wash:#1f2f3c;
+    --amber:#d9995f; --amber-wash:#33261a; --moss:#8fb394; --moss-wash:#1f2a20; --plum:#bb9ab4; --plum-wash:#2b2230;
+  }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--paper); color:var(--ink); font-family:var(--sans); font-size:15px; line-height:1.55; -webkit-font-smoothing:antialiased; }
+  .wrap { max-width:980px; margin:0 auto; padding-inline:20px; padding-block:40px 72px; }
+  .masthead { border-bottom:2px solid var(--ink); padding-bottom:18px; }
+  .eyebrow { font-family:var(--mono); font-size:11px; letter-spacing:.13em; text-transform:uppercase; color:var(--ink-faint); margin:0 0 10px; }
+  h1 { font-family:var(--serif); font-weight:600; font-size:clamp(28px,5.4vw,40px); line-height:1.1; margin:0; text-wrap:balance; }
+  .standfirst { margin:14px 0 0; max-width:66ch; color:var(--ink-soft); font-size:16px; }
+  .meta { display:flex; flex-wrap:wrap; gap:8px 22px; margin-top:16px; font-family:var(--mono); font-size:11.5px; color:var(--ink-faint); }
+  .meta b { color:var(--ink-soft); font-weight:500; }
+  section { margin-top:52px; }
+  h2 { font-family:var(--serif); font-size:23px; font-weight:600; margin:0 0 6px; }
+  .sec-note { margin:0 0 22px; color:var(--ink-soft); max-width:70ch; }
+  h3.grp { font-family:var(--mono); font-size:11px; letter-spacing:.11em; text-transform:uppercase; margin:34px 0 14px; padding-bottom:7px; border-bottom:1px solid var(--rule); color:var(--ink-faint); }
+  figure { margin:0 0 8px; }
+  .scroller { overflow-x:auto; border:1px solid var(--rule); border-radius:3px; background:var(--card); padding:14px 10px; }
+  .scroller svg { display:block; min-width:680px; max-width:100%; height:auto; margin:0 auto; }
+  figcaption { margin-top:12px; font-size:13.5px; color:var(--ink-soft); max-width:72ch; }
+  .n-t { font-family:var(--mono); font-size:12px; font-weight:600; fill:var(--ink); }
+  .n-s { font-family:var(--sans); font-size:10px; fill:var(--ink-faint); }
+  .a-l { font-family:var(--mono); font-size:9.5px; fill:var(--ink-faint); letter-spacing:.04em; }
+  .band { font-family:var(--mono); font-size:9.5px; fill:var(--ink-faint); letter-spacing:.13em; }
+  .changes { display:grid; gap:11px; margin:0; padding:0; list-style:none; }
+  .changes li { display:grid; grid-template-columns:26px 1fr; gap:12px; align-items:start; padding-left:13px; border-left:3px solid var(--navy); }
+  .cnum { width:22px; height:22px; border-radius:50%; background:var(--navy); color:var(--card); font-family:var(--mono); font-size:11px; font-weight:600; display:grid; place-items:center; margin-top:2px; }
+  .changes b { display:block; } .changes span { color:var(--ink-soft); font-size:14px; }
+  .ents { display:grid; grid-template-columns:repeat(auto-fill,minmax(288px,1fr)); gap:14px; }
+  .ent { background:var(--card); border:1px solid var(--rule); border-radius:3px; overflow:hidden; }
+  .ent > header { padding:10px 14px; border-bottom:1px solid var(--rule); display:flex; align-items:baseline; gap:8px; flex-wrap:wrap; }
+  .ent h4 { margin:0; font-family:var(--mono); font-size:12.5px; font-weight:600; }
+  .tag { font-family:var(--mono); font-size:9.5px; letter-spacing:.08em; text-transform:uppercase; padding:2px 6px; border-radius:2px; margin-left:auto; }
+  .t-phi { background:var(--amber-wash); color:var(--amber); } .t-cfg { background:var(--moss-wash); color:var(--moss); }
+  .t-imm { background:var(--plum-wash); color:var(--plum); } .t-new { background:var(--navy-wash); color:var(--navy); }
+  .ent ul { list-style:none; margin:0; padding:12px 14px; display:grid; gap:5px; }
+  .ent li { font-family:var(--mono); font-size:11.5px; line-height:1.5; color:var(--ink-soft); }
+  .ent li b { color:var(--ink); font-weight:600; }
+  .ent li i { font-style:normal; color:var(--ink-faint); font-family:var(--sans); font-size:11.5px; }
+  .ent .why { padding:10px 14px; border-top:1px solid var(--rule-soft); background:var(--navy-wash); font-size:12.5px; color:var(--ink-soft); }
+  .ent .why b { color:var(--ink); font-weight:600; }
+  code { font-family:var(--mono); font-size:11.5px; background:var(--rule-soft); padding:1px 5px; border-radius:2px; color:var(--ink); }
+  pre { margin:0; padding:14px 16px; background:var(--card); border:1px solid var(--rule); border-radius:3px; overflow-x:auto; font-family:var(--mono); font-size:12px; line-height:1.55; color:var(--ink); }
+  .pre-cap { font-family:var(--mono); font-size:10.5px; letter-spacing:.09em; text-transform:uppercase; color:var(--ink-faint); margin:18px 0 6px; }
+  .tblwrap { overflow-x:auto; }
+  table { width:100%; border-collapse:collapse; font-size:13.5px; }
+  th, td { text-align:left; padding:9px 10px; border-bottom:1px solid var(--rule-soft); vertical-align:top; }
+  th { font-family:var(--mono); font-size:10.5px; letter-spacing:.08em; text-transform:uppercase; color:var(--ink-faint); border-bottom:1px solid var(--rule); }
+  table.rel td:nth-child(1), table.rel td:nth-child(2) { font-family:var(--mono); font-size:11.5px; white-space:nowrap; }
+  table.rel td:nth-child(3) { font-family:var(--mono); font-size:11.5px; color:var(--navy); white-space:nowrap; }
+  .ok { color:var(--moss); font-weight:600; } .warn { color:var(--amber); font-weight:600; }
+  .tiers { display:grid; gap:14px; }
+  .tier { display:grid; grid-template-columns:auto 1fr; gap:16px; align-items:start; background:var(--card); border:1px solid var(--rule); border-radius:3px; padding:16px 18px; }
+  .tno { font-family:var(--mono); font-size:22px; font-weight:600; color:var(--navy); line-height:1; }
+  .tier h4 { margin:0 0 4px; font-size:15px; } .tier p { margin:0 0 8px; color:var(--ink-soft); font-size:14px; }
+  @media (max-width:520px){ .tier{grid-template-columns:1fr;} }
+  .callout { margin-top:20px; padding:16px 18px; background:var(--amber-wash); border-left:3px solid var(--amber); border-radius:0 3px 3px 0; font-size:14px; }
+  .callout b { color:var(--ink); } .callout.moss { background:var(--moss-wash); border-left-color:var(--moss); } .callout.navy { background:var(--navy-wash); border-left-color:var(--navy); }
+  .asm { background:var(--card); border:1px solid var(--rule); border-radius:3px; margin-bottom:12px; overflow:hidden; }
+  .asm > header { padding:11px 16px; border-bottom:1px solid var(--rule); display:flex; gap:10px; align-items:baseline; flex-wrap:wrap; }
+  .asm h4 { margin:0; font-size:14.5px; font-weight:700; }
+  .pill { margin-left:auto; font-family:var(--mono); font-size:9.5px; letter-spacing:.08em; text-transform:uppercase; padding:2px 7px; border-radius:2px; background:var(--amber-wash); color:var(--amber); }
+  .asm .rows { display:grid; grid-template-columns:96px 1fr; gap:8px 16px; padding:12px 16px; font-size:13.5px; }
+  .asm .rows dt { font-family:var(--mono); font-size:10px; letter-spacing:.08em; text-transform:uppercase; color:var(--ink-faint); padding-top:2px; }
+  .asm .rows dd { margin:0; color:var(--ink-soft); } .asm .rows dd b { color:var(--ink); }
+  @media (max-width:560px){ .asm .rows{grid-template-columns:1fr; gap:3px 0;} .asm .rows dt{margin-top:8px;} }
+</style>
+
+<style>
+.dnav{position:sticky;top:0;z-index:50;background:var(--card,#fffefb);border-bottom:1px solid var(--rule,#ddd8cd);font-family:var(--mono,ui-monospace,monospace);font-size:11.5px}
+.dnav .in{max-width:1020px;margin:0 auto;padding:9px 20px;display:flex;flex-wrap:wrap;gap:4px 18px;align-items:center}
+.dnav b{letter-spacing:.12em;text-transform:uppercase;font-size:10px;color:var(--ink-faint,#868c8e);margin-right:6px}
+.dnav a{color:var(--navy,#2d4a63);text-decoration:none;padding:2px 0;border-bottom:2px solid transparent}
+.dnav a:hover{border-bottom-color:var(--navy,#2d4a63)}
+.dnav a.on{color:var(--ink,#1e2124);border-bottom-color:var(--amber,#a4602a);font-weight:600}
+</style>
+</head>
+<body>
+<nav class="dnav" aria-label="DeYoe documents"><div class="in"><b>DeYoe docs</b><a href="index.html">Developer handbook (main)</a><a href="screen-spec.html">Screen spec</a><a href="data-model.html" class="on">Data model</a><a href="current-process.html">Current process</a></div></nav>
+<div class="wrap">
+<header class="masthead">
+  <p class="eyebrow">DeYoe Wellness Acupuncture — build design</p>
+  <h1>Packet tool data model</h1>
+  <p class="standfirst">How patients, authorizations, visits and sent faxes are stored; how the forms are defined as configuration; and how every value on every page is filled — so the name, numbers and dates can't drift between documents.</p>
+  <div class="meta"><span><b>Revision</b> 9 · 21 Sep 2026</span><span><b>Pairs with</b> <a href="screen-spec.html">the screen spec</a> and <a href="current-process.html">current-process map</a></span></div>
+</header>
+
+<section>
+  <h2>What changed in this revision</h2>
+  <ul class="changes">
+    <li><span class="cnum">1</span><div><b>Forms are defined as configuration</b><span>One master form definition lists every section and option in order. Each diagnosis has a small configuration saying which options it shows, which are ticked by default, and where each value prints on its scan. The entry screen is built from this, per diagnosis.</span></div></li>
+    <li><span class="cnum">2</span><div><b>The patient's answers are recorded per visit</b><span>Type of pain, painful activities and daily-life interference are stored per visit, each visit starting from the previous visit's answers. The first visit of a new authorization for the same patient and the same diagnosis starts from that patient's last recorded visit; otherwise from the diagnosis defaults.</span></div></li>
+    <li><span class="cnum">3</span><div><b>Three separate files per fax</b><span>Cover sheet, clinical notes and RFS are always separate PDFs, as the VA requires. The notes file is named from the patient's details.</span></div></li>
+    <li><span class="cnum">4</span><div><b>The cover sheet belongs to each send</b><span>Notes and RFS belong to the packet; each destination gets its own cover sheet. This is what makes the automatic Atlanta copy of every Blairsville send possible.</span></div></li>
+    <li><span class="cnum">5</span><div><b>Confirmed practice decisions built in</b><span>Lorraine prepares and approves · office Mac · SRFax · 20 diagnoses · no left/right printed · post-treatment always 1/10 · Excellent on the last page.</span></div></li>
+    <li><span class="cnum">6</span><div><b>Only the last four of the SSN</b><span>The full Social Security number is not stored. Every document uses only the last four.</span></div></li>
+    <li><span class="cnum">8</span><div><b>Visits held to the authorization</b><span>The number of visits can't exceed what the VA approved, and visit dates must fall inside the approved period — enforced by the database, not only the screen. The last page follows the visit marked final.</span></div></li>
+    <li><span class="cnum">9</span><div><b>Diagnosis settings kept as files</b><span>Each diagnosis is a folder with its scan and settings file, added by our team and loaded into the database on start-up.</span></div></li>
+    <li><span class="cnum">10</span><div><b>Everything is recorded</b><span>The activity log now also covers sign-ins (including failed ones), file downloads, settings changes and system events such as diagnosis updates, app updates, test faxes and backups.</span></div></li>
+    <li><span class="cnum">7</span><div><b>Built for more clinics, run for one</b><span>Every clinic's data is kept apart by design, and a clinic's branches are its offices. VA facilities and the standard diagnosis list are shared reference data; each clinic keeps its own contacts, cover sheets, templates and defaults. DeYoe runs as a single clinic on its own computer.</span></div></li>
+  </ul>
+</section>
+
+<section>
+  <h2>The shape</h2>
+  <p class="sec-note">Records hold the truth and change over time. Output is frozen the moment it is sent. Configuration describes the forms and contains no patient data. Every clinic table sits inside one clinic (tenant), whose branches are its offices. Two small reference lists — VA facilities and the standard diagnoses — are shared by all clinics and hold no clinic or patient data.</p>
+  <figure>
+    <div class="scroller">
+      <svg viewBox="0 0 880 720" role="img" aria-label="Data model: a patient has many authorizations; an authorization has many visits and one or more packets; a packet holds the notes and RFS files and is sent by one fax transmission per destination, each with its own cover sheet. Configuration — form definition, scanned templates with their settings, diagnoses, VA facilities, offices, practice settings and the Blairsville-to-Atlanta rule — builds the visit form and prints the pages.">
+        <defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
+        <rect x="12" y="12" width="856" height="696" rx="5" fill="none" stroke="var(--navy)" stroke-width="1.3"/>
+        <text class="band" x="26" y="32">CLINIC (TENANT) — EVERY CLINIC TABLE IS SCOPED TO IT · ★ = SHARED REFERENCE LIST</text>
+        <rect x="24" y="48" width="832" height="304" rx="4" fill="none" stroke="var(--rule)" stroke-dasharray="3 4"/>
+        <text class="band" x="40" y="68">RECORDS — PATIENT DATA</text>
+        <text class="band" x="330" y="68">OUTPUT — FROZEN WHEN SENT</text>
+
+        <g color="var(--ink-faint)" stroke="currentColor" stroke-width="1.4" fill="none" marker-end="url(#a)">
+          <line x1="140" y1="136" x2="140" y2="170"/>
+          <line x1="140" y1="232" x2="140" y2="266"/>
+          <line x1="240" y1="204" x2="324" y2="204"/>
+          <line x1="415" y1="240" x2="415" y2="266"/>
+          <line x1="500" y1="204" x2="554" y2="204"/>
+          <path d="M 330 430 L 236 342" stroke-dasharray="5 4"/>
+          <path d="M 445 430 L 420 338" stroke-dasharray="5 4"/>
+          <path d="M 548 430 L 690 244" stroke-dasharray="5 4"/>
+        </g>
+
+        <g><rect x="40" y="80" width="200" height="56" rx="3" fill="var(--card)" stroke="var(--amber)" stroke-width="1.6"/>
+          <text class="n-t" x="140" y="103" text-anchor="middle">patient</text><text class="n-s" x="140" y="121" text-anchor="middle">name · DOB · last four · his/her</text></g>
+        <text class="a-l" x="148" y="158">1 : N</text>
+        <g><rect x="40" y="176" width="200" height="56" rx="3" fill="var(--card)" stroke="var(--amber)" stroke-width="1.6"/>
+          <text class="n-t" x="140" y="199" text-anchor="middle">authorization</text><text class="n-s" x="140" y="217" text-anchor="middle">VA auth no. · diagnosis · visits approved</text></g>
+        <text class="a-l" x="148" y="254">1 : N</text>
+        <g><rect x="40" y="272" width="200" height="64" rx="3" fill="var(--card)" stroke="var(--amber)" stroke-width="1.6"/>
+          <text class="n-t" x="140" y="294" text-anchor="middle">visit</text><text class="n-s" x="140" y="311" text-anchor="middle">date · pain level</text><text class="n-s" x="140" y="325" text-anchor="middle">patient's answers (JSON)</text></g>
+        <text class="a-l" x="252" y="198">1 : N</text>
+
+        <g><rect x="330" y="172" width="170" height="68" rx="3" fill="var(--plum-wash)" stroke="var(--plum)" stroke-width="1.6"/>
+          <text class="n-t" x="415" y="196" text-anchor="middle">packet</text><text class="n-s" x="415" y="213" text-anchor="middle">initial · final · correction</text><text class="n-s" x="415" y="227" text-anchor="middle">snapshot · approval</text></g>
+        <g><rect x="330" y="272" width="170" height="62" rx="3" fill="var(--plum-wash)" stroke="var(--plum)" stroke-width="1.4"/>
+          <text class="n-t" x="415" y="295" text-anchor="middle">packet_document</text><text class="n-s" x="415" y="312" text-anchor="middle">notes PDF · RFS PDF</text></g>
+        <text class="a-l" x="423" y="258">1 : 2</text>
+        <g><rect x="560" y="172" width="280" height="68" rx="3" fill="var(--plum-wash)" stroke="var(--plum)" stroke-width="1.6"/>
+          <text class="n-t" x="700" y="196" text-anchor="middle">fax_transmission</text><text class="n-s" x="700" y="213" text-anchor="middle">one per destination and attempt</text><text class="n-s" x="700" y="227" text-anchor="middle">its own cover sheet PDF · status</text></g>
+        <text class="a-l" x="506" y="198">1 : N</text>
+
+        <rect x="24" y="396" width="832" height="296" rx="4" fill="none" stroke="var(--moss)" stroke-dasharray="3 4"/>
+        <text class="band" x="40" y="416">CONFIGURATION — NO PATIENT DATA</text>
+        <text class="a-l" x="236" y="378">builds the visit form</text>
+        <text class="a-l" x="446" y="378">prints on the scans</text>
+        <text class="a-l" x="626" y="330">cover sheet scan</text>
+
+        <g><rect x="40" y="430" width="230" height="60" rx="3" fill="var(--moss-wash)" stroke="var(--moss)" stroke-width="1.4"/>
+          <text class="n-t" x="155" y="454" text-anchor="middle">form_definition</text><text class="n-s" x="155" y="472" text-anchor="middle">master form JSON · versioned</text></g>
+        <g><rect x="310" y="430" width="250" height="60" rx="3" fill="var(--moss-wash)" stroke="var(--moss)" stroke-width="1.6"/>
+          <text class="n-t" x="435" y="454" text-anchor="middle">document_template</text><text class="n-s" x="435" y="472" text-anchor="middle">scan + settings JSON</text></g>
+        <g><rect x="600" y="430" width="240" height="60" rx="3" fill="var(--moss-wash)" stroke="var(--moss)" stroke-width="1.4"/>
+          <text class="n-t" x="720" y="454" text-anchor="middle">★ diagnosis</text><text class="n-s" x="720" y="472" text-anchor="middle">standard name · ICD-10 · body area</text></g>
+        <g><rect x="40" y="520" width="230" height="56" rx="3" fill="var(--moss-wash)" stroke="var(--moss)" stroke-width="1.4"/>
+          <text class="n-t" x="155" y="543" text-anchor="middle">★ va_facility</text><text class="n-s" x="155" y="561" text-anchor="middle">Atlanta · Augusta · Blairsville VA</text></g>
+        <g><rect x="310" y="520" width="250" height="56" rx="3" fill="var(--moss-wash)" stroke="var(--moss)" stroke-width="1.4"/>
+          <text class="n-t" x="435" y="543" text-anchor="middle">office (branch)</text><text class="n-s" x="435" y="561" text-anchor="middle">Clarkesville · Blairsville · Decatur</text></g>
+        <g><rect x="600" y="520" width="240" height="56" rx="3" fill="var(--moss-wash)" stroke="var(--moss)" stroke-width="1.4"/>
+          <text class="n-t" x="720" y="543" text-anchor="middle">practice_setting</text><text class="n-s" x="720" y="561" text-anchor="middle">NPI · phone · fax · retention</text></g>
+        <g><rect x="40" y="606" width="230" height="56" rx="3" fill="var(--amber-wash)" stroke="var(--amber)" stroke-width="1.4"/>
+          <text class="n-t" x="155" y="629" text-anchor="middle">destination_rule</text><text class="n-s" x="155" y="647" text-anchor="middle">Blairsville VA → also Atlanta</text></g>
+        <g><rect x="310" y="606" width="250" height="56" rx="3" fill="var(--card)" stroke="var(--rule)" stroke-width="1.4"/>
+          <text class="n-t" x="435" y="629" text-anchor="middle">app_user · membership</text><text class="n-s" x="435" y="647" text-anchor="middle">Lorraine · roles per clinic</text></g>
+        <g><rect x="600" y="606" width="240" height="56" rx="3" fill="var(--card)" stroke="var(--rule)" stroke-width="1.4"/>
+          <text class="n-t" x="720" y="629" text-anchor="middle">activity_log · ai_draft</text><text class="n-s" x="720" y="647" text-anchor="middle">who viewed and changed what</text></g>
+      </svg>
+    </div>
+    <figcaption>Every printed value draws from one patient row, one authorization row and that visit's row. The name, VA number and last four therefore cannot differ between the notes, the cover sheet and the RFS — there is only one copy of each. ★ marks the two shared reference lists; everything else belongs to one clinic.</figcaption>
+  </figure>
+</section>
+
+<section>
+  <h2>Forms as configuration</h2>
+  <p class="sec-note">The 20 progress-note templates are the same printed form with different ticks. So there is one <b>master form definition</b>, and each diagnosis adds only a small <b>settings</b> file. The entry screen, the defaults and the printed positions all come from these two — change them, and no code changes.</p>
+
+  <p class="pre-cap">1 · Master form — every option, in the order printed, versioned</p>
+<pre>{ "form": "progress_note", "version": 3,
+  "sections": [
+    { "key": "pain_type", "title": "Type of pain", "per": "visit",
+      "fields": [ { "key": "shooting",  "label": "Shooting",  "type": "checkbox" },
+                  { "key": "throbbing", "label": "Throbbing", "type": "checkbox" },
+                  { "key": "sharp",     "label": "Sharp",     "type": "checkbox" },
+                  { "key": "numbness",  "label": "Numbness",  "type": "checkbox" } ] },
+    { "key": "pain_level", "title": "Pain level", "per": "visit",
+      "fields": [ { "key": "pain_level", "type": "number", "min": 0, "max": 10, "required": true } ] },
+    { "key": "objective", "title": "Objective", "per": "template",
+      "fields": [ { "key": "lumbar", "label": "Lumbar", "type": "circles", "options": ["H","T","W","R","L","M"] } ] }
+  ] }</pre>
+
+  <p class="pre-cap">2 · Diagnosis settings — what it shows, what's ticked by default, where it prints</p>
+<pre>{ "template": "low_back_pain_left", "scan_version": 2, "form": "progress_note@3",
+  "hidden":   ["objective.cervical", "objective.shoulder"],
+  "defaults": { "pain_type.throbbing": true, "pain_type.dull": true,
+                "pain_type.aching": true, "pain_type.stiffness": true },
+  "print":    { "patient_name": { "x": 24, "y": 78, "size": 18 },
+                "pain_type.throbbing": { "x": 79, "y": 170, "box": 7.4 } },
+  "cover":    [ { "x": 326, "y": 136, "w": 30, "h": 17, "reason": "pre_printed_pain" } ] }</pre>
+
+  <p class="pre-cap">3 · A visit — real columns for what's filtered often, JSON for the answers</p>
+<pre>visit_id 101 · authorization A3 · patient P7 · 2026-04-01 · visit 1 · pain_level 8 · form progress_note@3
+answers:        { "pain_type": { "throbbing": false, "dull": true, "sharp": true, "numbness": true } }
+answer_source:  { "pain_type.sharp": "doctor_note", "pain_type.numbness": "doctor_note",
+                  "pain_type.throbbing": "changed", "pain_type.dull": "default" }</pre>
+
+  <div class="tiers" style="margin-top:22px">
+    <div class="tier"><div class="tno">per</div><div>
+      <h4>What is recorded per visit, and what stays with the diagnosis</h4>
+      <p><b>Per visit</b> — date, pain level, and the patient's answers: type of pain, painful activities, daily-life interference. Each visit starts from the previous visit's answers, so only changes need touching.</p>
+      <p><b>Per diagnosis</b> — objective findings, pulse and tongue, assessment, prognosis, plan, treatments, point prescription and therapies stay exactly as printed on Dr. DeYoe's scan. The master form can describe them, but they are not editable in this phase.</p>
+    </div></div>
+    <div class="tier"><div class="tno">why</div><div>
+      <h4>Rules that keep this safe over time</h4>
+      <p><b>Stable keys, not labels</b> — answers are stored under <code>numbness</code>, not the printed word, so correcting a label never breaks data. <b>Versions everywhere</b> — each visit records the form version it was filled against, and each template records its scan version, so old records always read correctly. <b>Defaults are copied, not referenced</b> — changing a diagnosis's defaults affects new visits only.</p>
+    </div></div>
+  </div>
+</section>
+
+<section>
+  <h2>Relationships</h2>
+  <div class="tblwrap">
+    <table class="rel">
+      <thead><tr><th>Parent</th><th>Child</th><th>Cardinality</th><th>Behaviour</th></tr></thead>
+      <tbody>
+        <tr><td>tenant (clinic)</td><td>all clinic tables</td><td>1 : N</td><td>Every query scoped in one data-access layer. Restrict. Tested with two clinics holding the same patient names.</td></tr>
+        <tr><td>tenant (clinic)</td><td>office</td><td>1 : N</td><td>Branches. Offices label and filter records; they are not separate logins.</td></tr>
+        <tr><td>app_user</td><td>user_membership</td><td>1 : N</td><td>Roles are held per clinic. At go-live: Lorraine, one clinic, all roles.</td></tr>
+        <tr><td>★ va_facility, ★ diagnosis</td><td>clinic tables</td><td>1 : N</td><td>Shared, read-only for clinics. A clinic's own contacts, cover sheets, templates and defaults sit on its own rows.</td></tr>
+        <tr><td>patient</td><td>authorization</td><td>1 : N</td><td>Restrict. Patients are deactivated, never deleted.</td></tr>
+        <tr><td>authorization</td><td>visit</td><td>1 : N</td><td>Unique (authorization, visit date). No more visits than <code>visits_approved</code>; dates inside the period. Cascade only while nothing has been sent.</td></tr>
+        <tr><td>authorization</td><td>packet</td><td>1 : N</td><td>Usually one final packet; an initial-visit packet and corrections add more.</td></tr>
+        <tr><td>packet</td><td>packet_document</td><td>1 : 1–2</td><td>Clinical notes always; RFS when requested. Never merged into one file.</td></tr>
+        <tr><td>packet</td><td>packet_page</td><td>1 : N</td><td>Per-page overrides made in preview. Cascade.</td></tr>
+        <tr><td>packet</td><td>fax_transmission</td><td>0 : N</td><td>One per destination and attempt. Restrict.</td></tr>
+        <tr><td>packet</td><td>packet (supersedes)</td><td>0 : 1</td><td>A correction points at the packet it replaces; neither is deleted.</td></tr>
+        <tr><td>form_definition</td><td>document_template</td><td>1 : N</td><td>Each note, cover-sheet or RFS scan is bound to one form version.</td></tr>
+        <tr><td>diagnosis</td><td>document_template</td><td>1 : N</td><td>One current note template per diagnosis, plus superseded versions.</td></tr>
+        <tr><td>diagnosis</td><td>authorization</td><td>1 : N</td><td>One diagnosis per authorization.</td></tr>
+        <tr><td>va_facility</td><td>document_template</td><td>1 : N</td><td>Cover-sheet scans: Atlanta two, Augusta one, Blairsville two.</td></tr>
+        <tr><td>va_facility</td><td>fax_transmission</td><td>1 : N</td><td>Destination of each send.</td></tr>
+        <tr><td>office</td><td>document_template</td><td>1 : 1</td><td>One RFS scan per office.</td></tr>
+        <tr><td>va_facility</td><td>destination_rule</td><td>1 : N</td><td>“When sending here, also send there.”</td></tr>
+        <tr><td>app_user</td><td>most tables</td><td>1 : N</td><td>Attribution (created, updated, approved by). Users are deactivated, never deleted.</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section>
+  <h2>The tables</h2>
+  <p class="sec-note"><code>tenant_id</code>, <code>created_at</code>, <code>created_by</code>, <code>updated_at</code> and <code>updated_by</code> are on every table and omitted below — except the two shared lists marked ★, which have no <code>tenant_id</code>.</p>
+
+  <h3 class="grp">Records — patient data</h3>
+  <div class="ents">
+    <div class="ent"><header><h4>patient</h4><span class="tag t-phi">PHI</span></header>
+      <ul><li><b>id</b> · <b>version</b> <i>optimistic locking</i></li><li><b>first_name, middle_initial, last_name</b></li><li><b>date_of_birth</b></li><li><b>ssn_last_four</b> <i>char(4) — no full SSN</i></li><li><b>title</b> <i>Mr. / Ms. / Mrs.</i> · <b>pronoun</b> <i>his / her</i></li><li><b>va_patient_id</b> <i>optional, only if the practice uses one</i></li></ul>
+      <div class="why"><b>One row per veteran, reused for every authorization.</b> Returning veterans are matched on last name + date of birth + last four; the tool suggests, a person confirms. Never merged automatically.</div></div>
+    <div class="ent"><header><h4>authorization</h4><span class="tag t-phi">PHI</span></header>
+      <ul><li><b>id, version</b> · <b>patient_id</b></li><li><b>va_auth_number</b> <i>belongs here, not on the patient</i></li><li><b>diagnosis_id</b> · <b>va_facility_id</b> · <b>office_id</b></li><li><b>visits_approved</b> · <b>period_start, period_end</b> <i>both required</i></li><li><b>status</b> <i>active / complete / expired</i></li></ul>
+      <div class="why"><b>The unit of work.</b> A new authorization brings a new VA number. Diagnosis cannot change once visits exist — a new diagnosis is a new authorization. <b>Limits:</b> visits can't exceed <code>visits_approved</code> or fall outside the period; neither can be reduced below what's recorded. Extensions are edits here, with a reason in the activity log.</div></div>
+    <div class="ent"><header><h4>visit</h4><span class="tag t-phi">PHI</span></header>
+      <ul><li><b>id, version</b> · <b>authorization_id</b> · <b>patient_id</b></li><li><b>visit_date</b> <i>a date, printed top and bottom</i></li><li><b>sequence_no</b> · <b>pain_level</b> <i>0–10, a real column</i></li><li><b>form_version</b> <i>e.g. progress_note@3</i></li><li><b>answers</b> <i>JSON — the patient's answers</i></li><li><b>answer_source</b> <i>JSON — default · previous visit · doctor's note · changed</i></li><li><b>is_final</b> <i>set at the last approved visit, or earlier if treatment ends</i></li><li><b>note_override</b> <i>nullable</i></li></ul>
+      <div class="why"><b>One row per visit.</b> The date is stored once, so top and bottom can't differ. <code>answer_source</code> separates what the patient actually said from what was carried forward. Unique (authorization, sequence_no) with <code>1 ≤ sequence_no ≤ visits_approved</code>; at most one final visit, and none after it.</div></div>
+  </div>
+
+  <h3 class="grp">Output — frozen when sent</h3>
+  <div class="ents">
+    <div class="ent"><header><h4>packet</h4><span class="tag t-imm">Immutable</span></header>
+      <ul><li><b>id, version</b> · <b>authorization_id</b></li><li><b>kind</b> <i>initial · final · correction</i></li><li><b>supersedes_packet_id</b> · <b>supersede_reason</b></li><li><b>rfs_template_id</b> <i>null when no RFS</i></li><li><b>snapshot</b> <i>JSON — every value as printed</i></li><li><b>state</b> · <b>prepared_by, approved_by, approved_at</b></li></ul>
+      <div class="why"><b>State is a constrained sequence:</b> <code>draft → ready → approved → sending → sent</code>. Only a draft can be edited. Once approved, the packet and its files are frozen and reproducible for good.</div></div>
+    <div class="ent"><header><h4>packet_document</h4><span class="tag t-imm">Immutable</span></header>
+      <ul><li><b>id</b> · <b>packet_id</b></li><li><b>kind</b> <i>clinical_notes · rfs</i></li><li><b>file_name</b> <i>John Doe 1234 Acupuncture Records VA0012345678.pdf</i></li><li><b>pdf_path, sha256, page_count</b></li></ul>
+      <div class="why"><b>Separate files, as the VA requires.</b> The notes file name is built from the patient's name, last four and VA number.</div></div>
+    <div class="ent"><header><h4>packet_page</h4><span class="tag t-imm">Immutable</span></header>
+      <ul><li><b>id</b> · <b>packet_id</b> · <b>document_kind</b> · <b>page_no</b></li><li><b>visit_id</b> <i>nullable</i></li><li><b>overrides</b> <i>JSON — values changed on this page only</i></li></ul>
+      <div class="why">The only way two documents can disagree is a deliberate per-page override — which is what the consistency check looks for.</div></div>
+    <div class="ent"><header><h4>fax_transmission</h4><span class="tag t-imm">Immutable</span></header>
+      <ul><li><b>id</b> · <b>packet_id</b> <i>null for a test fax</i> · <b>kind</b> <i>packet · test</i></li><li><b>va_facility_id</b> · <b>to_fax_number</b></li><li><b>cover_template_id</b> · <b>cover_pdf_path</b> · <b>cover_file_name</b></li><li><b>total_pages</b> <i>cover + notes + RFS</i></li><li><b>triggered_by</b> <i>manual · rule</i></li><li><b>attempt_no</b> · <b>provider_message_id</b> · <b>status</b></li><li><b>last_polled_at, poll_attempts</b> · <b>error_text, sent_at</b></li></ul>
+      <div class="why"><b>The cover sheet lives here, not on the packet</b> — each destination gets its own. SRFax accepts a fax and confirms delivery later, so a background job polls until <i>queued</i> becomes <i>sent</i>.</div></div>
+    <div class="ent"><header><h4>activity_log</h4><span class="tag t-imm">Immutable</span></header>
+      <ul><li><b>actor_id</b> <i>null for system events</i> · <b>category</b> <i>record · access · export · settings · system</i></li><li><b>action</b> <i>view · create · update · approve · send · sign_in · sign_in_failed · locked · signed_out · download · settings_changed · config_loaded · update_installed · test_fax · backup</i></li><li><b>entity, entity_id</b> · <b>before, after</b> <i>secrets never recorded</i> · <b>reason</b></li><li><b>occurred_at</b> · <b>client_info</b> <i>browser and device</i></li></ul>
+      <div class="why">Records who <b>looked at</b> patient records, not only who changed them — plus every sign-in, every file downloaded, every settings change and system events such as diagnosis updates and backups. Append-only, kept inside the encrypted database, never written to plain log files.</div></div>
+    <div class="ent"><header><h4>ai_draft</h4><span class="tag t-cfg">No PHI</span></header>
+      <ul><li><b>id</b> · <b>entity, entity_id</b></li><li><b>prompt_sent</b> <i>stored exactly as sent — no names or IDs</i></li><li><b>response</b> · <b>accepted</b> · <b>reviewed_by</b></li></ul>
+      <div class="why">Proof, not a promise, that no identifiers were sent to Grok.</div></div>
+  </div>
+
+  <h3 class="grp">Configuration — no patient data</h3>
+  <div class="ents">
+    <div class="ent"><header><h4>form_definition</h4><span class="tag t-new">New</span></header>
+      <ul><li><b>id</b> · <b>key</b> <i>progress_note · cover_sheet · rfs</i></li><li><b>version</b> · <b>status</b></li><li><b>definition</b> <i>JSON — sections, fields, order, rules, per visit / per template</i></li></ul>
+      <div class="why">One master definition per document type. A new version never changes visits already recorded.</div></div>
+    <div class="ent"><header><h4>document_template</h4><span class="tag t-cfg">Config</span></header>
+      <ul><li><b>id</b> · <b>kind</b> <i>note · cover_sheet · rfs</i></li><li><b>diagnosis_id</b> / <b>va_facility_id</b> / <b>office_id</b></li><li><b>form_definition_id</b> · <b>form_version</b></li><li><b>source_pdf</b> <i>untouched original</i> · <b>clean_background</b> <i>ticks erased where boxes are live</i></li><li><b>settings</b> <i>JSON — hidden, defaults, print positions, cover-ups</i></li><li><b>version</b> · <b>status</b> <i>ready · blocked · superseded</i> · <b>block_reason</b></li></ul>
+      <div class="why">Loaded from a folder per diagnosis and version (<code>scan.pdf</code> + <code>settings.json</code>), checked against the schema on start-up. Replacing a scan creates a new version; packets already sent keep the one they used.</div></div>
+    <div class="ent"><header><h4>★ diagnosis</h4><span class="tag t-cfg">Shared</span></header>
+      <ul><li><b>id, slug</b></li><li><b>display_name</b> <i>with side, for staff — Low Back Pain – Left</i></li><li><b>printed_wording</b> <i>on the page — LOW BACK PAIN</i></li><li><b>icd10_code</b> <i>blocks RFS only</i> · <b>body_area</b> <i>for RFS field 18</i></li><li><b>body_group</b> <i>Back · Neck · Knee · Hip… for the picker</i></li><li><b>post_treatment_severity</b> <i>always 1</i></li></ul>
+      <div class="why">Staff pick by the name <i>with</i> the side; the page prints the wording <i>without</i> it, as the practice asked. A clinic's own scan, defaults, closing note and any wording change live in its template settings.</div></div>
+    <div class="ent"><header><h4>★ va_facility</h4><span class="tag t-cfg">Shared</span></header>
+      <ul><li><b>id</b> · <b>name</b> · <b>address</b></li><li><b>main_fax, main_phone</b></li></ul>
+      <div class="why">One list for every clinic. The named contact on a cover sheet (“ATTN: …”) and its fax number are the clinic's own — they sit on the clinic's cover-sheet template.</div></div>
+    <div class="ent"><header><h4>tenant · office · practice_setting</h4><span class="tag t-cfg">Config</span></header>
+      <ul><li><b>tenant</b>: clinic name, status</li><li><b>office</b>: the clinic's branches — name, address, active</li><li><b>practice_setting</b>: provider name, NPI, phone, <b>fax 404-738-1714</b>, email, footer, retention periods, fax account</li></ul>
+      <div class="why">Practice details are printed on top of the scans, never baked in — the fax number changes in one place.</div></div>
+    <div class="ent"><header><h4>destination_rule</h4><span class="tag t-new">New</span></header>
+      <ul><li><b>when_facility_id</b> <i>Blairsville VA</i></li><li><b>also_send_to_id</b> <i>Atlanta VA</i></li><li><b>cover_template_id</b> <i>which Atlanta cover — to confirm</i></li><li><b>include_rfs</b> <i>to confirm</i></li></ul>
+      <div class="why">One approval, two faxes — confirmed as routine by the practice.</div></div>
+    <div class="ent"><header><h4>app_user · user_membership</h4><span class="tag t-cfg">Config</span></header>
+      <ul><li><b>app_user</b>: id, email, password_hash, full_name, is_active, last_login_at</li><li><b>user_membership</b>: user_id, tenant_id, <b>roles</b> <i>preparer · approver · administrator</i></li></ul>
+      <div class="why">Roles belong to a clinic, so one login could later work for more than one clinic. At go-live Lorraine holds all three roles in one clinic.</div></div>
+  </div>
+</section>
+
+<section>
+  <h2>How every value gets filled</h2>
+  <div class="tiers">
+    <div class="tier"><div class="tno">A</div><div><h4>From the records — no logic</h4><p>Name, date of birth, last four, title, his/her · VA number · diagnosis wording and ICD-10 · office address · VA facility and its fax · practice phone, fax, NPI · dates · page counts · the notes file name.</p></div></div>
+    <div class="tier"><div class="tno">B</div><div><h4>By rule</h4><p>First page from visit 1, last page from the visit marked final, middle otherwise · INITIAL VISIT and Last Visit labels and notes · Excellent on the last page, Good otherwise · post-treatment 1/10 · cover-ups from the template settings · each visit's answers start from the previous visit (first visit: same patient + same diagnosis → their last recorded visit, else diagnosis defaults) and stay editable (pain level excepted — always entered) · Blairsville sends copied to Atlanta · RFS reason assembled from the standard wording plus title and surname, body area and his/her.</p></div></div>
+    <div class="tier"><div class="tno">C</div><div><h4>Grok — reviewed before use</h4><p>Reads Dr. DeYoe's note with names and IDs removed and proposes the template and the first visit's answers (“dull and sharp … numbness” → Dull, Sharp, Numbness) · drafts the closing note. Nothing is saved until Lorraine accepts it.</p></div></div>
+  </div>
+</section>
+
+<section>
+  <h2>Finding things later</h2>
+  <p class="sec-note">Because answers live under stable keys, the database can answer questions like these directly — and a reporting screen or assistant can be added later without changing anything stored.</p>
+<pre>-- Which patients reported numbness in the last 6 months, and was it really reported?
+SELECT p.last_name, v.visit_date
+FROM   visit v JOIN patient p ON p.id = v.patient_id
+WHERE  json_extract(v.answers, '$.pain_type.numbness') = 1
+  AND  json_extract(v.answer_source, '$."pain_type.numbness"') != 'default'
+  AND  v.visit_date &gt;= date('now', '-6 months');
+
+-- Average pain drop per diagnosis, first visit to last
+SELECT d.display_name, AVG(first.pain_level - last.pain_level) …</pre>
+</section>
+
+<section>
+  <h2>Checked against the scope of work</h2>
+  <div class="tblwrap">
+    <table>
+      <thead><tr><th>Commitment</th><th>Verdict</th><th>How the model handles it</th></tr></thead>
+      <tbody>
+        <tr><td>Field positions editable without code</td><td class="ok">Stronger</td><td>Template settings JSON — one file per diagnosis, maintained by our team.</td></tr>
+        <tr><td>Hide pre-printed content that must change</td><td class="ok">Holds</td><td>Cover-ups in template settings; ticks erased only where boxes are live.</td></tr>
+        <tr><td>Top and bottom dates cannot differ</td><td class="ok">Stronger</td><td>One date column printed twice.</td></tr>
+        <tr><td>Pain level never generated by the tool</td><td class="ok">Holds</td><td>Entered per visit; Grok may propose, a person accepts.</td></tr>
+        <tr><td>Output as one merged PDF</td><td class="warn">Replaced</td><td>The VA requires three separate files — cover sheet, notes, RFS. The model stores them separately.</td></tr>
+        <tr><td>Consistency checks before a packet is final</td><td class="ok">Stronger</td><td>Adds the approved-visit limit and the authorization period, checked in the database as well as on screen.</td></tr>
+        <tr><td>Page order and total page count</td><td class="ok">Holds</td><td>Counted across the three files on each cover sheet.</td></tr>
+        <tr><td>Name, VA number, last four match everywhere</td><td class="ok">Stronger</td><td>One copy of each; the check only has to watch per-page overrides.</td></tr>
+        <tr><td>Approve before send, log with retry</td><td class="ok">Holds</td><td>Approval on the packet; one transmission row per destination and attempt.</td></tr>
+        <tr><td>Test fax to a chosen number</td><td class="ok">Holds</td><td>A test transmission with no packet, from practice settings.</td></tr>
+        <tr><td>No identifiers sent to Grok</td><td class="ok">Stronger</td><td>The exact prompt sent is stored for review.</td></tr>
+        <tr><td>Out of scope: EHR, HSRM, VA portal</td><td class="ok">Respected</td><td>Nothing syncs outward; HSRM upload stays manual.</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section>
+  <h2>Decided, and still open</h2>
+  <div class="tblwrap" style="margin-bottom:22px">
+    <table>
+      <thead><tr><th>Confirmed by the practice</th><th>How it's built</th></tr></thead>
+      <tbody>
+        <tr><td>Lorraine prepares and approves every packet</td><td>One person, one flow: prepare → review → confirm and send</td></tr>
+        <tr><td>Three separate PDFs, notes named from the patient</td><td><code>packet_document</code> per file; cover sheet per transmission</td></tr>
+        <tr><td>Every Blairsville VA send also goes to Atlanta VA</td><td><code>destination_rule</code>, applied automatically</td></tr>
+        <tr><td>Left/right not printed on the page</td><td><code>display_name</code> for staff, <code>printed_wording</code> for the page</td></tr>
+        <tr><td>Post-treatment always 1/10 · Excellent on the last page</td><td>Rules, not per-diagnosis settings</td></tr>
+        <tr><td>Office Mac desktop</td><td>SQLite with FileVault encryption and encrypted backups</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="asm"><header><h4>When the VA extends an authorization</h4><span class="pill">Open</span></header>
+    <dl class="rows"><dt>Assumed</dt><dd><b>Same VA number, more visits or a later end date</b> — edited on the authorization, with a reason logged. If the VA issues a new number instead, it's recorded as a new authorization.</dd></dl></div>
+  <div class="asm"><header><h4>Is the first visit's note sent separately?</h4><span class="pill">Open</span></header>
+    <dl class="rows"><dt>Assumed</dt><dd><b>Supported, off by default.</b> An <code>initial</code> packet with the “Initial Visit Acupuncture Records” cover sheet; the final packet follows at the end.</dd></dl></div>
+  <div class="asm"><header><h4>RFS field 21 — the ordering provider's signature</h4><span class="pill">Open</span></header>
+    <dl class="rows"><dt>Assumed</dt><dd><b>Nothing is signed automatically.</b> The field is required and blank on all three forms. Options: a short sign step for Dr. DeYoe on RFS only, his signature image applied with written consent, or print-and-sign.</dd></dl></div>
+  <div class="asm"><header><h4>The Atlanta copy of a Blairsville send</h4><span class="pill">Open</span></header>
+    <dl class="rows"><dt>Assumed</dt><dd><b>Atlanta VAMC — Request for Services cover sheet; RFS included in both.</b> Page count covers all three files.</dd></dl></div>
+  <div class="asm"><header><h4>Side wording already printed on some templates</h4><span class="pill">Open</span></header>
+    <dl class="rows"><dt>Assumed</dt><dd><b>Keep what each scan prints.</b> Hip and right-knee templates print the side (“PAIN IN LEFT HIP”), while Low Back Pain – Left is shown without it on the Jane Doe sample. <code>printed_wording</code> can be set either way per diagnosis.</dd></dl></div>
+  <div class="asm"><header><h4>Retention</h4><span class="pill">Open</span></header>
+    <dl class="rows"><dt>Assumed</dt><dd><b>10 years for packets, 6 years for logs</b>, as settings. Not legal advice — to be confirmed with the practice's own advisor.</dd></dl></div>
+
+  <div class="callout moss"><b>Deliberately not built now.</b> A general form designer · editing clinical ticks per visit · patient self check-in · reports and an assistant · inbound fax · HSRM or EHR integration · a VA login · storing the full SSN. The configuration and stored answers are shaped so the first four can be added later without changing anything already recorded.</div>
+</section>
+</div>
+
+</body>
+</html>

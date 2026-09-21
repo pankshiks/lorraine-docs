@@ -1,0 +1,545 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Packet Tool Screen Spec</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Serif:wght@500;600&display=swap">
+<style>
+  :root {
+    --paper:#f6f4ef; --card:#fffefb; --ink:#1e2124; --ink-soft:#565c5f; --ink-faint:#868c8e;
+    --rule:#ddd8cd; --rule-soft:#ebe6dc;
+    --navy:#2d4a63; --navy-wash:#e5ebf0; --amber:#a4602a; --amber-wash:#f4e9dd;
+    --moss:#4c6a4f; --moss-wash:#e5ece3; --plum:#6a4a63; --plum-wash:#eee7ed;
+    --sans:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+    --serif:"IBM Plex Serif",Georgia,"Times New Roman",serif;
+    --mono:"IBM Plex Mono",ui-monospace,"SF Mono",Menlo,monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper:#16181a; --card:#1e2124; --ink:#e8e5de; --ink-soft:#a8aeb0; --ink-faint:#7d8385;
+      --rule:#33383b; --rule-soft:#282c2e; --navy:#8fb6d4; --navy-wash:#1f2f3c; --amber:#d9995f; --amber-wash:#33261a;
+      --moss:#8fb394; --moss-wash:#1f2a20; --plum:#bb9ab4; --plum-wash:#2b2230;
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper:#16181a; --card:#1e2124; --ink:#e8e5de; --ink-soft:#a8aeb0; --ink-faint:#7d8385;
+    --rule:#33383b; --rule-soft:#282c2e; --navy:#8fb6d4; --navy-wash:#1f2f3c; --amber:#d9995f; --amber-wash:#33261a;
+    --moss:#8fb394; --moss-wash:#1f2a20; --plum:#bb9ab4; --plum-wash:#2b2230;
+  }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--paper); color:var(--ink); font-family:var(--sans); font-size:15px; line-height:1.55; -webkit-font-smoothing:antialiased; }
+  .wrap { max-width:1020px; margin:0 auto; padding-inline:20px; padding-block:40px 80px; }
+  .masthead { border-bottom:2px solid var(--ink); padding-bottom:18px; }
+  .eyebrow { font-family:var(--mono); font-size:11px; letter-spacing:.13em; text-transform:uppercase; color:var(--ink-faint); margin:0 0 10px; }
+  h1 { font-family:var(--serif); font-weight:600; font-size:clamp(28px,5.4vw,40px); line-height:1.1; margin:0; text-wrap:balance; }
+  .standfirst { margin:14px 0 0; max-width:66ch; color:var(--ink-soft); font-size:16px; }
+  .meta { display:flex; flex-wrap:wrap; gap:8px 22px; margin-top:16px; font-family:var(--mono); font-size:11.5px; color:var(--ink-faint); }
+  .meta b { color:var(--ink-soft); font-weight:500; }
+  section { margin-top:52px; }
+  h2 { font-family:var(--serif); font-size:23px; font-weight:600; margin:0 0 6px; }
+  .sec-note { margin:0 0 22px; color:var(--ink-soft); max-width:70ch; }
+  h3.grp { font-family:var(--mono); font-size:11px; letter-spacing:.11em; text-transform:uppercase; margin:36px 0 16px; padding-bottom:7px; border-bottom:1px solid var(--rule); color:var(--ink-faint); }
+  figure { margin:0; }
+  .scroller { overflow-x:auto; border:1px solid var(--rule); border-radius:3px; background:var(--card); padding:14px 10px; }
+  .scroller svg { display:block; min-width:640px; max-width:100%; height:auto; margin:0 auto; }
+  figcaption { margin-top:12px; font-size:13.5px; color:var(--ink-soft); max-width:70ch; }
+  .n-t { font-family:var(--mono); font-size:11.5px; font-weight:600; fill:var(--ink); }
+  .n-s { font-family:var(--sans); font-size:10px; fill:var(--ink-faint); }
+  .band { font-family:var(--mono); font-size:9.5px; fill:var(--ink-faint); letter-spacing:.12em; }
+  .screen { background:var(--card); border:1px solid var(--rule); border-radius:3px; margin-bottom:18px; overflow:hidden; }
+  .screen > header { padding:13px 18px; border-bottom:1px solid var(--rule); background:var(--navy-wash); display:flex; flex-wrap:wrap; gap:6px 12px; align-items:baseline; }
+  .sid { font-family:var(--mono); font-size:11px; font-weight:600; color:var(--navy); letter-spacing:.06em; }
+  .screen h4 { margin:0; font-size:16px; font-weight:700; }
+  .who { margin-left:auto; font-family:var(--mono); font-size:10px; letter-spacing:.07em; text-transform:uppercase; color:var(--ink-faint); }
+  .screen .body { padding:16px 18px; }
+  .purpose { margin:0 0 14px; color:var(--ink-soft); font-size:14px; }
+  dl.sd { margin:0; display:grid; grid-template-columns:112px 1fr; gap:9px 16px; font-size:13.5px; }
+  dl.sd dt { font-family:var(--mono); font-size:10px; letter-spacing:.08em; text-transform:uppercase; color:var(--ink-faint); padding-top:2px; }
+  dl.sd dd { margin:0; color:var(--ink-soft); } dl.sd dd b { color:var(--ink); font-weight:600; }
+  @media (max-width:560px){ dl.sd{grid-template-columns:1fr; gap:3px 0;} dl.sd dt{margin-top:8px;} }
+  code { font-family:var(--mono); font-size:11.5px; background:var(--rule-soft); padding:1px 5px; border-radius:2px; color:var(--ink); }
+  .flag { display:inline-block; font-family:var(--mono); font-size:9.5px; letter-spacing:.07em; text-transform:uppercase; padding:2px 6px; border-radius:2px; background:var(--amber-wash); color:var(--amber); }
+  .tblwrap { overflow-x:auto; margin:14px 0 4px; }
+  table { width:100%; border-collapse:collapse; font-size:13px; }
+  th, td { text-align:left; padding:8px 10px; border-bottom:1px solid var(--rule-soft); vertical-align:top; }
+  th { font-family:var(--mono); font-size:9.5px; letter-spacing:.08em; text-transform:uppercase; color:var(--ink-faint); border-bottom:1px solid var(--rule); white-space:nowrap; }
+  table.fields td:nth-child(1) { font-weight:600; white-space:nowrap; }
+  table.fields td:nth-child(2) { font-family:var(--mono); font-size:11px; color:var(--ink-faint); white-space:nowrap; }
+  table.fields td:nth-child(4) { font-family:var(--mono); font-size:11.5px; color:var(--navy); }
+  .y { color:var(--moss); font-weight:600; } .n { color:var(--ink-faint); } .warn { color:var(--amber); font-weight:600; }
+  ul.plain { list-style:none; margin:0; padding:0; display:grid; gap:9px; }
+  ul.plain li { padding-left:16px; position:relative; color:var(--ink-soft); font-size:14px; }
+  ul.plain li::before { content:""; position:absolute; left:0; top:9px; width:5px; height:5px; border-radius:50%; background:var(--navy); }
+  ul.plain li b { color:var(--ink); }
+  .callout { margin-top:20px; padding:16px 18px; background:var(--amber-wash); border-left:3px solid var(--amber); border-radius:0 3px 3px 0; font-size:14px; }
+  .callout b { color:var(--ink); } .callout.moss { background:var(--moss-wash); border-left-color:var(--moss); } .callout.navy { background:var(--navy-wash); border-left-color:var(--navy); }
+  .changes { display:grid; gap:11px; margin:0; padding:0; list-style:none; }
+  .changes li { display:grid; grid-template-columns:26px 1fr; gap:12px; align-items:start; padding-left:13px; border-left:3px solid var(--navy); }
+  .cnum { width:22px; height:22px; border-radius:50%; background:var(--navy); color:var(--card); font-family:var(--mono); font-size:11px; font-weight:600; display:grid; place-items:center; margin-top:2px; }
+  .changes b { display:block; } .changes span { color:var(--ink-soft); font-size:14px; }
+  .verbatim { margin:10px 0 0; padding:12px 14px; background:var(--rule-soft); border-left:3px solid var(--ink-faint); font-family:var(--mono); font-size:11.5px; line-height:1.6; white-space:pre-wrap; color:var(--ink); }
+  .verbatim u { text-decoration:none; border-bottom:2px solid var(--amber); font-weight:600; }
+  .ftitle { font-family:var(--mono); font-size:10px; letter-spacing:.09em; text-transform:uppercase; color:var(--ink-faint); margin:16px 0 0; }
+  .grid3 { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px 18px; font-size:13px; color:var(--ink-soft); margin-top:10px; }
+  .grid3 b { display:block; color:var(--ink); font-size:12px; font-family:var(--mono); letter-spacing:.06em; text-transform:uppercase; margin-bottom:3px; }
+  @media (max-width:640px){ .grid3{grid-template-columns:1fr;} }
+</style>
+
+<style>
+.dnav{position:sticky;top:0;z-index:50;background:var(--card,#fffefb);border-bottom:1px solid var(--rule,#ddd8cd);font-family:var(--mono,ui-monospace,monospace);font-size:11.5px}
+.dnav .in{max-width:1020px;margin:0 auto;padding:9px 20px;display:flex;flex-wrap:wrap;gap:4px 18px;align-items:center}
+.dnav b{letter-spacing:.12em;text-transform:uppercase;font-size:10px;color:var(--ink-faint,#868c8e);margin-right:6px}
+.dnav a{color:var(--navy,#2d4a63);text-decoration:none;padding:2px 0;border-bottom:2px solid transparent}
+.dnav a:hover{border-bottom-color:var(--navy,#2d4a63)}
+.dnav a.on{color:var(--ink,#1e2124);border-bottom-color:var(--amber,#a4602a);font-weight:600}
+</style>
+</head>
+<body>
+<nav class="dnav" aria-label="DeYoe documents"><div class="in"><b>DeYoe docs</b><a href="index.html">Developer handbook (main)</a><a href="screen-spec.html" class="on">Screen spec</a><a href="data-model.html">Data model</a><a href="current-process.html">Current process</a></div></nav>
+<div class="wrap">
+<header class="masthead">
+  <p class="eyebrow">DeYoe Wellness Acupuncture — design handoff</p>
+  <h1>Packet tool screen spec</h1>
+  <p class="standfirst">Everything needed to design the staff application: who uses it, how it flows, real reference data from the practice's own forms, and a field-level specification for each of the 21 screens.</p>
+  <div class="meta"><span><b>Revision</b> 6 · 21 Sep 2026</span><span><b>User</b> Lorraine, Practice Manager</span><span><b>Device</b> office Mac, desktop browser</span></div>
+</header>
+
+<section>
+  <h2>What changed in this revision</h2>
+  <ul class="changes">
+    <li><span class="cnum">1</span><div><b>One person runs the whole flow</b><span>Lorraine prepares, reviews and sends every packet. The separate approval hand-off is gone; the final review screen stays deliberate.</span></div></li>
+    <li><span class="cnum">2</span><div><b>Three separate files per fax</b><span>Cover sheet, clinical notes and RFS are built, previewed and sent as separate PDFs. Every Blairsville VA send also goes to Atlanta VA automatically.</span></div></li>
+    <li><span class="cnum">3</span><div><b>The patient's answers per visit</b><span>Type of pain, painful activities and daily-life interference are recorded at each visit, starting from the previous visit's answers.</span></div></li>
+    <li><span class="cnum">4</span><div><b>Forms built from configuration</b><span>The visit screen shows exactly the options each diagnosis uses. A searchable diagnosis picker is ready for more than 20 diagnoses.</span></div></li>
+    <li><span class="cnum">6</span><div><b>Visits held to what the VA approved</b><span>No more visits than approved, and no visit dates outside the authorization period. Warnings two visits before the limit. Treatment that ends early is marked as the final visit.</span></div></li>
+    <li><span class="cnum">7</span><div><b>Answers filled in automatically, always editable</b><span>Every visit starts from the previous visit's answers. The first visit of a new authorization for the same patient and the same diagnosis starts from that patient's last recorded visit; otherwise from the diagnosis defaults (or Dr. DeYoe's note). Any answer can be changed; the change carries forward. The pain level is always entered, never carried over.</span></div></li>
+    <li><span class="cnum">8</span><div><b>Diagnoses set up by our team in this release</b><span>Each diagnosis is a settings file prepared and added by our team. S16 is a read-only list; there is no on-screen form editor (S17 is not part of this project).</span></div></li>
+    <li><span class="cnum">5</span><div><b>Reference data refreshed</b><span>20 diagnoses (PTSD and Brain Stem Stroke removed; Headache and Cervicalgia – Left added; two replacements to come), the new fax number, and the practice's answers of 19 September.</span></div></li>
+  </ul>
+</section>
+
+<section>
+  <h2>Context a designer needs</h2>
+  <ul class="plain">
+    <li><b>One main user.</b> Lorraine, the Practice Manager, prepares and sends every packet. Dr. DeYoe does not use the tool at go-live. Non-technical, busy, works from one office Mac.</li>
+    <li><b>What it replaces.</b> Retyping a page of clinical notes per visit onto scanned templates, then faxing three files to the VA. A 12-visit packet is an afternoon today.</li>
+    <li><b>The rhythm.</b> Visits are recorded as they happen. The packet is sent once, when the authorization's visits are complete — possibly with an earlier initial-visit send, still to be confirmed.</li>
+    <li><b>The one irreversible action.</b> Sending a fax to the VA. Everything builds toward a calm, well-informed review before it.</li>
+    <li><b>Healthcare data.</b> No patient details in page titles, browser tabs or lingering notifications. Automatic sign-out after inactivity.</li>
+    <li><b>Small volume.</b> Tens of patients. Design for clarity and confidence — generous type, no dense grids.</li>
+    <li><b>Output looks like her paper.</b> Every printed page is the practice's own scanned template with values added. Staff never type on the scan; they fill short screens and see the page as a preview.</li>
+  </ul>
+</section>
+
+<section>
+  <h2>Decisions and assumptions in force</h2>
+  <div class="tblwrap">
+    <table>
+      <thead><tr><th>Topic</th><th>Status</th><th>How the screens handle it</th><th>Screens</th></tr></thead>
+      <tbody>
+        <tr><td>Who prepares and sends</td><td class="y">Confirmed</td><td>Lorraine alone. Roles exist for future staff.</td><td>S13, S20</td></tr>
+        <tr><td>Three separate PDFs</td><td class="y">Confirmed</td><td>Three files, each previewed and named</td><td>S11, S12, S13</td></tr>
+        <tr><td>Blairsville VA also goes to Atlanta VA</td><td class="y">Confirmed</td><td>Added automatically as a second destination</td><td>S11, S13, S14, S18</td></tr>
+        <tr><td>Left/right not printed</td><td class="y">Confirmed</td><td>Menus show the side; the page doesn't</td><td>S6, S16</td></tr>
+        <tr><td>Post-treatment 1/10 · Excellent on the last page</td><td class="y">Confirmed</td><td>Automatic, not editable per visit</td><td>S9, S12</td></tr>
+        <tr><td>Hosting on the office Mac</td><td class="y">Confirmed</td><td>Backup and encryption status shown in settings</td><td>S19</td></tr>
+        <tr><td>Patient answers recorded per visit</td><td class="y">Decided</td><td>Carried forward from the last visit; defaults from the diagnosis settings; same patient + same diagnosis continues from their last recorded visit</td><td>S9, S10</td></tr>
+        <tr><td>Visits limited to the approved number and period</td><td class="y">Decided</td><td>Hard block, with the reason shown; extensions recorded on S8 and logged</td><td>S7, S8, S9</td></tr>
+        <tr><td>VA extends an authorization</td><td class="warn">To confirm</td><td>Assumed: same VA number, more visits or a later end date, edited on S8. If the VA issues a new number, it becomes a new authorization.</td><td>S8</td></tr>
+        <tr><td>Initial-visit records sent early</td><td class="warn">To confirm</td><td>Supported as a packet type, hidden until confirmed</td><td>S2, S11</td></tr>
+        <tr><td>RFS provider signature (field 21)</td><td class="warn">To confirm</td><td>Flagged as unsigned in preview and review</td><td>S12, S13</td></tr>
+        <tr><td>Which cover sheet goes with the Atlanta copy</td><td class="warn">Assumed</td><td>Atlanta — Request for Services, RFS included</td><td>S18</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section>
+  <h2>Navigation</h2>
+  <figure>
+    <div class="scroller">
+      <svg viewBox="0 0 840 580" role="img" aria-label="Navigation: sign-in leads to the dashboard and the patient area. The main path runs patient, authorization, visit entry with optional AI assist, build packet, preview, review and send, send result, with a fax log and correct-and-resend branching off, and admin screens to the side.">
+        <defs><marker id="na" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
+        <g color="var(--ink-faint)" stroke="currentColor" stroke-width="1.3" fill="none" marker-end="url(#na)">
+          <line x1="110" y1="62" x2="110" y2="96"/><line x1="180" y1="120" x2="286" y2="120"/>
+          <line x1="352" y1="148" x2="352" y2="182"/><line x1="352" y1="234" x2="352" y2="268"/>
+          <line x1="352" y1="320" x2="352" y2="354"/><line x1="352" y1="406" x2="352" y2="440"/>
+          <line x1="418" y1="380" x2="530" y2="380"/><line x1="418" y1="466" x2="530" y2="300"/>
+          <line x1="596" y1="268" x2="596" y2="238"/><line x1="596" y1="180" x2="596" y2="150"/>
+          <line x1="110" y1="148" x2="110" y2="440"/>
+          <line x1="662" y1="120" x2="726" y2="120" stroke-dasharray="4 4"/><line x1="778" y1="148" x2="778" y2="196" stroke-dasharray="4 4"/>
+        </g>
+        <g><rect x="40" y="20" width="140" height="42" rx="3" fill="var(--card)" stroke="var(--rule)" stroke-width="1.5"/><text class="n-t" x="110" y="40" text-anchor="middle">S1 Sign in</text><text class="n-s" x="110" y="54" text-anchor="middle">Lorraine</text></g>
+        <g><rect x="40" y="98" width="140" height="50" rx="3" fill="var(--navy-wash)" stroke="var(--navy)" stroke-width="1.6"/><text class="n-t" x="110" y="120" text-anchor="middle">S2 Dashboard</text><text class="n-s" x="110" y="136" text-anchor="middle">what needs me today</text></g>
+        <text class="band" x="286" y="88">EVERY DAY</text>
+        <g><rect x="286" y="98" width="132" height="50" rx="3" fill="var(--card)" stroke="var(--rule)" stroke-width="1.5"/><text class="n-t" x="352" y="120" text-anchor="middle">S3 Patients</text><text class="n-s" x="352" y="136" text-anchor="middle">S4 add / edit</text></g>
+        <g><rect x="286" y="184" width="132" height="50" rx="3" fill="var(--card)" stroke="var(--rule)" stroke-width="1.5"/><text class="n-t" x="352" y="206" text-anchor="middle">S5 Patient</text><text class="n-s" x="352" y="222" text-anchor="middle">history</text></g>
+        <g><rect x="286" y="270" width="132" height="50" rx="3" fill="var(--card)" stroke="var(--rule)" stroke-width="1.5"/><text class="n-t" x="352" y="292" text-anchor="middle">S7 Authorization</text><text class="n-s" x="352" y="308" text-anchor="middle">S6 new · S8 edit</text></g>
+        <g><rect x="286" y="356" width="132" height="50" rx="3" fill="var(--card)" stroke="var(--rule)" stroke-width="1.5"/><text class="n-t" x="352" y="378" text-anchor="middle">S9 Visit entry</text><text class="n-s" x="352" y="394" text-anchor="middle">after each visit</text></g>
+        <text class="band" x="286" y="432">WHEN VISITS ARE DONE</text>
+        <g><rect x="286" y="442" width="132" height="50" rx="3" fill="var(--card)" stroke="var(--rule)" stroke-width="1.5"/><text class="n-t" x="352" y="464" text-anchor="middle">S11 Build packet</text><text class="n-s" x="352" y="480" text-anchor="middle">3 files · destinations</text></g>
+        <g><rect x="530" y="356" width="132" height="50" rx="3" fill="var(--card)" stroke="var(--rule)" stroke-width="1.5" stroke-dasharray="4 3"/><text class="n-t" x="596" y="378" text-anchor="middle">S10 AI assist</text><text class="n-s" x="596" y="394" text-anchor="middle">read Dr. DeYoe's note</text></g>
+        <g><rect x="530" y="270" width="132" height="50" rx="3" fill="var(--card)" stroke="var(--rule)" stroke-width="1.5"/><text class="n-t" x="596" y="292" text-anchor="middle">S12 Preview</text><text class="n-s" x="596" y="308" text-anchor="middle">each file, each page</text></g>
+        <g><rect x="530" y="182" width="132" height="56" rx="3" fill="var(--plum-wash)" stroke="var(--plum)" stroke-width="1.8"/><text class="n-t" x="596" y="204" text-anchor="middle">S13 Review &amp; send</text><text class="n-s" x="596" y="219" text-anchor="middle">the one irreversible</text><text class="n-s" x="596" y="232" text-anchor="middle">step</text></g>
+        <g><rect x="530" y="98" width="132" height="50" rx="3" fill="var(--moss-wash)" stroke="var(--moss)" stroke-width="1.6"/><text class="n-t" x="596" y="120" text-anchor="middle">S14 Send result</text><text class="n-s" x="596" y="136" text-anchor="middle">per destination</text></g>
+        <g><rect x="726" y="98" width="104" height="50" rx="3" fill="var(--card)" stroke="var(--rule)" stroke-width="1.5"/><text class="n-t" x="778" y="120" text-anchor="middle">S15 Fax log</text></g>
+        <g><rect x="726" y="196" width="104" height="50" rx="3" fill="var(--card)" stroke="var(--rule)" stroke-width="1.5" stroke-dasharray="4 3"/><text class="n-t" x="778" y="218" text-anchor="middle">S21 Correct</text><text class="n-s" x="778" y="234" text-anchor="middle">and re-send</text></g>
+        <text class="band" x="40" y="436">SET-UP</text>
+        <g><rect x="40" y="442" width="140" height="50" rx="3" fill="var(--card)" stroke="var(--rule)" stroke-width="1.5" stroke-dasharray="4 3"/><text class="n-t" x="110" y="464" text-anchor="middle">S16–S20</text><text class="n-s" x="110" y="480" text-anchor="middle">templates · settings</text></g>
+      </svg>
+    </div>
+    <figcaption>Visit entry happens throughout the authorization; building and sending happens once at the end. The review step is visually distinct because it's the only one that can't be undone. Set-up screens sit off the daily path.</figcaption>
+  </figure>
+</section>
+
+<section>
+  <h2>Reference data</h2>
+  <p class="sec-note">Real values from the practice's files, with made-up patients. Use them in every mockup.</p>
+
+  <h3 class="grp">Sample patient A — Jane Doe, 12 visits</h3>
+  <div class="tblwrap"><table class="fields">
+    <thead><tr><th>Field</th><th>Type</th><th>Notes</th><th>Value</th></tr></thead>
+    <tbody>
+      <tr><td>Patient</td><td>record</td><td>Ms. · her</td><td>Jane Doe · DOB 03/14/1961 · last four 1234</td></tr>
+      <tr><td>Authorization</td><td>record</td><td>Clarkesville office · Atlanta VAMC</td><td>VA0012345678 · Low Back Pain – Left · 12 visits</td></tr>
+      <tr><td>Visits</td><td>date → pain</td><td>one row each</td><td>04/01 → 8 · 04/03 → 7 · 04/05 → 7 · 04/10 → 6 · 04/15 → 6 · 04/17 → 5 · 04/21 → 5 · 04/25 → 4 · 04/28 → 4 · 05/07 → 3 · 05/15 → 3 · 05/20 → 2</td></tr>
+      <tr><td>Notes file</td><td>file name</td><td>built automatically</td><td>Jane Doe 1234 Acupuncture Records VA0012345678.pdf</td></tr>
+    </tbody>
+  </table></div>
+  <div class="callout"><b>Use this as the worked example of the consistency check.</b> In the practice's own sample, the notes show last four <code>1234</code> and the matching cover sheet shows <code>1111</code>. The tool makes that impossible.</div>
+
+  <h3 class="grp">Sample patient B — John Doe, 8 visits</h3>
+  <div class="tblwrap"><table class="fields">
+    <thead><tr><th>Field</th><th>Type</th><th>Notes</th><th>Value</th></tr></thead>
+    <tbody>
+      <tr><td>Patient</td><td>record</td><td>Mr. · his</td><td>John Doe · last four 0001</td></tr>
+      <tr><td>Authorization</td><td>record</td><td>Blairsville office · Blairsville VA → also Atlanta VA</td><td>VA0023456789 · Pain in Hip – Left · 8 visits</td></tr>
+      <tr><td>Visits</td><td>date → pain</td><td></td><td>5/01 → 8 · 5/05 → 7 · 5/14 → 6 · 5/30 → 5 · 6/04 → 4 · 6/10 → 3 · 6/14 → 2 · 6/19 → 2</td></tr>
+      <tr><td>Closing note</td><td>text</td><td>last page</td><td>Pt responded well to tx. Pt had an excellent outcome w/ acupuncture</td></tr>
+    </tbody>
+  </table></div>
+  <p class="ftitle">Dr. DeYoe's handoff note — the practice's own example, a separate Low Back Pain – Left case; the input to AI assist (S10)</p>
+  <p class="verbatim">John Doe
+Auth: Low back pain - Left side LBP with pain being <u>dull and sharp</u> with ADL and <u>mild numbness</u> down the left leg -
+Use <u>LBP Left side template</u>. Schedule NV for: two weeks, on a Wednesday @ 10:00 am. Mileage Report needed: Yes</p>
+
+  <h3 class="grp">The 20 diagnoses</h3>
+  <p class="sec-note">Staff pick by the name with the side; the page prints the wording on the scan. Post-treatment is always 1/10. Every template has “Good” ticked under today's response, replaced by Excellent on the last page.</p>
+  <div class="tblwrap"><table>
+    <thead><tr><th>Shown to staff</th><th>Group</th><th>Printed on the page</th><th>Pain value on scan</th><th>Status</th></tr></thead>
+    <tbody>
+      <tr><td>Anosmia</td><td>Other</td><td>Anosmia</td><td>8/10 — covered</td><td class="y">Ready · short layout</td></tr>
+      <tr><td>Cervicalgia – Left</td><td>Neck</td><td>CERVICALGIA</td><td>blank</td><td class="y">Ready · new</td></tr>
+      <tr><td>Cervicalgia – Right</td><td>Neck</td><td>CERVICALGIA</td><td>none — added</td><td class="y">Ready</td></tr>
+      <tr><td>Dorsalgia – Left</td><td>Back</td><td>Dorsalgia</td><td>none — added</td><td class="y">Ready</td></tr>
+      <tr><td>Dorsalgia – Right</td><td>Back</td><td>Dorsalgia</td><td>none — added</td><td class="y">Ready</td></tr>
+      <tr><td>Headache</td><td>Head</td><td>HEADACHE</td><td>blank</td><td class="y">Ready · new</td></tr>
+      <tr><td>Low Back Pain – Left</td><td>Back</td><td>LOW BACK PAIN</td><td>8/10 — covered</td><td class="y">Ready</td></tr>
+      <tr><td>Low Back Pain – Right</td><td>Back</td><td>Low Back Pain</td><td>label, no value</td><td class="y">Ready</td></tr>
+      <tr><td>Other Chronic Pain</td><td>Other</td><td>other chronic pain</td><td>8/10 — covered</td><td class="y">Ready</td></tr>
+      <tr><td>Other Spondylosis – Left</td><td>Back</td><td>OTHER SPONDYLOSIS</td><td>blank</td><td class="y">Ready · now signed</td></tr>
+      <tr><td>Other Spondylosis – Right</td><td>Back</td><td>Other Spondylosis</td><td>blank</td><td class="y">Ready · clean copy</td></tr>
+      <tr><td>Pain in Hip – Left</td><td>Hip</td><td>PAIN IN LEFT HIP</td><td>8/10 — covered</td><td class="y">Ready</td></tr>
+      <tr><td>Pain in Hip – Right</td><td>Hip</td><td>PAIN IN RIGHT HIP</td><td>8/10 — covered</td><td class="y">Ready</td></tr>
+      <tr><td>Pain in Knee – Left</td><td>Knee</td><td>PAIN IN KNEE</td><td>blank</td><td class="y">Ready · corrected</td></tr>
+      <tr><td>Pain in Knee – Right</td><td>Knee</td><td>Pain In Right Knee</td><td>8/10 — covered</td><td class="y">Ready</td></tr>
+      <tr><td>Shoulder – Right</td><td>Shoulder</td><td>Pain in unspecified shoulder</td><td>none — added</td><td class="y">Ready</td></tr>
+      <tr><td>Shoulder (May 30 version)</td><td>Shoulder</td><td>Pain in unspecified shoulder</td><td>none — added</td><td class="y">Ready · side to confirm</td></tr>
+      <tr><td>Vertebrogenic Low Back Pain – Left</td><td>Back</td><td>— none printed</td><td>8/10 — covered</td><td class="warn">Ready · corrected copy awaited</td></tr>
+      <tr><td>Replacement diagnosis 1</td><td>—</td><td>—</td><td>—</td><td class="n">Not yet received</td></tr>
+      <tr><td>Replacement diagnosis 2</td><td>—</td><td>—</td><td>—</td><td class="n">Not yet received</td></tr>
+    </tbody>
+  </table></div>
+  <p class="sec-note" style="margin-top:12px"><b>18 ready, 2 to come.</b> ICD-10 codes are awaited for all 20 — the RFS can't be built without one. The practice has asked about 22 more diagnoses, so the picker must scale to 40+.</p>
+
+  <h3 class="grp">Cover sheets, destinations and files</h3>
+  <div class="tblwrap"><table>
+    <thead><tr><th>Cover sheet</th><th>Destination fax</th><th>Their phone</th><th>Quirk</th></tr></thead>
+    <tbody>
+      <tr><td>Atlanta VAMC — Request for Services</td><td>404-639-9335</td><td>404-321-6111</td><td>Also used for the automatic Atlanta copy</td></tr>
+      <tr><td>Atlanta VAMC — Initial Visit Records</td><td>404-639-9335</td><td>404-321-6111</td><td>Only sheet with an auth number field</td></tr>
+      <tr><td>Charlie Norwood VAMC, Augusta</td><td>706-731-3276</td><td>706-733-0188</td><td></td></tr>
+      <tr><td>Blairsville VA — ATTN Dr. Sheffield</td><td>404-417-1581</td><td>706-835-3980</td><td>Uses his/her · triggers the Atlanta copy</td></tr>
+      <tr><td>Blairsville VA — ATTN Lauren Payne</td><td>404-417-1581</td><td>706-835-3980</td><td>Triggers the Atlanta copy</td></tr>
+    </tbody>
+  </table></div>
+  <div class="grid3">
+    <div><b>File 1</b>Cover sheet — one per destination · e.g. <code>John Doe 1234 Fax Cover Sheet.pdf</code> <span class="n">(name to confirm)</span></div>
+    <div><b>File 2</b>Clinical notes — all visits · <code>John Doe 1234 Acupuncture Records VA0023456789.pdf</code></div>
+    <div><b>File 3</b>RFS — both pages, when requested · e.g. <code>John Doe 1234 RFS VA0023456789.pdf</code> <span class="n">(name to confirm)</span></div>
+  </div>
+  <p class="sec-note" style="margin-top:12px">Sending from the practice fax <b>404-738-1714</b> (the supplied forms still show the old 706-664-0421). Phone <code>678-982-7714</code>.</p>
+
+  <h3 class="grp">Offices and VA facilities</h3>
+  <div class="tblwrap"><table>
+    <thead><tr><th>Type</th><th>Name</th><th>Detail</th></tr></thead>
+    <tbody>
+      <tr><td>Office</td><td>Clarkesville office</td><td>1857 Hardman Rd, GA 30523</td></tr>
+      <tr><td>Office</td><td>Blairsville office</td><td>47 Commerce Drive Ste 1B, GA 30512</td></tr>
+      <tr><td>Office</td><td>Decatur office</td><td>235 E Ponce de Leon Ave Suite 227, GA 30030</td></tr>
+      <tr><td>VA facility</td><td>Atlanta VAMC</td><td>1670 Clairmont Road, Decatur GA 30033</td></tr>
+      <tr><td>VA facility</td><td>Charlie Norwood VAMC</td><td>Augusta</td></tr>
+      <tr><td>VA facility</td><td>Blairsville VA</td><td>contacts: Dr. Sheffield, Lauren Payne</td></tr>
+    </tbody>
+  </table></div>
+  <div class="callout moss"><b>Always qualify “Blairsville”.</b> It is both a practice office and a VA destination. Write <b>Blairsville office</b> or <b>Blairsville VA</b>, never the bare word.</div>
+
+  <h3 class="grp">RFS — VA Form 10-10172</h3>
+  <p class="sec-note">Two pages, always both. Pre-printed: VA facility, office address, phone, fax, email, provider name, NPI 1194225565. Fields 15 and 16 stay blank.</p>
+  <div class="tblwrap"><table class="fields">
+    <thead><tr><th>Field</th><th>No.</th><th>Source</th><th>Example</th></tr></thead>
+    <tbody>
+      <tr><td>Veteran's full name · date of birth</td><td>1, 2</td><td>patient</td><td>John Doe · MM/DD/YYYY</td></tr>
+      <tr><td>VA authorization number</td><td>4</td><td>authorization</td><td>VA0023456789</td></tr>
+      <tr><td>48 hours · continuation · referral</td><td>10–12</td><td>fixed</td><td>NO · YES · NO</td></tr>
+      <tr><td>ICD-10 · description</td><td>13, 14</td><td>diagnosis</td><td>awaited · LOW BACK PAIN</td></tr>
+      <tr><td>Reason for request</td><td>18</td><td>assembled</td><td>see below</td></tr>
+      <tr><td>Provider signature</td><td>21</td><td>—</td><td class="warn">Required · not signed by the tool yet</td></tr>
+      <tr><td>Today's date</td><td>22</td><td>system</td><td>today</td></tr>
+    </tbody>
+  </table></div>
+  <p class="verbatim">REQUESTING A CONTINUATION OF CARE FOR ACUPUNCTURE THROUGH COMMUNITY CARE.
+
+<u>MR. DOE</u> HAS BEEN UNDER MY CARE FOR ACUPUNCTURE SERVICES. ACUPUNCTURE
+TREATMENTS HAVE PROVIDED PATIENT WITH SIGNIFICANT PAIN RELIEF IN <u>HIS</u>
+<u>LOWER BACK</u>, IMPROVING <u>HIS</u> CIRCULATION AND PROMOTING MUSCLE RELAXATION.
+THANK YOU.</p>
+</section>
+
+<section>
+  <h2>Screen specifications</h2>
+
+  <h3 class="grp">Access and orientation</h3>
+  <div class="screen"><header><span class="sid">S1</span><h4>Sign in</h4><span class="who">All users</span></header><div class="body">
+    <p class="purpose">Email and password. A tool, not a product launch.</p>
+    <dl class="sd"><dt>States</dt><dd>Default · wrong details · locked after repeated attempts · signed out for inactivity, with one line saying why.</dd><dt>Notes</dt><dd>No patient data on this page.</dd></dl>
+  </div></div>
+
+  <div class="screen"><header><span class="sid">S2</span><h4>Dashboard</h4><span class="who">All users</span></header><div class="body">
+    <p class="purpose">The daily starting point. Answers “what needs me today?” before anything else.</p>
+    <dl class="sd">
+      <dt>Needs attention</dt><dd><b>Ready to send</b> — authorizations whose visits are all recorded · <b>Faxes that failed</b> or are <b>still waiting for delivery confirmation</b> after the expected time · <b>Authorizations nearing their last visit</b> · <b>Diagnoses missing an ICD-10 code</b> (blocks the RFS).</dd>
+      <dt>In progress</dt><dd>Open authorizations with patient, diagnosis and visits recorded out of approved — e.g. <code>Jane Doe · Low Back Pain – Left · 7 of 12</code>.</dd>
+      <dt>Recently sent</dt><dd>Last few packets with destinations and status.</dd>
+      <dt>Actions</dt><dd>Record a visit · start a new authorization · open a ready packet · retry a failed fax · search.</dd>
+      <dt>States</dt><dd>First run, nothing yet (point at adding a patient) · quiet day · several things needing attention.</dd>
+    </dl>
+  </div></div>
+
+  <h3 class="grp">Patients and authorizations</h3>
+  <div class="screen"><header><span class="sid">S3</span><h4>Patient list and search</h4><span class="who">All users</span></header><div class="body">
+    <p class="purpose">Find a veteran fast — search by name or last four is the main control.</p>
+    <div class="tblwrap"><table class="fields"><thead><tr><th>Column</th><th>Type</th><th>Notes</th><th>Example</th></tr></thead><tbody>
+      <tr><td>Name</td><td>text</td><td>primary sort</td><td>Jane Doe</td></tr>
+      <tr><td>Date of birth</td><td>date</td><td></td><td>03/14/1961</td></tr>
+      <tr><td>Last four</td><td>char(4)</td><td>never a full SSN</td><td>1234</td></tr>
+      <tr><td>Open authorization</td><td>text</td><td>diagnosis + progress</td><td>Low Back Pain – Left · 7 of 12</td></tr>
+      <tr><td>Office</td><td>filter</td><td>a filter only</td><td>Clarkesville office</td></tr>
+    </tbody></table></div>
+  </div></div>
+
+  <div class="screen"><header><span class="sid">S4</span><h4>Add / edit patient</h4><span class="who">All users</span></header><div class="body">
+    <p class="purpose">Capture the identity every document will print. Entered once, reused for every authorization.</p>
+    <div class="tblwrap"><table class="fields"><thead><tr><th>Field</th><th>Type</th><th>Validation</th><th>Example</th></tr></thead><tbody>
+      <tr><td>First name · middle initial · last name</td><td>text</td><td>first and last required</td><td>Jane · A · Doe</td></tr>
+      <tr><td>Date of birth</td><td>date</td><td>required, plausible</td><td>03/14/1961</td></tr>
+      <tr><td>Last four of SSN</td><td>char(4)</td><td>exactly 4 digits</td><td>1234</td></tr>
+      <tr><td>Title · pronoun</td><td>select</td><td>Mr./Ms./Mrs. · his/her</td><td>Ms. · her</td></tr>
+      <tr><td>VA patient ID</td><td>text</td><td>optional — only if the practice uses one</td><td>—</td></tr>
+    </tbody></table></div>
+    <dl class="sd"><dt>States</dt><dd><span class="flag">Important</span> <b>Possible duplicate</b> — same last name, date of birth and last four as an existing patient. Show the existing record; the user chooses. Never merged automatically.</dd>
+    <dt>Notes</dt><dd>One line explaining that title and pronoun print into the RFS and one cover sheet. There is no field for the full SSN, by design.</dd></dl>
+  </div></div>
+
+  <div class="screen"><header><span class="sid">S5</span><h4>Patient detail</h4><span class="who">All users</span></header><div class="body">
+    <p class="purpose">One veteran's whole history with the practice.</p>
+    <dl class="sd"><dt>Contains</dt><dd>Identity header · authorizations, newest first: VA number, diagnosis, dates, office, visits recorded of approved, packets sent · a small pain trend per authorization · start a new authorization.</dd>
+    <dt>States</dt><dd>No authorizations yet · one open · several past.</dd></dl>
+  </div></div>
+
+  <div class="screen"><header><span class="sid">S6</span><h4>New authorization</h4><span class="who">All users</span></header><div class="body">
+    <p class="purpose">Record what the VA approved. Everything else hangs from this.</p>
+    <div class="tblwrap"><table class="fields"><thead><tr><th>Field</th><th>Type</th><th>Validation</th><th>Example</th></tr></thead><tbody>
+      <tr><td>VA authorization number</td><td>text</td><td>required</td><td>VA0012345678</td></tr>
+      <tr><td>Diagnosis</td><td>search + groups</td><td>required; only ready templates</td><td>Low Back Pain – Left</td></tr>
+      <tr><td>VA facility</td><td>select</td><td>required</td><td>Atlanta VAMC</td></tr>
+      <tr><td>Treating office</td><td>select</td><td>required; picks the RFS version</td><td>Clarkesville office</td></tr>
+      <tr><td>Visits approved</td><td>number</td><td>at least 1; caps the visits that can be recorded</td><td>12</td></tr>
+      <tr><td>Period start · end</td><td>date</td><td>required; end after start; visit dates must fall inside</td><td>04/01/2026 · 05/31/2026</td></tr>
+    </tbody></table></div>
+    <dl class="sd"><dt>Diagnosis picker</dt><dd><span class="flag">Important</span> Type-to-search, grouped by body area (Back, Neck, Hip, Knee, Shoulder, Head, Other), showing the name <b>with</b> the side. Must stay usable at 40+ diagnoses. Templates not yet ready are shown greyed with a plain reason (“Template not received yet”), not hidden.</dd>
+    <dt>Optional</dt><dd>Start from Dr. DeYoe's note (S10) to pre-select the diagnosis.</dd></dl>
+  </div></div>
+
+  <div class="screen"><header><span class="sid">S7</span><h4>Authorization detail</h4><span class="who">All users</span></header><div class="body">
+    <p class="purpose">The hub for one authorization: its visits, its packets, its faxes.</p>
+    <dl class="sd"><dt>Contains</dt><dd>Patient chip, VA number, diagnosis, office, VA facility (and “also sent to Atlanta VA” when Blairsville) · visit list with date, pain level and a small marker where the patient's answers changed · progress against visits approved · packets and their status.</dd>
+    <dt>Limits</dt><dd><span class="flag">Important</span> Progress reads “7 of 12 approved”. At 2 visits left, a quiet warning here and on the dashboard. When all approved visits are recorded, <b>Add visit</b> is disabled with the reason and a link to record an extension (S8). A visit can be marked <b>final visit</b> before the limit when treatment ends early.</dd>
+    <dt>States</dt><dd>No visits · in progress · 2 visits left · all approved visits recorded, ready to build · ended early (final visit marked) · period ended with visits left · sent (read-only, with the three files).</dd></dl>
+  </div></div>
+
+  <div class="screen"><header><span class="sid">S8</span><h4>Edit authorization</h4><span class="who">All users</span></header><div class="body">
+    <p class="purpose">Fix a mistyped VA number or record an extension of approved visits.</p>
+    <dl class="sd"><dt>Editable</dt><dd>VA number, facility, office, visits approved, dates.</dd><dt>Locked</dt><dd><b>Diagnosis</b>, once visits exist — a different diagnosis is a new authorization. Say so next to the field.</dd><dt>Extensions</dt><dd>Raising visits approved or moving the end date asks for a short reason (“VA extension received 05/28”) and is logged. Visits approved can't go below the visits already recorded, and the period can't be shortened past a recorded visit — the message names the visit in the way.</dd><dt>States</dt><dd>Fully editable · partly locked · sent (offer S21) · changed by someone else, reload.</dd></dl>
+  </div></div>
+
+  <h3 class="grp">After each visit</h3>
+  <div class="screen"><header><span class="sid">S9</span><h4>Visit entry</h4><span class="who">All users</span></header><div class="body">
+    <p class="purpose">The most-used screen. Record today's visit in under a minute. The options shown come from the diagnosis's configuration, so every diagnosis gets exactly its own form.</p>
+    <div class="tblwrap"><table class="fields"><thead><tr><th>Field</th><th>Type</th><th>Validation</th><th>Example</th></tr></thead><tbody>
+      <tr><td>Visit date</td><td>date</td><td>required, not a duplicate, after the previous visit, inside the authorization period</td><td>04/03/2026</td></tr>
+      <tr><td>Pain level</td><td>0–10 selector</td><td>required every visit; last visit's value shown as a hint, never pre-selected</td><td>7 <i>(last visit: 8)</i></td></tr>
+      <tr><td>Type of pain</td><td>checkboxes (11)</td><td>starts from last visit</td><td>Dull · Sharp · Numbness</td></tr>
+      <tr><td>Painful activities</td><td>checkboxes (7) + other</td><td>starts from last visit</td><td>Bending · Lying down · Lifting · other: twisting</td></tr>
+      <tr><td>Interferes with</td><td>checkboxes (11)</td><td>starts from last visit</td><td>Exercising</td></tr>
+      <tr><td>Final visit</td><td>switch</td><td>on automatically at the last approved visit; can be turned on earlier if treatment ends</td><td>Off</td></tr>
+      <tr><td>Page role</td><td>derived</td><td>read-only — from visit 1 and the final visit</td><td>First visit / Last visit</td></tr>
+      <tr><td>Physician's note</td><td>text</td><td>first and last visit only; default pre-filled</td><td>Pt responded well to tx…</td></tr>
+    </tbody></table></div>
+    <dl class="sd">
+      <dt>Speed</dt><dd><b>Same as last visit</b> — one click when nothing but the date and pain changed. Visit 1 of a new authorization for the same patient and the same diagnosis starts from that patient's last recorded visit; otherwise from the diagnosis defaults; Dr. DeYoe's note (S10) can replace either. A one-line note says which source was used (“Continued from the last Low Back Pain – Left authorization, 05/20/2026”).</dd>
+      <dt>Clarity</dt><dd>Answers that differ from the previous visit are highlighted. A small marker shows where each answer came from — carried forward, from the doctor's note, or changed today.</dd>
+      <dt>Validation</dt><dd>Inline, on the field that's wrong. Never one summary error at the bottom.</dd>
+      <dt>Notes</dt><dd><span class="flag">Key</span> The date is entered once and prints at both the top and bottom of the page — say so, because staff who know the paper will look for a second date. Clinical findings (objective, prognosis, plan, point prescription) are not on this screen: they stay as printed on Dr. DeYoe's template.</dd>
+      <dt>Limits</dt><dd>Visit number shown as “Visit 7 of 12 approved”. The screen can't be opened for a visit beyond the approved number; a date outside the period is an inline error that names the period.</dd>
+      <dt>States</dt><dd>First visit · a later visit, pre-filled · unchanged since last visit · errors (duplicate date, out of order, outside the period) · 2 visits left · last approved visit (final visit on) · limit reached.</dd>
+    </dl>
+  </div></div>
+
+  <div class="screen"><header><span class="sid">S10</span><h4>AI assist — read Dr. DeYoe's note</h4><span class="who">All users</span></header><div class="body">
+    <p class="purpose">Paste the doctor's handoff note; get a proposed diagnosis and first-visit answers to confirm.</p>
+    <dl class="sd">
+      <dt>Contains</dt><dd>Paste area · “read note” · proposals shown <b>beside</b> the note: diagnosis (<code>Low Back Pain – Left</code>), type of pain (<code>Dull, Sharp, Numbness</code>), with the words they came from highlighted in the note · accept all, accept one, or edit.</dd>
+      <dt>Also</dt><dd>Drafts the closing note for the last visit, for Lorraine to accept or edit.</dd>
+      <dt>States</dt><dd>Empty · reading · proposals ready · some uncertain (flagged) · nothing recognised · service unavailable (falls back to manual entry).</dd>
+      <dt>Notes</dt><dd><span class="flag">Privacy</span> A quiet, permanent line: <b>“Names and ID numbers are removed before the note is read.”</b> Scheduling and mileage parts of the note are ignored. Nothing is saved until accepted.</dd>
+    </dl>
+  </div></div>
+
+  <h3 class="grp">When the visits are done</h3>
+  <div class="screen"><header><span class="sid">S11</span><h4>Build packet</h4><span class="who">All users</span></header><div class="body">
+    <p class="purpose">Decide what goes, and to whom. The files and page counts assemble themselves.</p>
+    <div class="tblwrap"><table class="fields"><thead><tr><th>Field</th><th>Type</th><th>Rule</th><th>Example</th></tr></thead><tbody>
+      <tr><td>Packet type</td><td>select</td><td>final by default; initial only if enabled</td><td>Final — all visits</td></tr>
+      <tr><td>Cover sheet</td><td>select</td><td>the VA facility's sheets only</td><td>Blairsville VA — ATTN Dr. Sheffield</td></tr>
+      <tr><td>Also sending to</td><td>derived</td><td>added automatically for Blairsville VA</td><td>Atlanta VAMC — Request for Services</td></tr>
+      <tr><td>Include RFS</td><td>toggle</td><td>needs an ICD-10 code</td><td>Yes</td></tr>
+      <tr><td>RFS office · body area</td><td>select · text</td><td>office from the authorization</td><td>Blairsville office · LEFT HIP</td></tr>
+      <tr><td>Files</td><td>derived</td><td>three, each named</td><td>cover · notes (8 pages) · RFS (2 pages)</td></tr>
+      <tr><td>Pages per fax</td><td>derived</td><td>1 + notes + RFS</td><td>1 + 8 + 2 = 11</td></tr>
+    </tbody></table></div>
+    <dl class="sd"><dt>States</dt><dd>Default · RFS on/off with the count updating · second destination added automatically, with a one-line reason (“Blairsville VA sends are always copied to Atlanta VA”) · missing ICD-10, offer to continue without RFS.</dd></dl>
+  </div></div>
+
+  <div class="screen"><header><span class="sid">S12</span><h4>Preview</h4><span class="who">All users</span></header><div class="body">
+    <p class="purpose">See exactly what the VA will receive, file by file, and fix anything before it goes.</p>
+    <dl class="sd">
+      <dt>Contains</dt><dd>Tabs for each file — <b>Cover sheet</b> (one per destination), <b>Clinical notes</b> (page thumbnails beside a large page), <b>RFS</b> (two pages) · the file name above each · per-page edit · a consistency panel showing that name, VA number and last four agree across every file.</dd>
+      <dt>Actions</dt><dd>Edit a page · regenerate · download the files (useful for the manual HSRM upload) · continue to review.</dd>
+      <dt>States</dt><dd>Generating · ready · edited since generated · warnings, including <b>RFS not signed</b> until the signature question is settled.</dd>
+      <dt>Notes</dt><dd>The consistency panel is normally a calm confirmation; it only raises an alarm if a single page was overridden by hand.</dd>
+    </dl>
+  </div></div>
+
+  <h3 class="grp">Sending</h3>
+  <div class="screen"><header><span class="sid">S13</span><h4>Review and send</h4><span class="who">Lorraine</span></header><div class="body">
+    <p class="purpose">The one moment that can't be undone. One person does it, so the screen itself is the second pair of eyes.</p>
+    <div class="tblwrap"><table class="fields"><thead><tr><th>Shown</th><th>Source</th><th>Notes</th><th>Example</th></tr></thead><tbody>
+      <tr><td>Veteran</td><td>patient</td><td>name + last four</td><td>John Doe (0001)</td></tr>
+      <tr><td>Authorization</td><td>authorization</td><td></td><td>VA0023456789</td></tr>
+      <tr><td>Fax 1</td><td>cover sheet → VA facility</td><td>destination and number in full</td><td>Blairsville VA · 404-417-1581</td></tr>
+      <tr><td>Fax 2</td><td>destination rule</td><td>labelled as automatic</td><td>Atlanta VAMC · 404-639-9335</td></tr>
+      <tr><td>Files in each</td><td>packet</td><td>names and page counts</td><td>cover · notes 8 pp · RFS 2 pp = 11</td></tr>
+      <tr><td>Sending from</td><td>practice settings</td><td></td><td>404-738-1714</td></tr>
+    </tbody></table></div>
+    <dl class="sd"><dt>Actions</dt><dd>Confirm and send · back to preview.</dd><dt>States</dt><dd>Ready · warnings to acknowledge first · already sent in another window.</dd>
+    <dt>Notes</dt><dd><span class="flag">Critical</span> Destination and sender numbers come from opposite ends of the data and are both shown so a wrong wiring is visible. Confirmation records who and when.</dd></dl>
+  </div></div>
+
+  <div class="screen"><header><span class="sid">S14</span><h4>Send result</h4><span class="who">Lorraine</span></header><div class="body">
+    <p class="purpose">Whether each fax left, whether it arrived, and what to do if not — per destination.</p>
+    <dl class="sd"><dt>States</dt><dd><b>Queued</b> — accepted, delivery not yet confirmed (never shown as success) · <b>Sent</b> — delivery confirmed, with time and pages · <b>Failed</b> — reason in plain words, retry · <b>Waiting too long</b> — raised on the dashboard. One destination can succeed while the other fails.</dd>
+    <dt>Actions</dt><dd>Retry a destination (adds an attempt) · view in the fax log.</dd></dl>
+  </div></div>
+
+  <div class="screen"><header><span class="sid">S15</span><h4>Fax log</h4><span class="who">All users</span></header><div class="body">
+    <p class="purpose">Every transmission, so “did we send that?” takes seconds.</p>
+    <div class="tblwrap"><table class="fields"><thead><tr><th>Column</th><th>Type</th><th>Notes</th><th>Example</th></tr></thead><tbody>
+      <tr><td>Date and time</td><td>datetime</td><td></td><td>06/20/2026 09:14</td></tr>
+      <tr><td>Veteran</td><td>text</td><td>blank for test faxes</td><td>John Doe (0001)</td></tr>
+      <tr><td>Destination</td><td>text</td><td>automatic copies marked</td><td>Atlanta VAMC · auto</td></tr>
+      <tr><td>Kind</td><td>pill</td><td>initial · final · correction · test</td><td>Final</td></tr>
+      <tr><td>Pages · status · attempt</td><td>mixed</td><td></td><td>11 · Sent · 1 of 1</td></tr>
+    </tbody></table></div>
+    <dl class="sd"><dt>Actions</dt><dd>Open the three files exactly as sent · retry · correct and re-send · filter.</dd></dl>
+  </div></div>
+
+  <div class="screen"><header><span class="sid">S21</span><h4>Correct and re-send</h4><span class="who">Lorraine</span></header><div class="body">
+    <p class="purpose">Something went out wrong. A sent packet never changes, so a correction is a new packet linked to the old one.</p>
+    <dl class="sd"><dt>Flow</dt><dd>Say what was wrong · fix the record if needed · a new draft is created from the original · preview, review and send as normal.</dd><dt>States</dt><dd>Original still sending (wait) · correction drafted · correction sent — both shown in order in the authorization's history.</dd></dl>
+  </div></div>
+
+  <h3 class="grp">Set-up</h3>
+  <div class="screen"><header><span class="sid">S16</span><h4>Diagnoses and templates</h4><span class="who">Administrator</span></header><div class="body">
+    <p class="purpose">All diagnoses, their templates, and which are ready — including those still to come.</p>
+    <div class="tblwrap"><table class="fields"><thead><tr><th>Column</th><th>Type</th><th>Notes</th><th>Example</th></tr></thead><tbody>
+      <tr><td>Name shown to staff</td><td>text</td><td>with side</td><td>Pain in Knee – Left</td></tr>
+      <tr><td>Printed wording</td><td>text</td><td>what the page shows</td><td>PAIN IN KNEE</td></tr>
+      <tr><td>Group</td><td>select</td><td>for the picker</td><td>Knee</td></tr>
+      <tr><td>ICD-10 · body area</td><td>text</td><td>body area prints in RFS field 18</td><td>awaited · LEFT KNEE</td></tr>
+      <tr><td>Status · version</td><td>pill · number</td><td>ready / not received / replaced</td><td>Ready · v2</td></tr>
+    </tbody></table></div>
+    <dl class="sd"><dt>Actions</dt><dd>Search · view a diagnosis's sample first, middle and last pages · see which version is in use.</dd>
+    <dt>Notes</dt><dd><span class="flag">This release</span> Read-only. Diagnoses and replacement scans are added by our team as new versions; a line on the screen says so and how to request one.</dd></dl>
+  </div></div>
+
+  <div class="screen"><header><span class="sid">S17</span><h4>Template set-up</h4><span class="who">Not part of this project — do not design</span></header><div class="body">
+    <p class="purpose">There is no screen for this. Our team prepares each diagnosis's settings file (defaults, print positions, cover-ups) and adds it for the practice. The number is kept so screen references stay stable.</p>
+  </div></div>
+
+  <div class="screen"><header><span class="sid">S18</span><h4>Cover sheets, RFS and destinations</h4><span class="who">Administrator</span></header><div class="body">
+    <p class="purpose">The five cover sheets, three RFS versions, and the rule that copies Blairsville sends to Atlanta.</p>
+    <dl class="sd"><dt>Contains</dt><dd>Cover sheets by VA facility, with destination fax and the fields each carries · RFS office versions · the field-18 wording with its three fill-in slots · <b>destination rule</b>: “When sending to Blairsville VA, also send to Atlanta VAMC using [cover sheet], including the RFS [yes/no]”.</dd>
+    <dt>Notes</dt><dd>Four cover sheets have sample names printed on them and need covering — show it rather than hiding it.</dd></dl>
+  </div></div>
+
+  <div class="screen"><header><span class="sid">S19</span><h4>Practice and sending</h4><span class="who">Administrator</span></header><div class="body">
+    <p class="purpose">The practice details printed on every document, the fax connection, and data safety.</p>
+    <div class="tblwrap"><table class="fields"><thead><tr><th>Field</th><th>Type</th><th>Notes</th><th>Example</th></tr></thead><tbody>
+      <tr><td>Provider name · NPI</td><td>text</td><td>RFS 19–20</td><td>JAMES DEYOE, LAC · 1194225565</td></tr>
+      <tr><td>Practice phone · fax · email</td><td>text</td><td>fax updates all eight documents</td><td>678-982-7714 · 404-738-1714</td></tr>
+      <tr><td>Offices · VA facilities</td><td>lists</td><td>always qualified names</td><td>Clarkesville office · Atlanta VAMC</td></tr>
+      <tr><td>SRFax connection</td><td>secret</td><td>entered once, never shown back</td><td>••••••</td></tr>
+      <tr><td>Retention</td><td>months</td><td>confirm with the practice's advisor</td><td>120 packets · 72 logs</td></tr>
+      <tr><td>Encryption and backup</td><td>status</td><td>read-only</td><td>FileVault on · last backup today 07:00</td></tr>
+    </tbody></table></div>
+    <dl class="sd"><dt>Actions</dt><dd><span class="flag">Key</span> <b>Send a test fax</b> to a number she types, with no patient data. It appears in the fax log as a test.</dd></dl>
+  </div></div>
+
+  <div class="screen"><header><span class="sid">S20</span><h4>Users and activity log</h4><span class="who">Administrator</span></header><div class="body">
+    <p class="purpose">Who can use the tool, and a record of what was looked at and changed.</p>
+    <dl class="sd"><dt>Contains</dt><dd>Users and their roles (Lorraine holds all three at go-live) · add a user later · activity log filtered by person, patient, date and type — <b>records</b> (viewed, created, changed, approved, sent), <b>sign-ins</b> (including failed attempts and lock-outs), <b>downloads</b>, <b>settings changes</b> and <b>system events</b> (diagnosis updates, app updates, test faxes, backups) — showing before and after.</dd>
+    <dt>Notes</dt><dd>The log records <b>views</b> of patient records as well as changes, and can't be edited. Passwords and keys never appear in it. Export for an auditor is a later request, not part of this design.</dd>
+    <dt>States</dt><dd>Default · filtered · nothing matching · a failed-sign-in run highlighted.</dd></dl>
+  </div></div>
+</section>
+
+<section>
+  <h2>Patterns to design once</h2>
+  <ul class="plain">
+    <li><b>Patient chip</b> — <code>Jane Doe · 1234 · 03/14/1961</code> on every screen that shows patient data.</li>
+    <li><b>Status pill</b> — draft · ready · queued · sent · failed. One vocabulary, recognisable by shape as well as colour.</li>
+    <li><b>Answer source marker</b> — tiny and quiet: carried forward · from doctor's note · changed today.</li>
+    <li><b>File card</b> — file name, page count, open. Used for the three files in S11–S15.</li>
+    <li><b>Destination row</b> — facility, fax number in full, “automatic” tag where applicable, status.</li>
+    <li><b>Inline validation</b> — on the field, as the user moves on.</li>
+    <li><b>Read-only state</b> — sent things look settled, not like disabled forms.</li>
+    <li><b>Someone else changed this</b> — reload notice, never a lock that strands a record.</li>
+  </ul>
+  <div class="callout moss"><b>Not in this design.</b> A VA login or portal · inbound faxes · HSRM upload (manual; files can be downloaded) · editing clinical findings per visit · a form designer · patient self check-in · reports or an assistant · mobile app. Several of these are natural later phases; the data is shaped to allow them.</div>
+</section>
+</div>
+
+</body>
+</html>
