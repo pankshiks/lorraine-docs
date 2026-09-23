@@ -1,0 +1,226 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DeYoe Docs Changelog</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Serif:wght@500;600&display=swap">
+<style>
+  :root {
+    --paper:#f6f4ef; --card:#fffefb; --ink:#1e2124; --ink-soft:#565c5f; --ink-faint:#868c8e;
+    --rule:#ddd8cd; --rule-soft:#ebe6dc;
+    --navy:#2d4a63; --navy-wash:#e5ebf0;
+    --amber:#a4602a; --amber-wash:#f4e9dd;
+    --moss:#4c6a4f; --moss-wash:#e5ece3;
+    --sans:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+    --serif:"IBM Plex Serif",Georgia,"Times New Roman",serif;
+    --mono:"IBM Plex Mono",ui-monospace,"SF Mono",Menlo,monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper:#16181a; --card:#1e2124; --ink:#e8e5de; --ink-soft:#a8aeb0; --ink-faint:#7d8385;
+      --rule:#33383b; --rule-soft:#282c2e; --navy:#8fb6d4; --navy-wash:#1f2f3c;
+      --amber:#d9995f; --amber-wash:#33261a; --moss:#8fb394; --moss-wash:#1f2a20;
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper:#16181a; --card:#1e2124; --ink:#e8e5de; --ink-soft:#a8aeb0; --ink-faint:#7d8385;
+    --rule:#33383b; --rule-soft:#282c2e; --navy:#8fb6d4; --navy-wash:#1f2f3c;
+    --amber:#d9995f; --amber-wash:#33261a; --moss:#8fb394; --moss-wash:#1f2a20;
+  }
+
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--paper); color:var(--ink); font-family:var(--sans); font-size:15px; line-height:1.55; -webkit-font-smoothing:antialiased; }
+  .wrap { max-width:960px; margin:0 auto; padding-inline:20px; padding-block:40px 72px; }
+  .masthead { border-bottom:2px solid var(--ink); padding-bottom:18px; }
+  .eyebrow { font-family:var(--mono); font-size:11px; letter-spacing:.13em; text-transform:uppercase; color:var(--ink-faint); margin:0 0 10px; }
+  h1 { font-family:var(--serif); font-weight:600; font-size:clamp(28px,5.4vw,40px); line-height:1.1; margin:0; text-wrap:balance; }
+  h2 { font-family:var(--serif); font-weight:600; font-size:24px; margin:0; }
+  h3 { font-size:15px; margin:28px 0 8px; }
+  .standfirst { margin:14px 0 0; max-width:64ch; color:var(--ink-soft); font-size:16px; }
+  .meta { display:flex; flex-wrap:wrap; gap:8px 22px; margin-top:18px; font-family:var(--mono); font-size:11.5px; color:var(--ink-faint); }
+  .meta b { color:var(--ink-soft); font-weight:500; }
+  code { font-family:var(--mono); font-size:12.5px; }
+  a { color:var(--navy); }
+  .callout { margin-top:26px; padding:14px 16px; background:var(--navy-wash); border-left:3px solid var(--navy); border-radius:0 3px 3px 0; font-size:14px; }
+  .callout ol { margin:6px 0 0; padding-left:20px; } .callout li { margin:3px 0; }
+  .rel { margin-top:40px; }
+  .rel header { display:flex; align-items:baseline; gap:14px; border-bottom:1px solid var(--rule); padding-bottom:6px; }
+  .date { font-family:var(--mono); font-size:12px; color:var(--ink-faint); }
+  .src, .pages { margin:8px 0; font-size:14px; color:var(--ink-soft); }
+  .tblwrap { overflow-x:auto; margin-top:10px; border:1px solid var(--rule); background:var(--card); }
+  table { border-collapse:collapse; width:100%; min-width:640px; font-size:14px; }
+  th, td { text-align:left; vertical-align:top; padding:9px 12px; border-bottom:1px solid var(--rule-soft); }
+  th { font-family:var(--mono); font-size:10.5px; letter-spacing:.1em; text-transform:uppercase; color:var(--ink-faint); font-weight:500; }
+  tr:last-child td { border-bottom:0; }
+  td.area { font-weight:600; white-space:nowrap; }
+  td.where { font-size:12px; white-space:nowrap; }
+  .pend { margin-top:40px; }
+  .pend ul { padding-left:20px; } .pend li { margin:4px 0; }
+  .rel:first-of-type header h2::after { content:"latest"; font-family:var(--mono); font-size:10px; letter-spacing:.1em; text-transform:uppercase; color:var(--amber); background:var(--amber-wash); padding:2px 7px; border-radius:99px; margin-left:10px; vertical-align:middle; }
+.dnav{position:sticky;top:0;z-index:50;background:var(--card,#fffefb);border-bottom:1px solid var(--rule,#ddd8cd);font-family:var(--mono,ui-monospace,monospace);font-size:11.5px}
+.dnav .in{max-width:1020px;margin:0 auto;padding:9px 20px;display:flex;flex-wrap:wrap;gap:4px 18px;align-items:center}
+.dnav b{letter-spacing:.12em;text-transform:uppercase;font-size:10px;color:var(--ink-faint,#868c8e);margin-right:6px}
+.dnav a{color:var(--navy,#2d4a63);text-decoration:none;padding:2px 0;border-bottom:2px solid transparent}
+.dnav a:hover{border-bottom-color:var(--navy,#2d4a63)}
+.dnav a.on{color:var(--ink,#1e2124);border-bottom-color:var(--amber,#a4602a);font-weight:600}
+</style>
+</head>
+<body>
+<nav class="dnav" aria-label="DeYoe documents"><div class="in"><b>DeYoe docs</b><a href="index.html">Developer handbook (main)</a><a href="screen-spec.html">Screen spec</a><a href="data-model.html">Data model</a><a href="current-process.html">Current process</a><a href="changelog.html" class="on">Changelog</a></div></nav>
+<div class="wrap">
+<header class="masthead">
+  <p class="eyebrow">DeYoe Wellness Acupuncture — for the development team</p>
+  <h1>Changelog</h1>
+  <p class="standfirst">Every change to these documents, newest first: what changed, why, and where. Read this before starting work, so you build against the current rules and not an older version.</p>
+  <div class="meta"><span><b>Latest</b> v2.2 · 2026-09-23</span><span><b>Internal</b> not for the client</span></div>
+</header>
+
+<div class="callout"><b>For Claude Code and anyone building from these docs</b>
+<ol>
+  <li>Read this page first, then the handbook (<code>index.html</code>). If they disagree, the handbook wins. Raise the conflict with Poonam or Shikha.</li>
+  <li>Anything marked <b>unconfirmed</b> or listed under "Waiting on the practice" must not be hard-coded as final. Use the default the handbook gives.</li>
+  <li>When the docs change, add a new entry at the top of this page <b>and</b> to the JSON block at the bottom (<code>#changelog-data</code>), bump the version on the pages you changed, and list each change with the section it touched.</li>
+  <li>Never put real patient data in these docs or in a changelog entry.</li>
+</ol></div>
+
+<section class="rel" id="v2-2">
+  <header><h2>v2.2</h2><span class="date">2026-09-23</span></header>
+  <p class="src"><b>Source:</b> Practice delivery of 22 Sep 2026 (ICD-10 list, 20 clean templates, answers to 'What we need from you')</p>
+  <p class="pages"><code>index.html</code> Handbook v2.1 → v2.2 · <code>screen-spec.html</code> rev 6 → rev 7 · <code>data-model.html</code> rev 9 → rev 10 · <code>current-process.html</code> date only</p>
+  <div class="tblwrap"><table><thead><tr><th>Area</th><th>Change</th><th>Where</th></tr></thead><tbody>
+<tr><td class="area">Diagnoses</td><td>The 20 diagnoses are final. The two replacements are Vertebrogenic Low Back Pain – Right and Fibromyalgia. The 'May 30' shoulder is now Pain in Shoulder – Left. All 20 clean scans received 22 Sep; use only these and mark every earlier scan superseded.</td><td class="where"><a href="index.html#refdata"><code>index.html#refdata</code></a> · <a href="screen-spec.html"><code>screen-spec.html</code></a></td></tr>
+<tr><td class="area">ICD-10</td><td>Codes added for all 20, stored with the dot (M54.50). Three are UNCONFIRMED because the code sent is for the other side: Hip – Left (sent M25.551 = right hip), Knee – Right (sent M25.562 = left knee), Shoulder – Right (sent M25.512 = left shoulder). icd10_confirmed = false → RFS disabled with a reason. Do not seed the sent codes as final.</td><td class="where"><a href="index.html#refdata"><code>index.html#refdata</code></a> · <a href="json-example/diagnoses.v2.json"><code>json-example/diagnoses.v2.json</code></a></td></tr>
+<tr><td class="area">Data model</td><td>diagnosis gains icd10_description (RFS field 14) and icd10_confirmed (bool). icd10_code stored with the dot.</td><td class="where"><a href="data-model.html"><code>data-model.html</code></a></td></tr>
+<tr><td class="area">Top pain value</td><td>Only Low Back Pain – Left and both Hip scans still pre-print 8/10 (cover it). Anosmia, Other Chronic Pain, Knee – Right and Vertebrogenic – Left are now blank. Don't reuse old cover-ups.</td><td class="where"><a href="index.html#refdata"><code>index.html#refdata</code></a> · <a href="json-example/templates-intake.v2.json"><code>json-example/templates-intake.v2.json</code></a></td></tr>
+<tr><td class="area">Side in title</td><td>Clean Hip and Knee scans no longer print the side. Only Pain in Shoulder – Left prints it ('Pain In Left Shoulder'): cover the title and print 'Pain in shoulder' (config only).</td><td class="where"><a href="index.html#refdata"><code>index.html#refdata</code></a></td></tr>
+<tr><td class="area">Template intake</td><td>New json-example/templates-intake.v2.json: per-template source file, title, pain label, pre-printed values, post-treatment text, missing sections and checks. No coordinates on purpose: measure them from each scan with make new-diagnosis and check by eye.</td><td class="where"><a href="json-example/templates-intake.v2.json"><code>json-example/templates-intake.v2.json</code></a></td></tr>
+<tr><td class="area">Decisions</td><td>Hosting confirmed as iMac 24-inch, Apple M4 (arm64), FileVault on. Repository owned by the practice GitHub account DeYoeWellness714 (not 'Lorraine Fordham'), with 2FA required.</td><td class="where"><a href="index.html#decisions"><code>index.html#decisions</code></a></td></tr>
+<tr><td class="area">Open items</td><td>Added: 3 ICD-10 confirmations · Left Shoulder title · Anosmia RFS field 18 wording (RFS off by default) · Fibromyalgia body area ('BODY' until confirmed) · Hip – Left 'ashi r hip' and Dorsalgia = Cervicalgia text (print as is).</td><td class="where"><a href="index.html#open"><code>index.html#open</code></a></td></tr>
+<tr><td class="area">Test fax</td><td>Still missing. The number the practice sent, 404-738-1714, is our own SRFax sending number, not a test destination.</td><td class="where"><a href="index.html#open"><code>index.html#open</code></a> · <a href="index.html#order"><code>index.html#order</code></a></td></tr>
+<tr><td class="area">Mac build</td><td>Build arm64/multi-arch images. In M0, test SQLite WAL on a Docker named volume vs a bind mount. Confirm an external drive for encrypted backups.</td><td class="where"><a href="index.html#order"><code>index.html#order</code></a></td></tr>
+  </tbody></table></div>
+</section>
+<section class="rel" id="v2-1">
+  <header><h2>v2.1</h2><span class="date">2026-09-21</span></header>
+  <p class="src"><b>Source:</b> Practice answers of 19 Sep 2026 + internal decisions of 21 Sep</p>
+  <p class="pages"><code>index.html</code> Handbook v2.1 · <code>screen-spec.html</code> rev 6 · <code>data-model.html</code> rev 9 · <code>current-process.html</code> 21 Sep</p>
+  <div class="tblwrap"><table><thead><tr><th>Area</th><th>Change</th><th>Where</th></tr></thead><tbody>
+<tr><td class="area">Baseline</td><td>First published set: three separate PDFs per fax, Blairsville VA → also Atlanta VAMC, post-treatment always 1/10, Excellent on the last page, Lorraine as the only user, office Mac hosting, SRFax with 404-738-1714, forms as configuration, per-visit answers, visit limits enforced in the database.</td><td class="where"><a href="index.html"><code>index.html</code></a></td></tr>
+  </tbody></table></div>
+</section>
+
+<section class="pend" id="pending">
+  <h3>Waiting on the practice (as of v2.2)</h3>
+  <ul>
+    <li>Confirm ICD-10 for Hip – Left, Knee – Right, Shoulder – Right</li>
+    <li>A test fax destination (not 404-738-1714)</li>
+    <li>SRFax API details (entered by the practice in the tool)</li>
+    <li>Left Shoulder: OK to cover the title and print 'Pain in shoulder'?</li>
+    <li>Anosmia RFS field 18 wording · Fibromyalgia body area</li>
+    <li>Are the two Right Shoulder files the same?</li>
+    <li>Hip – Left 'ashi r hip' and Dorsalgia matching Cervicalgia: intended?</li>
+    <li>Visual checks on scans: signatures, pre-ticked boxes, overlap on LBP – Left / VLBP – Left / Dorsalgia – Left</li>
+  </ul>
+</section>
+</div>
+<script type="application/json" id="changelog-data">
+{
+  "latest": "2.2",
+  "entries": [
+    {
+      "version": "2.2",
+      "date": "2026-09-23",
+      "source": "Practice delivery of 22 Sep 2026 (ICD-10 list, 20 clean templates, answers to 'What we need from you')",
+      "pages": {
+        "index.html": "Handbook v2.1 → v2.2",
+        "screen-spec.html": "rev 6 → rev 7",
+        "data-model.html": "rev 9 → rev 10",
+        "current-process.html": "date only"
+      },
+      "changes": [
+        {
+          "area": "Diagnoses",
+          "change": "The 20 diagnoses are final. The two replacements are Vertebrogenic Low Back Pain – Right and Fibromyalgia. The 'May 30' shoulder is now Pain in Shoulder – Left. All 20 clean scans received 22 Sep; use only these and mark every earlier scan superseded.",
+          "where": "index.html#refdata · screen-spec.html"
+        },
+        {
+          "area": "ICD-10",
+          "change": "Codes added for all 20, stored with the dot (M54.50). Three are UNCONFIRMED because the code sent is for the other side: Hip – Left (sent M25.551 = right hip), Knee – Right (sent M25.562 = left knee), Shoulder – Right (sent M25.512 = left shoulder). icd10_confirmed = false → RFS disabled with a reason. Do not seed the sent codes as final.",
+          "where": "index.html#refdata · json-example/diagnoses.v2.json"
+        },
+        {
+          "area": "Data model",
+          "change": "diagnosis gains icd10_description (RFS field 14) and icd10_confirmed (bool). icd10_code stored with the dot.",
+          "where": "data-model.html"
+        },
+        {
+          "area": "Top pain value",
+          "change": "Only Low Back Pain – Left and both Hip scans still pre-print 8/10 (cover it). Anosmia, Other Chronic Pain, Knee – Right and Vertebrogenic – Left are now blank. Don't reuse old cover-ups.",
+          "where": "index.html#refdata · json-example/templates-intake.v2.json"
+        },
+        {
+          "area": "Side in title",
+          "change": "Clean Hip and Knee scans no longer print the side. Only Pain in Shoulder – Left prints it ('Pain In Left Shoulder'): cover the title and print 'Pain in shoulder' (config only).",
+          "where": "index.html#refdata"
+        },
+        {
+          "area": "Template intake",
+          "change": "New json-example/templates-intake.v2.json: per-template source file, title, pain label, pre-printed values, post-treatment text, missing sections and checks. No coordinates on purpose: measure them from each scan with make new-diagnosis and check by eye.",
+          "where": "json-example/templates-intake.v2.json"
+        },
+        {
+          "area": "Decisions",
+          "change": "Hosting confirmed as iMac 24-inch, Apple M4 (arm64), FileVault on. Repository owned by the practice GitHub account DeYoeWellness714 (not 'Lorraine Fordham'), with 2FA required.",
+          "where": "index.html#decisions"
+        },
+        {
+          "area": "Open items",
+          "change": "Added: 3 ICD-10 confirmations · Left Shoulder title · Anosmia RFS field 18 wording (RFS off by default) · Fibromyalgia body area ('BODY' until confirmed) · Hip – Left 'ashi r hip' and Dorsalgia = Cervicalgia text (print as is).",
+          "where": "index.html#open"
+        },
+        {
+          "area": "Test fax",
+          "change": "Still missing. The number the practice sent, 404-738-1714, is our own SRFax sending number, not a test destination.",
+          "where": "index.html#open · index.html#order"
+        },
+        {
+          "area": "Mac build",
+          "change": "Build arm64/multi-arch images. In M0, test SQLite WAL on a Docker named volume vs a bind mount. Confirm an external drive for encrypted backups.",
+          "where": "index.html#order"
+        }
+      ]
+    },
+    {
+      "version": "2.1",
+      "date": "2026-09-21",
+      "source": "Practice answers of 19 Sep 2026 + internal decisions of 21 Sep",
+      "pages": {
+        "index.html": "Handbook v2.1",
+        "screen-spec.html": "rev 6",
+        "data-model.html": "rev 9",
+        "current-process.html": "21 Sep"
+      },
+      "changes": [
+        {
+          "area": "Baseline",
+          "change": "First published set: three separate PDFs per fax, Blairsville VA → also Atlanta VAMC, post-treatment always 1/10, Excellent on the last page, Lorraine as the only user, office Mac hosting, SRFax with 404-738-1714, forms as configuration, per-visit answers, visit limits enforced in the database.",
+          "where": "index.html"
+        }
+      ]
+    }
+  ],
+  "pending_from_practice": [
+    "Confirm ICD-10 for Hip – Left, Knee – Right, Shoulder – Right",
+    "A test fax destination (not 404-738-1714)",
+    "SRFax API details (entered by the practice in the tool)",
+    "Left Shoulder: OK to cover the title and print 'Pain in shoulder'?",
+    "Anosmia RFS field 18 wording · Fibromyalgia body area",
+    "Are the two Right Shoulder files the same?",
+    "Hip – Left 'ashi r hip' and Dorsalgia matching Cervicalgia: intended?",
+    "Visual checks on scans: signatures, pre-ticked boxes, overlap on LBP – Left / VLBP – Left / Dorsalgia – Left"
+  ]
+}
+</script>
+</body>
+</html>

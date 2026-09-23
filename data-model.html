@@ -104,13 +104,13 @@
 </style>
 </head>
 <body>
-<nav class="dnav" aria-label="DeYoe documents"><div class="in"><b>DeYoe docs</b><a href="index.html">Developer handbook (main)</a><a href="screen-spec.html">Screen spec</a><a href="data-model.html" class="on">Data model</a><a href="current-process.html">Current process</a></div></nav>
+<nav class="dnav" aria-label="DeYoe documents"><div class="in"><b>DeYoe docs</b><a href="index.html">Developer handbook (main)</a><a href="screen-spec.html">Screen spec</a><a href="data-model.html" class="on">Data model</a><a href="current-process.html">Current process</a><a href="changelog.html">Changelog</a></div></nav>
 <div class="wrap">
 <header class="masthead">
   <p class="eyebrow">DeYoe Wellness Acupuncture — build design</p>
   <h1>Packet tool data model</h1>
   <p class="standfirst">How patients, authorizations, visits and sent faxes are stored; how the forms are defined as configuration; and how every value on every page is filled — so the name, numbers and dates can't drift between documents.</p>
-  <div class="meta"><span><b>Revision</b> 9 · 21 Sep 2026</span><span><b>Pairs with</b> <a href="screen-spec.html">the screen spec</a> and <a href="current-process.html">current-process map</a></span></div>
+  <div class="meta"><span><b>Revision</b> 10 · 23 Sep 2026</span><span><b>Pairs with</b> <a href="screen-spec.html">the screen spec</a> and <a href="current-process.html">current-process map</a></span></div>
 </header>
 
 <section>
@@ -125,6 +125,7 @@
     <li><span class="cnum">8</span><div><b>Visits held to the authorization</b><span>The number of visits can't exceed what the VA approved, and visit dates must fall inside the approved period — enforced by the database, not only the screen. The last page follows the visit marked final.</span></div></li>
     <li><span class="cnum">9</span><div><b>Diagnosis settings kept as files</b><span>Each diagnosis is a folder with its scan and settings file, added by our team and loaded into the database on start-up.</span></div></li>
     <li><span class="cnum">10</span><div><b>Everything is recorded</b><span>The activity log now also covers sign-ins (including failed ones), file downloads, settings changes and system events such as diagnosis updates, app updates, test faxes and backups.</span></div></li>
+    <li><span class="cnum">11</span><div><b>ICD-10 codes received (rev 10, 23 Sep)</b><span>Codes for all 20 diagnoses are in the diagnosis list, stored with the dot, with a description for the RFS and a “confirmed” flag. Three codes (Hip – Left, Knee – Right, Shoulder – Right) await confirmation because the code sent is for the other side; the RFS stays off for those until then.</span></div></li>
     <li><span class="cnum">7</span><div><b>Built for more clinics, run for one</b><span>Every clinic's data is kept apart by design, and a clinic's branches are its offices. VA facilities and the standard diagnosis list are shared reference data; each clinic keeps its own contacts, cover sheets, templates and defaults. DeYoe runs as a single clinic on its own computer.</span></div></li>
   </ul>
 </section>
@@ -326,7 +327,7 @@ answer_source:  { "pain_type.sharp": "doctor_note", "pain_type.numbness": "docto
       <ul><li><b>id</b> · <b>kind</b> <i>note · cover_sheet · rfs</i></li><li><b>diagnosis_id</b> / <b>va_facility_id</b> / <b>office_id</b></li><li><b>form_definition_id</b> · <b>form_version</b></li><li><b>source_pdf</b> <i>untouched original</i> · <b>clean_background</b> <i>ticks erased where boxes are live</i></li><li><b>settings</b> <i>JSON — hidden, defaults, print positions, cover-ups</i></li><li><b>version</b> · <b>status</b> <i>ready · blocked · superseded</i> · <b>block_reason</b></li></ul>
       <div class="why">Loaded from a folder per diagnosis and version (<code>scan.pdf</code> + <code>settings.json</code>), checked against the schema on start-up. Replacing a scan creates a new version; packets already sent keep the one they used.</div></div>
     <div class="ent"><header><h4>★ diagnosis</h4><span class="tag t-cfg">Shared</span></header>
-      <ul><li><b>id, slug</b></li><li><b>display_name</b> <i>with side, for staff — Low Back Pain – Left</i></li><li><b>printed_wording</b> <i>on the page — LOW BACK PAIN</i></li><li><b>icd10_code</b> <i>blocks RFS only</i> · <b>body_area</b> <i>for RFS field 18</i></li><li><b>body_group</b> <i>Back · Neck · Knee · Hip… for the picker</i></li><li><b>post_treatment_severity</b> <i>always 1</i></li></ul>
+      <ul><li><b>id, slug</b></li><li><b>display_name</b> <i>with side, for staff — Low Back Pain – Left</i></li><li><b>printed_wording</b> <i>on the page — LOW BACK PAIN</i></li><li><b>icd10_code</b> <i>with the dot — M54.50; blocks RFS only</i> · <b>icd10_description</b> <i>RFS field 14</i> · <b>icd10_confirmed</b> <i>RFS stays off while false</i></li><li><b>body_area</b> <i>for RFS field 18</i></li><li><b>body_group</b> <i>Back · Neck · Knee · Hip… for the picker</i></li><li><b>post_treatment_severity</b> <i>always 1</i></li></ul>
       <div class="why">Staff pick by the name <i>with</i> the side; the page prints the wording <i>without</i> it, as the practice asked. A clinic's own scan, defaults, closing note and any wording change live in its template settings.</div></div>
     <div class="ent"><header><h4>★ va_facility</h4><span class="tag t-cfg">Shared</span></header>
       <ul><li><b>id</b> · <b>name</b> · <b>address</b></li><li><b>main_fax, main_phone</b></li></ul>
@@ -400,7 +401,8 @@ SELECT d.display_name, AVG(first.pain_level - last.pain_level) …</pre>
         <tr><td>Every Blairsville VA send also goes to Atlanta VA</td><td><code>destination_rule</code>, applied automatically</td></tr>
         <tr><td>Left/right not printed on the page</td><td><code>display_name</code> for staff, <code>printed_wording</code> for the page</td></tr>
         <tr><td>Post-treatment always 1/10 · Excellent on the last page</td><td>Rules, not per-diagnosis settings</td></tr>
-        <tr><td>Office Mac desktop</td><td>SQLite with FileVault encryption and encrypted backups</td></tr>
+        <tr><td>Office Mac desktop (iMac 24-inch, M4, FileVault on)</td><td>SQLite with FileVault encryption and encrypted backups</td></tr>
+        <tr><td>ICD-10 codes for 20 diagnoses (22 Sep)</td><td><code>diagnosis.icd10_code</code> with the dot; <code>icd10_confirmed</code> false for the 3 codes awaiting confirmation</td></tr>
       </tbody>
     </table>
   </div>

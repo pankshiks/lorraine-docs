@@ -96,13 +96,13 @@
 </style>
 </head>
 <body>
-<nav class="dnav" aria-label="DeYoe documents"><div class="in"><b>DeYoe docs</b><a href="index.html">Developer handbook (main)</a><a href="screen-spec.html" class="on">Screen spec</a><a href="data-model.html">Data model</a><a href="current-process.html">Current process</a></div></nav>
+<nav class="dnav" aria-label="DeYoe documents"><div class="in"><b>DeYoe docs</b><a href="index.html">Developer handbook (main)</a><a href="screen-spec.html" class="on">Screen spec</a><a href="data-model.html">Data model</a><a href="current-process.html">Current process</a><a href="changelog.html">Changelog</a></div></nav>
 <div class="wrap">
 <header class="masthead">
   <p class="eyebrow">DeYoe Wellness Acupuncture — design handoff</p>
   <h1>Packet tool screen spec</h1>
   <p class="standfirst">Everything needed to design the staff application: who uses it, how it flows, real reference data from the practice's own forms, and a field-level specification for each of the 21 screens.</p>
-  <div class="meta"><span><b>Revision</b> 6 · 21 Sep 2026</span><span><b>User</b> Lorraine, Practice Manager</span><span><b>Device</b> office Mac, desktop browser</span></div>
+  <div class="meta"><span><b>Revision</b> 7 · 23 Sep 2026</span><span><b>User</b> Lorraine, Practice Manager</span><span><b>Device</b> office Mac, desktop browser</span></div>
 </header>
 
 <section>
@@ -115,7 +115,8 @@
     <li><span class="cnum">6</span><div><b>Visits held to what the VA approved</b><span>No more visits than approved, and no visit dates outside the authorization period. Warnings two visits before the limit. Treatment that ends early is marked as the final visit.</span></div></li>
     <li><span class="cnum">7</span><div><b>Answers filled in automatically, always editable</b><span>Every visit starts from the previous visit's answers. The first visit of a new authorization for the same patient and the same diagnosis starts from that patient's last recorded visit; otherwise from the diagnosis defaults (or Dr. DeYoe's note). Any answer can be changed; the change carries forward. The pain level is always entered, never carried over.</span></div></li>
     <li><span class="cnum">8</span><div><b>Diagnoses set up by our team in this release</b><span>Each diagnosis is a settings file prepared and added by our team. S16 is a read-only list; there is no on-screen form editor (S17 is not part of this project).</span></div></li>
-    <li><span class="cnum">5</span><div><b>Reference data refreshed</b><span>20 diagnoses (PTSD and Brain Stem Stroke removed; Headache and Cervicalgia – Left added; two replacements to come), the new fax number, and the practice's answers of 19 September.</span></div></li>
+    <li><span class="cnum">5</span><div><b>Reference data refreshed</b><span>20 diagnoses (PTSD and Brain Stem Stroke removed; Headache and Cervicalgia – Left added), the new fax number, and the practice's answers of 19 September.</span></div></li>
+    <li><span class="cnum">9</span><div><b>All 20 templates and ICD-10 codes received (rev 7, 23 Sep)</b><span>The two replacements are Vertebrogenic Low Back Pain – Right and Fibromyalgia; the “May 30” shoulder is Pain in Shoulder – Left. ICD-10 codes added; three await confirmation, and the RFS stays off for those diagnoses until then.</span></div></li>
   </ul>
 </section>
 
@@ -227,31 +228,31 @@ Use <u>LBP Left side template</u>. Schedule NV for: two weeks, on a Wednesday @ 
   <h3 class="grp">The 20 diagnoses</h3>
   <p class="sec-note">Staff pick by the name with the side; the page prints the wording on the scan. Post-treatment is always 1/10. Every template has “Good” ticked under today's response, replaced by Excellent on the last page.</p>
   <div class="tblwrap"><table>
-    <thead><tr><th>Shown to staff</th><th>Group</th><th>Printed on the page</th><th>Pain value on scan</th><th>Status</th></tr></thead>
+    <thead><tr><th>Shown to staff</th><th>Group</th><th>Printed on the page</th><th>Pain value on scan</th><th>ICD-10</th><th>Status</th></tr></thead>
     <tbody>
-      <tr><td>Anosmia</td><td>Other</td><td>Anosmia</td><td>8/10 — covered</td><td class="y">Ready · short layout</td></tr>
-      <tr><td>Cervicalgia – Left</td><td>Neck</td><td>CERVICALGIA</td><td>blank</td><td class="y">Ready · new</td></tr>
-      <tr><td>Cervicalgia – Right</td><td>Neck</td><td>CERVICALGIA</td><td>none — added</td><td class="y">Ready</td></tr>
-      <tr><td>Dorsalgia – Left</td><td>Back</td><td>Dorsalgia</td><td>none — added</td><td class="y">Ready</td></tr>
-      <tr><td>Dorsalgia – Right</td><td>Back</td><td>Dorsalgia</td><td>none — added</td><td class="y">Ready</td></tr>
-      <tr><td>Headache</td><td>Head</td><td>HEADACHE</td><td>blank</td><td class="y">Ready · new</td></tr>
-      <tr><td>Low Back Pain – Left</td><td>Back</td><td>LOW BACK PAIN</td><td>8/10 — covered</td><td class="y">Ready</td></tr>
-      <tr><td>Low Back Pain – Right</td><td>Back</td><td>Low Back Pain</td><td>label, no value</td><td class="y">Ready</td></tr>
-      <tr><td>Other Chronic Pain</td><td>Other</td><td>other chronic pain</td><td>8/10 — covered</td><td class="y">Ready</td></tr>
-      <tr><td>Other Spondylosis – Left</td><td>Back</td><td>OTHER SPONDYLOSIS</td><td>blank</td><td class="y">Ready · now signed</td></tr>
-      <tr><td>Other Spondylosis – Right</td><td>Back</td><td>Other Spondylosis</td><td>blank</td><td class="y">Ready · clean copy</td></tr>
-      <tr><td>Pain in Hip – Left</td><td>Hip</td><td>PAIN IN LEFT HIP</td><td>8/10 — covered</td><td class="y">Ready</td></tr>
-      <tr><td>Pain in Hip – Right</td><td>Hip</td><td>PAIN IN RIGHT HIP</td><td>8/10 — covered</td><td class="y">Ready</td></tr>
-      <tr><td>Pain in Knee – Left</td><td>Knee</td><td>PAIN IN KNEE</td><td>blank</td><td class="y">Ready · corrected</td></tr>
-      <tr><td>Pain in Knee – Right</td><td>Knee</td><td>Pain In Right Knee</td><td>8/10 — covered</td><td class="y">Ready</td></tr>
-      <tr><td>Shoulder – Right</td><td>Shoulder</td><td>Pain in unspecified shoulder</td><td>none — added</td><td class="y">Ready</td></tr>
-      <tr><td>Shoulder (May 30 version)</td><td>Shoulder</td><td>Pain in unspecified shoulder</td><td>none — added</td><td class="y">Ready · side to confirm</td></tr>
-      <tr><td>Vertebrogenic Low Back Pain – Left</td><td>Back</td><td>— none printed</td><td>8/10 — covered</td><td class="warn">Ready · corrected copy awaited</td></tr>
-      <tr><td>Replacement diagnosis 1</td><td>—</td><td>—</td><td>—</td><td class="n">Not yet received</td></tr>
-      <tr><td>Replacement diagnosis 2</td><td>—</td><td>—</td><td>—</td><td class="n">Not yet received</td></tr>
+      <tr><td>Anosmia</td><td>Other</td><td>Anosmia</td><td>blank</td><td>R43.0</td><td class="y">Ready · short layout</td></tr>
+      <tr><td>Cervicalgia – Left</td><td>Neck</td><td>CERVICALGIA</td><td>blank</td><td>M54.2</td><td class="y">Ready</td></tr>
+      <tr><td>Cervicalgia – Right</td><td>Neck</td><td>CERVICALGIA</td><td>blank</td><td>M54.2</td><td class="y">Ready</td></tr>
+      <tr><td>Dorsalgia – Left</td><td>Back</td><td>Dorsalgia</td><td>blank</td><td>M54.9</td><td class="y">Ready</td></tr>
+      <tr><td>Dorsalgia – Right</td><td>Back</td><td>DORSALGIA</td><td>blank</td><td>M54.9</td><td class="y">Ready</td></tr>
+      <tr><td>Fibromyalgia</td><td>Other</td><td>Fibromyalgia</td><td>blank (label reads “Pain Level:”)</td><td>M79.7</td><td class="y">Ready · new</td></tr>
+      <tr><td>Headache</td><td>Head</td><td>HEADACHE</td><td>blank</td><td>R51.9</td><td class="y">Ready</td></tr>
+      <tr><td>Low Back Pain – Left</td><td>Back</td><td>LOW BACK PAIN</td><td>8/10 — cover</td><td>M54.50</td><td class="y">Ready</td></tr>
+      <tr><td>Low Back Pain – Right</td><td>Back</td><td>Low Back Pain</td><td>blank</td><td>M54.50</td><td class="y">Ready</td></tr>
+      <tr><td>Other Chronic Pain</td><td>Other</td><td>other chronic pain</td><td>blank</td><td>G89.29</td><td class="y">Ready</td></tr>
+      <tr><td>Other Spondylosis – Left</td><td>Back</td><td>OTHER SPONDYLOSIS</td><td>blank</td><td>M47.896</td><td class="y">Ready</td></tr>
+      <tr><td>Other Spondylosis – Right</td><td>Back</td><td>Other Spondylosis</td><td>blank</td><td>M47.896</td><td class="y">Ready</td></tr>
+      <tr><td>Pain in Hip – Left</td><td>Hip</td><td>PAIN IN HIP</td><td>8/10 — cover</td><td><b>unconfirmed</b></td><td class="warn">Ready · RFS awaits ICD-10</td></tr>
+      <tr><td>Pain in Hip – Right</td><td>Hip</td><td>PAIN IN HIP</td><td>8/10 — cover</td><td>M25.551</td><td class="y">Ready</td></tr>
+      <tr><td>Pain in Knee – Left</td><td>Knee</td><td>PAIN IN KNEE</td><td>blank</td><td>M25.562</td><td class="y">Ready</td></tr>
+      <tr><td>Pain in Knee – Right</td><td>Knee</td><td>Pain In Knee</td><td>blank</td><td><b>unconfirmed</b></td><td class="warn">Ready · RFS awaits ICD-10</td></tr>
+      <tr><td>Pain in Shoulder – Left</td><td>Shoulder</td><td>Pain In Left Shoulder — <b>side printed</b></td><td>blank</td><td>M25.512</td><td class="y">Ready · new</td></tr>
+      <tr><td>Pain in Shoulder – Right</td><td>Shoulder</td><td>Pain in shoulder</td><td>blank</td><td><b>unconfirmed</b></td><td class="warn">Ready · RFS awaits ICD-10</td></tr>
+      <tr><td>Vertebrogenic Low Back Pain – Left</td><td>Back</td><td>VERTEBROGENIC LOW BACK PAIN</td><td>blank</td><td>M54.51</td><td class="y">Ready · corrected copy</td></tr>
+      <tr><td>Vertebrogenic Low Back Pain – Right</td><td>Back</td><td>Vertebrogenic low back pain</td><td>blank</td><td>M54.51</td><td class="y">Ready · new</td></tr>
     </tbody>
   </table></div>
-  <p class="sec-note" style="margin-top:12px"><b>18 ready, 2 to come.</b> ICD-10 codes are awaited for all 20 — the RFS can't be built without one. The practice has asked about 22 more diagnoses, so the picker must scale to 40+.</p>
+  <p class="sec-note" style="margin-top:12px"><b>All 20 received (22 Sep).</b> ICD-10 codes received for all 20; for Hip – Left, Knee – Right and Shoulder – Right the code sent is for the other side, so the RFS stays off for those with “ICD-10 code awaiting confirmation” until the practice confirms. Pain in Shoulder – Left prints the side in its scanned title; the page covers it and prints “Pain in shoulder”. The practice has asked about 22 more diagnoses, so the picker must scale to 40+.</p>
 
   <h3 class="grp">Cover sheets, destinations and files</h3>
   <div class="tblwrap"><table>
@@ -293,7 +294,7 @@ Use <u>LBP Left side template</u>. Schedule NV for: two weeks, on a Wednesday @ 
       <tr><td>Veteran's full name · date of birth</td><td>1, 2</td><td>patient</td><td>John Doe · MM/DD/YYYY</td></tr>
       <tr><td>VA authorization number</td><td>4</td><td>authorization</td><td>VA0023456789</td></tr>
       <tr><td>48 hours · continuation · referral</td><td>10–12</td><td>fixed</td><td>NO · YES · NO</td></tr>
-      <tr><td>ICD-10 · description</td><td>13, 14</td><td>diagnosis</td><td>awaited · LOW BACK PAIN</td></tr>
+      <tr><td>ICD-10 · description</td><td>13, 14</td><td>diagnosis</td><td>M54.50 · LOW BACK PAIN, UNSPECIFIED</td></tr>
       <tr><td>Reason for request</td><td>18</td><td>assembled</td><td>see below</td></tr>
       <tr><td>Provider signature</td><td>21</td><td>—</td><td class="warn">Required · not signed by the tool yet</td></tr>
       <tr><td>Today's date</td><td>22</td><td>system</td><td>today</td></tr>
@@ -487,7 +488,7 @@ THANK YOU.</p>
       <tr><td>Name shown to staff</td><td>text</td><td>with side</td><td>Pain in Knee – Left</td></tr>
       <tr><td>Printed wording</td><td>text</td><td>what the page shows</td><td>PAIN IN KNEE</td></tr>
       <tr><td>Group</td><td>select</td><td>for the picker</td><td>Knee</td></tr>
-      <tr><td>ICD-10 · body area</td><td>text</td><td>body area prints in RFS field 18</td><td>awaited · LEFT KNEE</td></tr>
+      <tr><td>ICD-10 · body area</td><td>text</td><td>body area prints in RFS field 18</td><td>M25.562 · LEFT KNEE</td></tr>
       <tr><td>Status · version</td><td>pill · number</td><td>ready / not received / replaced</td><td>Ready · v2</td></tr>
     </tbody></table></div>
     <dl class="sd"><dt>Actions</dt><dd>Search · view a diagnosis's sample first, middle and last pages · see which version is in use.</dd>

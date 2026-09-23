@@ -1,0 +1,233 @@
+{
+  "_about": "Starter seed for the shared diagnosis list. Source: practice ICD-10 list + 20 clean templates, 22 Sep 2026. Handbook v2.2 section 07 wins if this disagrees.",
+  "version": 2,
+  "diagnoses": [
+    {
+      "slug": "anosmia",
+      "display_name": "Anosmia",
+      "printed_wording": "Anosmia",
+      "body_group": "Other",
+      "body_area": "SENSE OF SMELL",
+      "icd10_code": "R43.0",
+      "icd10_description": "Anosmia",
+      "icd10_confirmed": true,
+      "post_treatment_severity": 1,
+      "rfs_note": "Field 18 'pain relief' wording doesn't fit. RFS off by default until wording confirmed."
+    },
+    {
+      "slug": "cervicalgia-left",
+      "display_name": "Cervicalgia – Left",
+      "printed_wording": "CERVICALGIA",
+      "body_group": "Neck",
+      "body_area": "NECK",
+      "icd10_code": "M54.2",
+      "icd10_description": "Cervicalgia",
+      "icd10_confirmed": true,
+      "post_treatment_severity": 1
+    },
+    {
+      "slug": "cervicalgia-right",
+      "display_name": "Cervicalgia – Right",
+      "printed_wording": "CERVICALGIA",
+      "body_group": "Neck",
+      "body_area": "NECK",
+      "icd10_code": "M54.2",
+      "icd10_description": "Cervicalgia",
+      "icd10_confirmed": true,
+      "post_treatment_severity": 1
+    },
+    {
+      "slug": "dorsalgia-left",
+      "display_name": "Dorsalgia – Left",
+      "printed_wording": "Dorsalgia",
+      "body_group": "Back",
+      "body_area": "BACK",
+      "icd10_code": "M54.9",
+      "icd10_description": "Dorsalgia, unspecified",
+      "icd10_confirmed": true,
+      "post_treatment_severity": 1
+    },
+    {
+      "slug": "dorsalgia-right",
+      "display_name": "Dorsalgia – Right",
+      "printed_wording": "DORSALGIA",
+      "body_group": "Back",
+      "body_area": "BACK",
+      "icd10_code": "M54.9",
+      "icd10_description": "Dorsalgia, unspecified",
+      "icd10_confirmed": true,
+      "post_treatment_severity": 1
+    },
+    {
+      "slug": "fibromyalgia",
+      "display_name": "Fibromyalgia",
+      "printed_wording": "Fibromyalgia",
+      "body_group": "Other",
+      "body_area": "BODY",
+      "icd10_code": "M79.7",
+      "icd10_description": "Fibromyalgia",
+      "icd10_confirmed": true,
+      "post_treatment_severity": 1,
+      "body_area_note": "Placeholder until confirmed by practice."
+    },
+    {
+      "slug": "headache",
+      "display_name": "Headache",
+      "printed_wording": "HEADACHE",
+      "body_group": "Head",
+      "body_area": "HEAD",
+      "icd10_code": "R51.9",
+      "icd10_description": "Headache, unspecified",
+      "icd10_confirmed": true,
+      "post_treatment_severity": 1
+    },
+    {
+      "slug": "low-back-pain-left",
+      "display_name": "Low Back Pain – Left",
+      "printed_wording": "LOW BACK PAIN",
+      "body_group": "Back",
+      "body_area": "LOWER BACK",
+      "icd10_code": "M54.50",
+      "icd10_description": "Low back pain, unspecified",
+      "icd10_confirmed": true,
+      "post_treatment_severity": 1
+    },
+    {
+      "slug": "low-back-pain-right",
+      "display_name": "Low Back Pain – Right",
+      "printed_wording": "Low Back Pain",
+      "body_group": "Back",
+      "body_area": "LOWER BACK",
+      "icd10_code": "M54.50",
+      "icd10_description": "Low back pain, unspecified",
+      "icd10_confirmed": true,
+      "post_treatment_severity": 1
+    },
+    {
+      "slug": "other-chronic-pain",
+      "display_name": "Other Chronic Pain",
+      "printed_wording": "other chronic pain",
+      "body_group": "Other",
+      "body_area": "BODY",
+      "icd10_code": "G89.29",
+      "icd10_description": "Other chronic pain",
+      "icd10_confirmed": true,
+      "post_treatment_severity": 1,
+      "body_area_note": "Placeholder until confirmed by practice."
+    },
+    {
+      "slug": "other-spondylosis-left",
+      "display_name": "Other Spondylosis – Left",
+      "printed_wording": "OTHER SPONDYLOSIS",
+      "body_group": "Back",
+      "body_area": "LOWER BACK",
+      "icd10_code": "M47.896",
+      "icd10_description": "Other spondylosis, lumbosacral region",
+      "icd10_confirmed": true,
+      "post_treatment_severity": 1
+    },
+    {
+      "slug": "other-spondylosis-right",
+      "display_name": "Other Spondylosis – Right",
+      "printed_wording": "Other Spondylosis",
+      "body_group": "Back",
+      "body_area": "LOWER BACK",
+      "icd10_code": "M47.896",
+      "icd10_description": "Other spondylosis, lumbosacral region",
+      "icd10_confirmed": true,
+      "post_treatment_severity": 1
+    },
+    {
+      "slug": "pain-in-hip-left",
+      "display_name": "Pain in Hip – Left",
+      "printed_wording": "PAIN IN HIP",
+      "body_group": "Hip",
+      "body_area": "LEFT HIP",
+      "icd10_code": null,
+      "icd10_description": null,
+      "icd10_confirmed": false,
+      "post_treatment_severity": 1,
+      "icd10_note": "Practice sent M25.551 (other side). Likely M25.552. Awaiting confirmation: RFS disabled."
+    },
+    {
+      "slug": "pain-in-hip-right",
+      "display_name": "Pain in Hip – Right",
+      "printed_wording": "PAIN IN HIP",
+      "body_group": "Hip",
+      "body_area": "RIGHT HIP",
+      "icd10_code": "M25.551",
+      "icd10_description": "Pain in right hip",
+      "icd10_confirmed": true,
+      "post_treatment_severity": 1
+    },
+    {
+      "slug": "pain-in-knee-left",
+      "display_name": "Pain in Knee – Left",
+      "printed_wording": "PAIN IN KNEE",
+      "body_group": "Knee",
+      "body_area": "LEFT KNEE",
+      "icd10_code": "M25.562",
+      "icd10_description": "Pain in left knee",
+      "icd10_confirmed": true,
+      "post_treatment_severity": 1
+    },
+    {
+      "slug": "pain-in-knee-right",
+      "display_name": "Pain in Knee – Right",
+      "printed_wording": "Pain In Knee",
+      "body_group": "Knee",
+      "body_area": "RIGHT KNEE",
+      "icd10_code": null,
+      "icd10_description": null,
+      "icd10_confirmed": false,
+      "post_treatment_severity": 1,
+      "icd10_note": "Practice sent M25.562 (other side). Likely M25.561. Awaiting confirmation: RFS disabled."
+    },
+    {
+      "slug": "pain-in-shoulder-left",
+      "display_name": "Pain in Shoulder – Left",
+      "printed_wording": "Pain in shoulder",
+      "body_group": "Shoulder",
+      "body_area": "LEFT SHOULDER",
+      "icd10_code": "M25.512",
+      "icd10_description": "Pain in left shoulder",
+      "icd10_confirmed": true,
+      "post_treatment_severity": 1,
+      "template_note": "Scan prints 'Pain In Left Shoulder': cover the title, print printed_wording."
+    },
+    {
+      "slug": "pain-in-shoulder-right",
+      "display_name": "Pain in Shoulder – Right",
+      "printed_wording": "Pain in shoulder",
+      "body_group": "Shoulder",
+      "body_area": "RIGHT SHOULDER",
+      "icd10_code": null,
+      "icd10_description": null,
+      "icd10_confirmed": false,
+      "post_treatment_severity": 1,
+      "icd10_note": "Practice sent M25.512 (other side). Likely M25.511. Awaiting confirmation: RFS disabled."
+    },
+    {
+      "slug": "vertebrogenic-low-back-pain-left",
+      "display_name": "Vertebrogenic Low Back Pain – Left",
+      "printed_wording": "VERTEBROGENIC LOW BACK PAIN",
+      "body_group": "Back",
+      "body_area": "LOWER BACK",
+      "icd10_code": "M54.51",
+      "icd10_description": "Vertebrogenic low back pain",
+      "icd10_confirmed": true,
+      "post_treatment_severity": 1
+    },
+    {
+      "slug": "vertebrogenic-low-back-pain-right",
+      "display_name": "Vertebrogenic Low Back Pain – Right",
+      "printed_wording": "Vertebrogenic low back pain",
+      "body_group": "Back",
+      "body_area": "LOWER BACK",
+      "icd10_code": "M54.51",
+      "icd10_description": "Vertebrogenic low back pain",
+      "icd10_confirmed": true,
+      "post_treatment_severity": 1
+    }
+  ]
+}

@@ -1,0 +1,500 @@
+{
+  "_about": "Intake facts for the 20 clean templates received 22 Sep 2026, read from each PDF's text layer. It feeds the per-template settings.json files (config/clinics/deyoe/diagnoses/<slug>/v1/settings.json) but does NOT replace them: print positions, cover-up boxes and default ticks must be measured from each scan (make new-diagnosis) and checked by eye. Never invent coordinates. Handbook v2.2 section 07 wins if this disagrees.",
+  "applies_to_every_template": {
+    "first_page": "INITIAL VISIT IN AUTHORIZATION + first note",
+    "last_page": "Last Visit in authorization + closing note + Excellent",
+    "side_in_title": "never printed (only Pain in Shoulder – Left needs a cover-up)",
+    "use_only": "these 22 Sep scans; mark every earlier scan superseded"
+  },
+  "templates": [
+    {
+      "slug": "anosmia",
+      "source_file": "916255628-anosmia.pdf",
+      "received": "2026-09-22",
+      "calibration_status": "not calibrated",
+      "title_on_scan": "Anosmia",
+      "top_pain": {
+        "label_on_scan": "Pain severity:",
+        "preprinted_value": null,
+        "action": "print {pain}/10 after the label (no cover-up)"
+      },
+      "post_treatment": {
+        "location_preprinted": "loss of smell",
+        "severity_preprinted": "1/10",
+        "action": "leave as printed (rule: always 1/10)"
+      },
+      "sections_missing_on_scan": [
+        "activities",
+        "objective"
+      ],
+      "rfs_default": "off — field 18 wording to confirm",
+      "visual_checks_before_calibration": [
+        "signature present",
+        "which boxes are pre-ticked (these become defaults)",
+        "Good ticked under today's response (last page covers it with Excellent)",
+        "confirm pre-printed first-visit wording is gone"
+      ]
+    },
+    {
+      "slug": "cervicalgia-left",
+      "source_file": "916255632-cervicalgia-left.pdf",
+      "received": "2026-09-22",
+      "calibration_status": "not calibrated",
+      "title_on_scan": "CERVICALGIA",
+      "top_pain": {
+        "label_on_scan": "Pain severity:",
+        "preprinted_value": null,
+        "action": "print {pain}/10 after the label (no cover-up)"
+      },
+      "post_treatment": {
+        "location_preprinted": "Neck & upper back/ LEFT arm & hand",
+        "severity_preprinted": "1/10",
+        "action": "leave as printed (rule: always 1/10)"
+      },
+      "sections_missing_on_scan": [],
+      "visual_checks_before_calibration": [
+        "signature present",
+        "which boxes are pre-ticked (these become defaults)",
+        "Good ticked under today's response (last page covers it with Excellent)"
+      ]
+    },
+    {
+      "slug": "cervicalgia-right",
+      "source_file": "916255614-cervicalgia-right.pdf",
+      "received": "2026-09-22",
+      "calibration_status": "not calibrated",
+      "title_on_scan": "CERVICALGIA",
+      "top_pain": {
+        "label_on_scan": "Pain Severity:",
+        "preprinted_value": null,
+        "action": "print {pain}/10 after the label (no cover-up)"
+      },
+      "post_treatment": {
+        "location_preprinted": "Neck/upper back RIGHT arm/hand",
+        "severity_preprinted": "1/10",
+        "action": "leave as printed (rule: always 1/10)"
+      },
+      "sections_missing_on_scan": [],
+      "visual_checks_before_calibration": [
+        "signature present",
+        "which boxes are pre-ticked (these become defaults)",
+        "Good ticked under today's response (last page covers it with Excellent)"
+      ]
+    },
+    {
+      "slug": "dorsalgia-left",
+      "source_file": "916255626-dorsalgia-left.pdf",
+      "received": "2026-09-22",
+      "calibration_status": "not calibrated",
+      "title_on_scan": "Dorsalgia",
+      "top_pain": {
+        "label_on_scan": "Pain severity:",
+        "preprinted_value": null,
+        "action": "print {pain}/10 after the label (no cover-up)"
+      },
+      "post_treatment": {
+        "location_preprinted": "Neck & upper back/ LEFT arm & hand",
+        "severity_preprinted": "1/10",
+        "action": "leave as printed (rule: always 1/10)"
+      },
+      "sections_missing_on_scan": [],
+      "visual_checks_before_calibration": [
+        "signature present",
+        "which boxes are pre-ticked (these become defaults)",
+        "Good ticked under today's response (last page covers it with Excellent)",
+        "old scan had overlapping title text: check this one",
+        "location + point Rx identical to Cervicalgia – Left (asked practice; print as is)"
+      ]
+    },
+    {
+      "slug": "dorsalgia-right",
+      "source_file": "916255623-dorsalgia-right.pdf",
+      "received": "2026-09-22",
+      "calibration_status": "not calibrated",
+      "title_on_scan": "DORSALGIA",
+      "top_pain": {
+        "label_on_scan": "Pain severity:",
+        "preprinted_value": null,
+        "action": "print {pain}/10 after the label (no cover-up)"
+      },
+      "post_treatment": {
+        "location_preprinted": "Neck/upper back RIGHT arm & hand",
+        "severity_preprinted": "1/10",
+        "action": "leave as printed (rule: always 1/10)"
+      },
+      "sections_missing_on_scan": [],
+      "visual_checks_before_calibration": [
+        "signature present",
+        "which boxes are pre-ticked (these become defaults)",
+        "Good ticked under today's response (last page covers it with Excellent)",
+        "location + point Rx identical to Cervicalgia – Right (asked practice; print as is)"
+      ]
+    },
+    {
+      "slug": "fibromyalgia",
+      "source_file": "916255600-fibromyalgia.pdf",
+      "received": "2026-09-22",
+      "calibration_status": "not calibrated",
+      "title_on_scan": "Fibromyalgia",
+      "top_pain": {
+        "label_on_scan": "Pain Level:",
+        "preprinted_value": null,
+        "action": "print {pain}/10 after the label (no cover-up)"
+      },
+      "post_treatment": {
+        "location_preprinted": "Neck and upper back/ L5 -si b hips",
+        "severity_preprinted": "1/10",
+        "action": "leave as printed (rule: always 1/10)"
+      },
+      "sections_missing_on_scan": [],
+      "visual_checks_before_calibration": [
+        "signature present",
+        "which boxes are pre-ticked (these become defaults)",
+        "Good ticked under today's response (last page covers it with Excellent)",
+        "new template 22 Sep"
+      ]
+    },
+    {
+      "slug": "headache",
+      "source_file": "916255612-headache-1.pdf",
+      "received": "2026-09-22",
+      "calibration_status": "not calibrated",
+      "title_on_scan": "HEADACHE",
+      "top_pain": {
+        "label_on_scan": "Pain Severity:",
+        "preprinted_value": null,
+        "action": "print {pain}/10 after the label (no cover-up)"
+      },
+      "post_treatment": {
+        "location_preprinted": "Neck and upper back",
+        "severity_preprinted": "1/10",
+        "action": "leave as printed (rule: always 1/10)"
+      },
+      "sections_missing_on_scan": [],
+      "layout": "shorter objective grid than the standard form",
+      "visual_checks_before_calibration": [
+        "signature present",
+        "which boxes are pre-ticked (these become defaults)",
+        "Good ticked under today's response (last page covers it with Excellent)"
+      ]
+    },
+    {
+      "slug": "low-back-pain-left",
+      "source_file": "916255635-low-back-pain-left.pdf",
+      "received": "2026-09-22",
+      "calibration_status": "calibrated (v1, check against new scan)",
+      "title_on_scan": "LOW BACK PAIN",
+      "top_pain": {
+        "label_on_scan": "Pain level:",
+        "preprinted_value": "8/10",
+        "action": "cover the pre-printed 8/10, then print {pain}/10"
+      },
+      "post_treatment": {
+        "location_preprinted": "L5 - s, LEFT hip & si",
+        "severity_preprinted": "1/10",
+        "action": "leave as printed (rule: always 1/10)"
+      },
+      "sections_missing_on_scan": [],
+      "existing_settings": "json-example/settings.low-back-pain-left.v1.json — re-check positions against this scan",
+      "visual_checks_before_calibration": [
+        "signature present",
+        "which boxes are pre-ticked (these become defaults)",
+        "Good ticked under today's response (last page covers it with Excellent)",
+        "text layer shows 'mproving' clipped and a stray '4.': check overlap"
+      ]
+    },
+    {
+      "slug": "low-back-pain-right",
+      "source_file": "916255644-low-back-pain-right-side.pdf",
+      "received": "2026-09-22",
+      "calibration_status": "not calibrated",
+      "title_on_scan": "Low Back Pain",
+      "top_pain": {
+        "label_on_scan": "Pain severity:",
+        "preprinted_value": null,
+        "action": "print {pain}/10 after the label (no cover-up)"
+      },
+      "post_treatment": {
+        "location_preprinted": "Right L 5- si Right hip",
+        "severity_preprinted": "1/10",
+        "action": "leave as printed (rule: always 1/10)"
+      },
+      "sections_missing_on_scan": [],
+      "visual_checks_before_calibration": [
+        "signature present",
+        "which boxes are pre-ticked (these become defaults)",
+        "Good ticked under today's response (last page covers it with Excellent)",
+        "confirm physician signature is on the scan"
+      ]
+    },
+    {
+      "slug": "other-chronic-pain",
+      "source_file": "916255606-other-chronic-pain.pdf",
+      "received": "2026-09-22",
+      "calibration_status": "not calibrated",
+      "title_on_scan": "other chronic pain",
+      "top_pain": {
+        "label_on_scan": "Pain Severity:",
+        "preprinted_value": null,
+        "action": "print {pain}/10 after the label (no cover-up)"
+      },
+      "post_treatment": {
+        "location_preprinted": "Neck & upper back / L5 - si b hips",
+        "severity_preprinted": "1/10",
+        "action": "leave as printed (rule: always 1/10)"
+      },
+      "sections_missing_on_scan": [],
+      "visual_checks_before_calibration": [
+        "signature present",
+        "which boxes are pre-ticked (these become defaults)",
+        "Good ticked under today's response (last page covers it with Excellent)"
+      ]
+    },
+    {
+      "slug": "other-spondylosis-left",
+      "source_file": "916255608-other-spondylosis-left.pdf",
+      "received": "2026-09-22",
+      "calibration_status": "not calibrated",
+      "title_on_scan": "OTHER SPONDYLOSIS",
+      "top_pain": {
+        "label_on_scan": "Pain Severity:",
+        "preprinted_value": null,
+        "action": "print {pain}/10 after the label (no cover-up)"
+      },
+      "post_treatment": {
+        "location_preprinted": "LEFT Side - si, L si & qi / c7-t5 L scapula",
+        "severity_preprinted": "1/10",
+        "action": "leave as printed (rule: always 1/10)"
+      },
+      "sections_missing_on_scan": [],
+      "scan_quality": "low — no usable text layer; auto box detection won't work",
+      "visual_checks_before_calibration": [
+        "signature present",
+        "which boxes are pre-ticked (these become defaults)",
+        "Good ticked under today's response (last page covers it with Excellent)",
+        "calibrate boxes by hand",
+        "check fax legibility"
+      ]
+    },
+    {
+      "slug": "other-spondylosis-right",
+      "source_file": "916255645-other-spondylosis-right.pdf",
+      "received": "2026-09-22",
+      "calibration_status": "not calibrated",
+      "title_on_scan": "Other Spondylosis",
+      "top_pain": {
+        "label_on_scan": "Pain Severity:",
+        "preprinted_value": null,
+        "action": "print {pain}/10 after the label (no cover-up)"
+      },
+      "post_treatment": {
+        "location_preprinted": "L5- si, RIGHT si & ql / c7-t5 RIGHT scapula",
+        "severity_preprinted": "1/10",
+        "action": "leave as printed (rule: always 1/10)"
+      },
+      "sections_missing_on_scan": [],
+      "scan_quality": "low — no usable text layer; auto box detection won't work",
+      "visual_checks_before_calibration": [
+        "signature present",
+        "which boxes are pre-ticked (these become defaults)",
+        "Good ticked under today's response (last page covers it with Excellent)",
+        "calibrate boxes by hand",
+        "check fax legibility",
+        "never use the original redacted file"
+      ]
+    },
+    {
+      "slug": "pain-in-hip-left",
+      "source_file": "916255620-pain-in-hip-left.pdf",
+      "received": "2026-09-22",
+      "calibration_status": "not calibrated",
+      "title_on_scan": "PAIN IN HIP",
+      "top_pain": {
+        "label_on_scan": "Pain Severity:",
+        "preprinted_value": "8/10",
+        "action": "cover the pre-printed 8/10, then print {pain}/10"
+      },
+      "post_treatment": {
+        "location_preprinted": "LEFT hip pain",
+        "severity_preprinted": "1/10",
+        "action": "leave as printed (rule: always 1/10)"
+      },
+      "sections_missing_on_scan": [],
+      "visual_checks_before_calibration": [
+        "signature present",
+        "which boxes are pre-ticked (these become defaults)",
+        "Good ticked under today's response (last page covers it with Excellent)",
+        "point Rx reads 'ashi r hip' (asked practice; print as is)"
+      ]
+    },
+    {
+      "slug": "pain-in-hip-right",
+      "source_file": "916255615-pain-in-hip-right.pdf",
+      "received": "2026-09-22",
+      "calibration_status": "not calibrated",
+      "title_on_scan": "PAIN IN HIP",
+      "top_pain": {
+        "label_on_scan": "Pain Severity:",
+        "preprinted_value": "8/10",
+        "action": "cover the pre-printed 8/10, then print {pain}/10"
+      },
+      "post_treatment": {
+        "location_preprinted": "RIGHT hip pain",
+        "severity_preprinted": "1/10",
+        "action": "leave as printed (rule: always 1/10)"
+      },
+      "sections_missing_on_scan": [],
+      "visual_checks_before_calibration": [
+        "signature present",
+        "which boxes are pre-ticked (these become defaults)",
+        "Good ticked under today's response (last page covers it with Excellent)"
+      ]
+    },
+    {
+      "slug": "pain-in-knee-left",
+      "source_file": "916255624-pain-in-knee-left.pdf",
+      "received": "2026-09-22",
+      "calibration_status": "not calibrated",
+      "title_on_scan": "PAIN IN KNEE",
+      "top_pain": {
+        "label_on_scan": "Pain Severity:",
+        "preprinted_value": null,
+        "action": "print {pain}/10 after the label (no cover-up)"
+      },
+      "post_treatment": {
+        "location_preprinted": "LEFT knee pain",
+        "severity_preprinted": "1/10",
+        "action": "leave as printed (rule: always 1/10)"
+      },
+      "sections_missing_on_scan": [],
+      "visual_checks_before_calibration": [
+        "signature present",
+        "which boxes are pre-ticked (these become defaults)",
+        "Good ticked under today's response (last page covers it with Excellent)"
+      ]
+    },
+    {
+      "slug": "pain-in-knee-right",
+      "source_file": "916255613-pain-in-knee-right.pdf",
+      "received": "2026-09-22",
+      "calibration_status": "not calibrated",
+      "title_on_scan": "Pain In Knee",
+      "top_pain": {
+        "label_on_scan": "Pain Severity:",
+        "preprinted_value": null,
+        "action": "print {pain}/10 after the label (no cover-up)"
+      },
+      "post_treatment": {
+        "location_preprinted": "Right knee pain",
+        "severity_preprinted": "1/10",
+        "action": "leave as printed (rule: always 1/10)"
+      },
+      "sections_missing_on_scan": [],
+      "visual_checks_before_calibration": [
+        "signature present",
+        "which boxes are pre-ticked (these become defaults)",
+        "Good ticked under today's response (last page covers it with Excellent)"
+      ]
+    },
+    {
+      "slug": "pain-in-shoulder-left",
+      "source_file": "916255601-pain-in-left-shoulder.pdf",
+      "received": "2026-09-22",
+      "calibration_status": "not calibrated",
+      "title_on_scan": "Pain In Left Shoulder",
+      "top_pain": {
+        "label_on_scan": "Pain Severity:",
+        "preprinted_value": null,
+        "action": "print {pain}/10 after the label (no cover-up)"
+      },
+      "post_treatment": {
+        "location_preprinted": "LEFT shoulder pain",
+        "severity_preprinted": "1/10",
+        "action": "leave as printed (rule: always 1/10)"
+      },
+      "sections_missing_on_scan": [],
+      "title_cover": "cover the scanned title and print 'Pain in shoulder'",
+      "visual_checks_before_calibration": [
+        "signature present",
+        "which boxes are pre-ticked (these become defaults)",
+        "Good ticked under today's response (last page covers it with Excellent)",
+        "new template 22 Sep"
+      ]
+    },
+    {
+      "slug": "pain-in-shoulder-right",
+      "source_file": "916255627-pain-in-right-shoulder.pdf",
+      "received": "2026-09-22",
+      "calibration_status": "not calibrated",
+      "title_on_scan": "Pain in shoulder",
+      "top_pain": {
+        "label_on_scan": "Pain Severity:",
+        "preprinted_value": null,
+        "action": "print {pain}/10 after the label (no cover-up)"
+      },
+      "post_treatment": {
+        "location_preprinted": "Pain in RIGHT shoulder",
+        "severity_preprinted": "1/10",
+        "action": "leave as printed (rule: always 1/10)"
+      },
+      "sections_missing_on_scan": [],
+      "duplicate_file": "916255651-pain-in-right-shoulder-1.pdf has identical text; register one",
+      "visual_checks_before_calibration": [
+        "signature present",
+        "which boxes are pre-ticked (these become defaults)",
+        "Good ticked under today's response (last page covers it with Excellent)"
+      ]
+    },
+    {
+      "slug": "vertebrogenic-low-back-pain-left",
+      "source_file": "916255611-vertebrogenic-low-back-pain-left-1.pdf",
+      "received": "2026-09-22",
+      "calibration_status": "not calibrated",
+      "title_on_scan": "VERTEBROGENIC LOW BACK PAIN",
+      "top_pain": {
+        "label_on_scan": "Pain Severity:",
+        "preprinted_value": null,
+        "action": "print {pain}/10 after the label (no cover-up)"
+      },
+      "post_treatment": {
+        "location_preprinted": "L5 - s, LEFT hip & si",
+        "severity_preprinted": "1/10",
+        "action": "leave as printed (rule: always 1/10)"
+      },
+      "sections_missing_on_scan": [],
+      "visual_checks_before_calibration": [
+        "signature present",
+        "which boxes are pre-ticked (these become defaults)",
+        "Good ticked under today's response (last page covers it with Excellent)",
+        "corrected copy 22 Sep",
+        "same 'mproving'/'4.' artefacts as Low Back Pain – Left: check overlap",
+        "confirm pre-printed first-visit wording is gone"
+      ]
+    },
+    {
+      "slug": "vertebrogenic-low-back-pain-right",
+      "source_file": "916255604-vertebrogenic-low-back-pain-right.pdf",
+      "received": "2026-09-22",
+      "calibration_status": "not calibrated",
+      "title_on_scan": "Vertebrogenic low back pain",
+      "top_pain": {
+        "label_on_scan": "Pain severity:",
+        "preprinted_value": null,
+        "action": "print {pain}/10 after the label (no cover-up)"
+      },
+      "post_treatment": {
+        "location_preprinted": "R L 5- si RIGHT hip",
+        "severity_preprinted": "1/10",
+        "action": "leave as printed (rule: always 1/10)"
+      },
+      "sections_missing_on_scan": [],
+      "visual_checks_before_calibration": [
+        "signature present",
+        "which boxes are pre-ticked (these become defaults)",
+        "Good ticked under today's response (last page covers it with Excellent)",
+        "new template 22 Sep",
+        "confirm physician signature is on the scan"
+      ]
+    }
+  ]
+}
