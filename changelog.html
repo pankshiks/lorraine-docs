@@ -67,7 +67,7 @@
 </style>
 </head>
 <body>
-<nav class="dnav" aria-label="DeYoe documents"><div class="in"><b>DeYoe docs</b><a href="index.html">Developer handbook (main)</a><a href="screen-spec.html">Screen spec</a><a href="data-model.html">Data model</a><a href="current-process.html">Current process</a><a href="changelog.html" class="on">Changelog</a></div></nav>
+<nav class="dnav" aria-label="DeYoe documents"><div class="in"><b>DeYoe docs</b><a href="index.html">Developer handbook (main)</a><a href="screen-spec.html">Screen spec</a><a href="data-model.html">Data model</a><a href="current-process.html">Current process</a><a href="changelog.html" class="on">Changelog</a><a href="feedback.html">Client feedback</a></div></nav>
 <div class="wrap">
 <header class="masthead">
   <p class="eyebrow">DeYoe Wellness Acupuncture — for the development team</p>
@@ -87,8 +87,9 @@
 <section class="rel" id="v2-2">
   <header><h2>v2.2</h2><span class="date">2026-09-23</span></header>
   <p class="src"><b>Source:</b> Practice delivery of 22 Sep 2026 (ICD-10 list, 20 clean templates, answers to 'What we need from you')</p>
-  <p class="pages"><code>index.html</code> Handbook v2.1 → v2.2 · <code>screen-spec.html</code> rev 6 → rev 7 · <code>data-model.html</code> rev 9 → rev 10 · <code>current-process.html</code> date only</p>
+  <p class="pages"><code>index.html</code> Handbook v2.1 → v2.2 · <code>screen-spec.html</code> rev 6 → rev 7 · <code>data-model.html</code> rev 9 → rev 10 · <code>current-process.html</code> date only · <code>feedback.html</code> new (client-facing)</p>
   <div class="tblwrap"><table><thead><tr><th>Area</th><th>Change</th><th>Where</th></tr></thead><tbody>
+<tr><td class="area">Client feedback page</td><td>New <code>feedback.html</code>: the ONE place the client sees what she has sent, what we are working on, and what we still need. It is client-facing: plain language, no internal notes, no prices, no links to the internal docs. <b>Copy it into the build and serve it at <code>/feedback</code></b> (Poonam links it in her emails). Update it after every review round: move items from "In progress" to "Received"/done, add new client feedback as it arrives, and change the "Last updated" date.</td><td class="where"><a href="feedback.html"><code>feedback.html</code></a></td></tr>
 <tr><td class="area">Diagnoses</td><td>The 20 diagnoses are final. The two replacements are Vertebrogenic Low Back Pain – Right and Fibromyalgia. The 'May 30' shoulder is now Pain in Shoulder – Left. All 20 clean scans received 22 Sep; use only these and mark every earlier scan superseded.</td><td class="where"><a href="index.html#refdata"><code>index.html#refdata</code></a> · <a href="screen-spec.html"><code>screen-spec.html</code></a></td></tr>
 <tr><td class="area">ICD-10</td><td>Codes added for all 20, stored with the dot (M54.50). Three are UNCONFIRMED because the code sent is for the other side: Hip – Left (sent M25.551 = right hip), Knee – Right (sent M25.562 = left knee), Shoulder – Right (sent M25.512 = left shoulder). icd10_confirmed = false → RFS disabled with a reason. Do not seed the sent codes as final.</td><td class="where"><a href="index.html#refdata"><code>index.html#refdata</code></a> · <a href="json-example/diagnoses.v2.json"><code>json-example/diagnoses.v2.json</code></a></td></tr>
 <tr><td class="area">Data model</td><td>diagnosis gains icd10_description (RFS field 14) and icd10_confirmed (bool). icd10_code stored with the dot.</td><td class="where"><a href="data-model.html"><code>data-model.html</code></a></td></tr>
@@ -136,9 +137,15 @@
         "index.html": "Handbook v2.1 → v2.2",
         "screen-spec.html": "rev 6 → rev 7",
         "data-model.html": "rev 9 → rev 10",
-        "current-process.html": "date only"
+        "current-process.html": "date only",
+        "feedback.html": "new (client-facing)"
       },
       "changes": [
+        {
+          "area": "Client feedback page",
+          "change": "New feedback.html: the single client-facing place for received items, work in progress and open questions. Copy into the build at /feedback; update after every review round (items, status, 'Last updated' date). No internal notes, prices or internal links.",
+          "where": "feedback.html"
+        },
         {
           "area": "Diagnoses",
           "change": "The 20 diagnoses are final. The two replacements are Vertebrogenic Low Back Pain – Right and Fibromyalgia. The 'May 30' shoulder is now Pain in Shoulder – Left. All 20 clean scans received 22 Sep; use only these and mark every earlier scan superseded.",
