@@ -87,7 +87,7 @@
 <section class="rel" id="v2-3">
   <header><h2>v2.3</h2><span class="date">2026-09-24</span></header>
   <p class="src"><b>Source:</b> Design and spec review of the build on 24 Sep 2026 (148.113.35.97:7678) against handbook v2.2, screen spec rev 7, build-fixes F1–F10 and json-example v2. No business rules changed.</p>
-  <p class="pages"><code>build-fixes.html</code> statuses + F11–F14 + start-of-session prompt · <code>feedback.html</code> 24 Sep · <code>changelog.html</code> v2.3 · handbook, screen spec, data model unchanged</p>
+  <p class="pages"><code>index.html</code> decision note (§10, §21) · <code>build-fixes.html</code> statuses + F11–F14 + start-of-session prompt · <code>feedback.html</code> 24 Sep · <code>changelog.html</code> v2.3 · screen spec, data model unchanged</p>
   <div class="tblwrap"><table><thead><tr><th>Area</th><th>Change</th><th>Where</th></tr></thead><tbody>
 <tr><td class="area">Build fixes — status</td><td>After the 24 Sep review of the build: F1, F2, F3, F4, F7, F8, F9 Done · F5 In progress (mismatch warning not yet shown) · F10 In progress (Low Back Pain – Left notes PDF correct on the 22 Sep scan; RFS PDF and the other 19 templates to do) · F6 To do (visit screen still has the full clinical sections; Type of pain has an extra &#x27;Other&#x27;). Each card now has a &#x27;Checked 24 Sep&#x27; line saying what was verified.</td><td class="where"><code>build-fixes.html</code></td></tr>
 <tr><td class="area">Build fixes — new</td><td>F11 Template readiness from templates-intake.v2.json (S16/S6/S11: all 20 received 22 Sep; Fibromyalgia and Vertebrogenic LBP – Right must be selectable; per-template notes; Anosmia RFS off by default). F12 Design tokens, components and product name (handbook §17; rename &#x27;lorraine.ai&#x27; to &#x27;DeYoe Wellness · Packet tool&#x27;). F13 RFS on Build packet: derived fields only + a real RFS PDF. F14 Screen polish against screen spec rev 7 (S19 settings, S1 states, PatientChip, inline validation, S2 grid, S18 sentence, demo data).</td><td class="where"><code>build-fixes.html#F11</code></td></tr>
@@ -100,6 +100,7 @@
 <tr><td class="area">Design phase</td><td>New section on build-fixes.html: what we told Lorraine on 23 Sep vs the demo today, each design pass (handbook §18) screen by screen with the fix that closes it, &#x27;design is complete when&#x27;, target sign-off Fri 26 Sep, and which modules start now (M0, M2 incl. real sign-in, M3, M4) vs after sign-off (M1, M5–M7).</td><td class="where"><code>build-fixes.html#design-exit</code></td></tr>
 <tr><td class="area">F5 / F14 updated</td><td>F5 also needs S12 &#x27;Edit this page&#x27; (disabled in the demo) so an override can raise the mismatch warning. F14 adds: the demo fax-log test fax must go to a separate test number, not 404-738-1714.</td><td class="where"><code>build-fixes.html#F5 · #F14</code></td></tr>
 <tr><td class="area">Finish-design prompt</td><td>New &#x27;One prompt to finish the design phase&#x27; on build-fixes.html (with a copy button): Claude Code works through F6, F11, F5, F13 (screen part), F12, F14 in order, checks each against its &#x27;Done when&#x27; lines and the §18 checklist, updates statuses, re-checks the demo end to end and reports back. Backend modules and M1/M5–M7 are out of this task.</td><td class="where"><code>build-fixes.html#finish-design</code></td></tr>
+<tr><td class="area">Decision: no parallel backend</td><td>Development does not start in parallel with design. M0, M2, M3, M4 and then M1, M5–M7 start only after design sign-off (target Fri 26 Sep). Handbook §10 and §21 updated with a decision note; build-fixes Design phase and the finish-design prompt updated.</td><td class="where"><code>index.html#phases · index.html#order · build-fixes.html#design-exit</code></td></tr>
   </tbody></table></div>
 </section>
 <section class="rel" id="v2-2">
@@ -156,7 +157,8 @@
       "pages": {
         "build-fixes.html": "statuses, F11–F14, start-of-session prompt",
         "feedback.html": "24 Sep update",
-        "changelog.html": "v2.3"
+        "changelog.html": "v2.3",
+        "index.html": "decision note in §10 and §21 (no parallel backend)"
       },
       "changes": [
         {
@@ -201,7 +203,7 @@
         },
         {
           "area": "Design phase",
-          "change": "New section on build-fixes.html: what we told Lorraine on 23 Sep vs the demo today, each design pass (handbook §18) screen by screen with the fix that closes it, 'design is complete when', target sign-off Fri 26 Sep, and which modules start now (M0, M2 incl. real sign-in, M3, M4) vs after sign-off (M1, M5–M7).",
+          "change": "New section on build-fixes.html: what we told Lorraine on 23 Sep vs the demo today, each design pass (handbook §18) screen by screen with the fix that closes it, 'design is complete when', target sign-off Fri 26 Sep, and the development order after sign-off.",
           "where": "build-fixes.html#design-exit"
         },
         {
@@ -213,6 +215,11 @@
           "area": "Finish-design prompt",
           "change": "New 'One prompt to finish the design phase (fixes + client feedback)' on build-fixes.html (with a copy button): Claude Code works through F6, F11, F5, F13 (screen part), F12, F14 in order, covers every design item promised on feedback.html and Lorraine's logged feedback (new requests listed for approval, not built), checks each against its 'Done when' lines and the §18 checklist, updates statuses, re-checks the demo end to end and reports back. Backend modules and M1/M5–M7 are out of this task.",
           "where": "build-fixes.html#finish-design"
+        },
+        {
+          "area": "Decision: no parallel backend",
+          "change": "Development does not start in parallel with design. M0, M2, M3, M4 and then M1, M5–M7 start only after design sign-off (target Fri 26 Sep). Handbook §10 and §21 updated with a decision note; build-fixes Design phase and the finish-design prompt updated.",
+          "where": "index.html#phases · index.html#order · build-fixes.html#design-exit"
         }
       ]
     },
