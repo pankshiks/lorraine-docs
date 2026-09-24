@@ -82,6 +82,13 @@
   .pill.st.done { background:var(--moss-wash); color:var(--moss); } .pill.st.prog { background:var(--navy-wash); color:var(--navy); } .pill.st.blk { background:var(--amber-wash); color:var(--amber); }
   .fix dd.chk { color:var(--ink-soft); } .callout.review { background:var(--moss-wash); border-left-color:var(--moss); }
   .session { margin-top:26px; } .session h3 { margin-top:0; }
+  .exit { margin-top:30px; } .exit h2 { margin-bottom:6px; } .exit ul { padding-left:20px; margin:6px 0; } .exit td ul { margin:0; padding-left:16px; }
+  .res { font-family:var(--mono); font-size:10.5px; text-transform:uppercase; letter-spacing:.05em; padding:2px 7px; border-radius:99px; white-space:nowrap; }
+  .res.ok { background:var(--moss-wash); color:var(--moss); } .res.no { background:var(--amber-wash); color:var(--amber); } .res.part { background:var(--navy-wash); color:var(--navy); }
+  .finish { margin-top:30px; padding:16px 18px; background:var(--card); border:1px solid var(--rule); border-left:4px solid var(--moss); border-radius:0 6px 6px 0; }
+  .finish h2 { margin-bottom:6px; } .finish pre.prompt { max-height:520px; overflow:auto; }
+  button.copy { font-family:var(--mono); font-size:12px; padding:6px 12px; border:1px solid var(--rule); background:var(--paper); color:var(--ink); border-radius:4px; cursor:pointer; margin-top:6px; }
+  button.copy:hover { border-color:var(--navy); color:var(--navy); }
 </style>
 </head>
 <body>
@@ -102,7 +109,66 @@
   <li>If a fix disagrees with the handbook, the handbook wins. Ask Poonam or Shikha; don't ask the client.</li>
 </ol></div>
 
-<div class="callout review"><b>24 Sep review — where things stand.</b> F1–F4 and F7–F9 are done. F5 and F10 are in progress. F6 is not started. New: F11 (template readiness), F12 (theme shadcn/ui with the §17 tokens, and product name), F13 (RFS on Build packet) and F14 (screen polish). <i>Checked in the running build (UI only); tests and code rules not reviewed.</i></div>
+<div class="callout review"><b>24 Sep review — where things stand.</b> F1–F4 and F7–F9 are done. F5 and F10 are in progress. F6 is not started. New: F11 (template readiness), F12 (theme shadcn/ui with the §17 tokens, and product name), F13 (RFS on Build packet) and F14 (screen polish). See <a href="#design-exit">Design phase</a> for what's left before design sign-off, and use <a href="#finish-design">the one prompt</a> to finish it. <i>Checked in the running build (UI only); tests and code rules not reviewed.</i></div>
+<section class="finish" id="finish-design">
+  <h2>One prompt to finish the design phase</h2>
+  <p class="src">Paste this into Claude Code in the app repo (with these docs in <code>docs/</code>). It works through every open fix (F5, F6, F11, F12, F13 screen part, F14), checks each against its “Done when” lines and the §18 checklist, updates this page, and reports back. Use it instead of pasting the cards one by one; the start-of-session prompt below is still fine for single fixes.</p>
+  <button type="button" class="copy" data-target="finish-prompt">Copy prompt</button>
+  <pre class="prompt" id="finish-prompt">You are finishing the DESIGN PHASE of the DeYoe Wellness packet tool (React + Vite + TypeScript + Tailwind + shadcn/ui, frontend demo). Work through every open item on docs/build-fixes.html until each one meets its &quot;Done when&quot; lines, then stop and report.
+
+READ FIRST, IN THIS ORDER
+1. docs/changelog.html — top entry (v2.3).
+2. docs/build-fixes.html — the &quot;Design phase&quot; section, then every card whose status is not Done. The card&#x27;s &quot;Done when&quot; lines are the acceptance criteria; its prompt is the instruction.
+3. docs/index.html (handbook) — §05 visit rules, §07 reference data, §17 design conventions, §18 review checklist. The handbook wins if anything disagrees.
+4. docs/screen-spec.html (rev 7) — fields and states for every screen you touch.
+5. docs/json-example/diagnoses.v2.json, templates-intake.v2.json, progress_note.v1.json — the only sources for diagnoses, ICD-10 codes, template readiness and form options.
+
+WORK ORDER (one branch and one pull request per fix: fix/F&lt;n&gt;-&lt;short-name&gt;)
+1. F6  Visit entry — only what changes per visit. Remove the clinical sections from S9; Type of pain = exactly the 11 options from progress_note.v1.json.
+2. F11 Template readiness from templates-intake.v2.json — all 20 received 22 Sep; Fibromyalgia and Vertebrogenic LBP – Right selectable; per-template notes; Anosmia RFS off by default; S11 blocks &quot;Build and preview&quot; for templates not set up yet.
+3. F5  Consistency checks — enable S12 &quot;Edit this page&quot; (per-page override, logged, &quot;edited since generated&quot;); an override with a different name / VA number / last four must raise a warning.
+4. F13 (screen part only) — S11 shows the Include RFS toggle, RFS office (read-only) and body area (text) — remove the embedded HTML RFS form. The RFS PDF itself is development work (M4); leave a clear &quot;RFS PDF comes with the PDF engine&quot; placeholder in the S12 RFS tab and do not fake it.
+5. F12 Theme shadcn/ui with the §17 tokens — KEEP shadcn/ui. Map its CSS variables to the §17 names (light first with a calm clinical accent, dark defined), add success/warning/info, remove --blue-*/--green-*/--amber-*/--rose-*/--slate-* aliases and raw colours from screens, add a CI grep/lint check. Build the §17 components on shadcn primitives with data-component attributes and use them everywhere (PatientChip, StatusPill with icon+colour, FileCard, DestinationRow, DiagnosisPicker, VisitForm, AnswerSourceMarker, PdfPreview, ConsistencyPanel, EmptyState, InlineError, ConfirmBar, ConcurrencyNotice). Rename the product to &quot;DeYoe Wellness · Packet tool&quot; (sidebar, sign-in, &lt;title&gt;); remove &quot;lorraine.ai&quot; and the &quot;L&quot; tile.
+6. F14 Screen polish — S19 settings fields + Save; S1 states and no pre-filled credentials; PatientChip on S9/S11/S12/S13; inline validation on blur (S4, S6, S8, S9); S2 tile grid; S18 rule sentence; consistent demo data (S2 vs S7; fax-log test fax to a separate test number, not 404-738-1714).
+Skip any card already marked Done unless your change breaks one of its &quot;Done when&quot; lines — then fix it.
+
+HARD RULES
+- Fake data only: Jane Doe and John Doe from the handbook/json-example. No other names, no real patient data, anywhere.
+- Never type diagnosis names, ICD-10 codes, template statuses, notes or print coordinates in components — read them from the json-example files.
+- Keep the demo banner on every screen. Desktop only: check at 1440 and 1280 wide (don&#x27;t break at 1024). No mobile work.
+- Dr. DeYoe does not use the tool; Lorraine is the only user. Pain level is always entered, never pre-filled or suggested. No signature pad for RFS box 21 (unsigned + flagged, not blocking).
+- Don&#x27;t change flows or add features that aren&#x27;t on a card. Nothing from the Parked list (real sign-in/API, SRFax, Grok, responsive, on-screen signature, cover-sheet wording).
+- If a card, the handbook and the screen spec disagree, or something is unclear: stop that item, write the question in your report, and carry on with the next item. Don&#x27;t guess and don&#x27;t contact the client.
+
+FOR EACH FIX, BEFORE YOU MARK IT DONE
+- Add the tests the card names (unit / Playwright). All tests, lint and type checks pass.
+- Run the app and check every &quot;Done when&quot; line yourself on the screens listed, at 1440 and 1280 wide, light theme (then glance at dark).
+- Walk the §18 review checklist for each touched screen: every field in the spec present with the right example value; every state shown; only board components; only tokens; PatientChip wherever patient data appears; no patient details in the page title.
+- Update docs/build-fixes.html: the card&#x27;s status (To do → Done, or Blocked with the reason) on the card AND in the #build-fixes-data JSON, and the matching row in the &quot;Design phase&quot; tables. Add a line to the top changelog entry if you changed a doc.
+
+WHEN ALL ITEMS ARE DONE (OR BLOCKED)
+1. Run the full design-pass check from the &quot;Design phase&quot; section: every screen S1–S21 (except S17) against screen spec rev 7. Fix anything small; list anything else.
+2. Deploy to the demo (148.113.35.97:7678) and re-check the core flow end to end: Dashboard → Jane Doe · Low Back Pain – Left → visit entry → Build packet → Preview → Review and send → Send result → Fax log. Then John Doe · Pain in Hip – Left (Blairsville VA + automatic Atlanta copy, RFS off with the ICD-10 reason).
+3. Reply with a report:
+   - a table: fix · status · PR link · tests added · anything not done and why;
+   - the design passes table (Pass 1, Pass 2 screens, Pass 3 screens) with Met / Not met;
+   - screenshots at 1440 of S2, S9 (Low Back Pain – Left and one short diagnosis), S11, S12, S13, S16;
+   - open questions for Poonam or Shikha.
+Do not start M1/M5–M7 production screens or any backend module in this task.</pre>
+</section>
+<section class="exit" id="design-exit">
+  <h2>Design phase: where we are and what's left</h2>
+  <p class="src">Checked on the live demo, 24 Sep (assets/index-mMAhix-i.js (deployed 24 Sep 07:59 GMT)), against handbook §18/§21 and screen spec rev 7. Design and backend run in parallel; the staff screens start once passes 1 and 2 are approved.</p>
+  <h3>What we told Lorraine on 23 Sep vs the demo today</h3>
+<div class="tblwrap"><table><thead><tr><th>Promised</th><th>In the demo today</th><th>Fix</th></tr></thead><tbody><tr><td>All 20 diagnoses on her new clean templates</td><td>Partly: Low Back Pain – Left prints correctly on her scan. The other 19 aren&#x27;t set up yet. S16/S6 still show the old template state (Fibromyalgia and Vertebrogenic LBP – Right can&#x27;t be picked).</td><td>F11 (screens) · F10 (PDFs)</td></tr><tr><td>ICD-10 codes fill the RFS automatically</td><td>Mostly: all 20 codes loaded; the 3 unconfirmed switch the RFS off with a reason. The RFS is still an HTML form, not a PDF on her form.</td><td>F13</td></tr><tr><td>A simpler visit screen</td><td>Not started: S9 still has the full clinical sections.</td><td>F6</td></tr><tr><td>Middle initial and his/her in patient details</td><td>Done, plus the duplicate-patient warning.</td><td>F7 ✓</td></tr><tr><td>Saving work, with her own secure sign-in</td><td>Not started: any email/password signs in and nothing is saved (frontend only). This is development work (M2), not design.</td><td>M2 · F14 (S1 screen states)</td></tr><tr><td>Name, VA number and last four checks</td><td>Can&#x27;t be confirmed: panel says “All consistent”, per-page edit is disabled so a mismatch can&#x27;t be shown.</td><td>F5</td></tr><tr><td>(Question 3) On-screen signature for RFS box 21</td><td>Removed as agreed; RFS goes out unsigned with a reminder on Review. Tell Lorraine in the next update.</td><td>F3 ✓</td></tr></tbody></table></div>
+  <h3>Design passes (handbook §18)</h3>
+  <div class="tblwrap"><table><thead><tr><th>Pass</th><th>Screen</th><th>Result</th><th>Gap</th><th>Fix</th></tr></thead><tbody><tr><td class="area">Pass 1 · Foundations</td><td>Tokens + component board (handbook §17)</td><td><span class="res no">Not met</span></td><td>shadcn/ui still on its default theme; §17 names and status colours missing; §17 components not built as named components; product named “lorraine.ai”.</td><td>F12</td></tr><tr><td class="area">Pass 2 · Core flow</td><td>S2 Dashboard</td><td><span class="res ok">Met (polish)</span></td><td>Tile grid wraps 4+2.</td><td>F14</td></tr><tr><td class="area"></td><td>S7 Authorization</td><td><span class="res ok">Met</span></td><td>Header chips, visit list, limits and markers correct.</td><td>—</td></tr><tr><td class="area"></td><td>S9 Visit entry</td><td><span class="res no">Not met</span></td><td>Full clinical sections per visit; extra “Other” in Type of pain; no PatientChip.</td><td>F6 · F14</td></tr><tr><td class="area"></td><td>S11 Build packet</td><td><span class="res no">Not met</span></td><td>Full editable RFS form on the screen; not-set-up templates not blocked.</td><td>F13 · F11</td></tr><tr><td class="area"></td><td>S12 Preview</td><td><span class="res part">Partly</span></td><td>Per-page edit disabled; mismatch warning unproven; no RFS PDF tab.</td><td>F5 · F13</td></tr><tr><td class="area"></td><td>S13 Review and send</td><td><span class="res ok">Met</span></td><td>Both numbers shown, RFS-unsigned acknowledgement, confirm dialog.</td><td>—</td></tr><tr><td class="area"></td><td>S14 Send result</td><td><span class="res ok">Met</span></td><td>Per destination, “queued is never shown as sent”.</td><td>—</td></tr><tr><td class="area">Pass 3 · Everything else</td><td>S1 Sign in</td><td><span class="res no">Not met</span></td><td>Pre-filled credentials; no wrong-details / locked / idle states.</td><td>F14</td></tr><tr><td class="area"></td><td>S3–S6, S8, S10</td><td><span class="res ok">Met</span></td><td>S4 and S8 validation work; S6 picker needs F11; inline validation in F14.</td><td>F11 · F14</td></tr><tr><td class="area"></td><td>S15 Fax log · S21 Correct and re-send</td><td><span class="res ok">Met (data fix)</span></td><td>Demo test fax goes to 404-738-1714.</td><td>F14</td></tr><tr><td class="area"></td><td>S16 Diagnoses</td><td><span class="res no">Not met</span></td><td>Template state from before 22 Sep.</td><td>F11</td></tr><tr><td class="area"></td><td>S18 Cover sheets &amp; RFS · S20 Users</td><td><span class="res ok">Met (polish)</span></td><td>S18 rule sentence wraps.</td><td>F14</td></tr><tr><td class="area"></td><td>S19 Practice &amp; sending</td><td><span class="res no">Not met</span></td><td>No test-fax number, retention, email, offices/facilities, Save.</td><td>F14</td></tr></tbody></table></div>
+  <h3>Design is complete when</h3>
+  <ul><li>F6, F11, F12, F14 done and F13&#x27;s S11 part done (RFS shows office + body area only).</li><li>F5: per-page edit works and a mismatch shows a warning.</li><li>Poonam/Shikha re-review every screen against screen spec rev 7 at 1440 and 1280 wide.</li><li>Lorraine&#x27;s feedback on the 23 Sep demo is logged on feedback.html and either done or agreed for later.</li></ul>
+  <p><b>Target:</b> Design sign-off Fri 26 Sep, so the staff screens (M1, M5–M7) start on approved designs.</p>
+  <h3>Development</h3>
+  <div class="tblwrap"><table><thead><tr><th>When</th><th>Modules</th></tr></thead><tbody><tr><td class="area">Start now (no screens needed)</td><td><ul><li>M0 Project set-up (repo under DeYoeWellness714, arm64 images)</li><li>M2 Data layer, tenancy, fixtures + real sign-in (sessions, Argon2, lock-out, idle sign-out) — this is the “saving + secure sign-in” promised to Lorraine</li><li>M3 Form engine (progress_note.v1.json + per-diagnosis settings)</li><li>M4 Templates and PDF engine — the other 19 templates from templates-intake.v2.json, then the RFS PDF (F10, F13)</li></ul></td></tr><tr><td class="area">After design sign-off</td><td><ul><li>M1 Design system and app shell (from the F12 theme + components)</li><li>M5 Patients and authorizations · M6 Visit entry · M7 Packet builder and preview</li></ul></td></tr><tr><td class="area">Milestone 3</td><td>M8 SRFax (needs API details + a test fax destination) · M9 Grok · M10 Settings/admin · M11 Testing, Mac install, handoff</td></tr></tbody></table></div>
+</section>
 <section class="session" id="session-prompt">
   <h3>Start-of-session prompt (paste this first into Claude Code)</h3>
   <p class="src">Use it at the start of every Claude Code session, then paste the prompt of the fix you are working on.</p>
@@ -163,10 +229,10 @@
     <dt>Screens</dt><dd>S12</dd>
     <dt>Problem</dt><dd>The consistency panel always says OK, even with no PDF built.</dd>
     <dt>Why</dt><dd>Build review C2. Screen spec S12.</dd>
-    <dt>Done when</dt><dd><ul><li>The panel compares name, VA number and last four across cover sheet(s), notes and RFS from the packet&#x27;s actual data.</li><li>Until PDFs exist, it says “Checks run when the files are generated” instead of a green OK.</li><li>A deliberately mismatched override shows a warning.</li></ul></dd>
-    <dt>Checked 24 Sep</dt><dd class="chk"><ul><li>Panel shows “All consistent” with real data, but a mismatch could not be triggered from the UI, so the check could not be confirmed.</li><li>To close: show a page override with a different last four producing a warning, and the unit test.</li></ul></dd>
+    <dt>Done when</dt><dd><ul><li>The panel compares name, VA number and last four across cover sheet(s), notes and RFS from the packet&#x27;s actual data.</li><li>Until PDFs exist, it says “Checks run when the files are generated” instead of a green OK.</li><li>A deliberately mismatched override shows a warning.</li><li>S12 “Edit this page” works (per-page override), and an edited page shows “edited since generated”.</li></ul></dd>
+    <dt>Checked 24 Sep</dt><dd class="chk"><ul><li>Panel shows “All consistent” with real data.</li><li>“Edit this page” on S12 is disabled, so a per-page override (and the mismatch warning it should trigger) can&#x27;t be tried. Screen spec S12 needs per-page edit.</li><li>To close: enable per-page edit, show an override with a different last four producing a warning, and add the unit test.</li></ul></dd>
   </dl>
-  <details><summary>Claude Code prompt</summary><pre class="prompt">Replace the hard-coded OK in the S12 consistency panel with a function that compares patient name, VA authorization number and last four across each cover sheet, the clinical notes pages (including per-page overrides) and the RFS, using the packet&#x27;s data. If files have not been generated yet, show &quot;Checks run when the files are generated&quot; (neutral, not green). Unit-test a mismatch caused by a page override.</pre></details>
+  <details><summary>Claude Code prompt</summary><pre class="prompt">Replace the hard-coded OK in the S12 consistency panel with a function that compares patient name, VA authorization number and last four across each cover sheet, the clinical notes pages (including per-page overrides) and the RFS, using the packet&#x27;s data. If files have not been generated yet, show &quot;Checks run when the files are generated&quot; (neutral, not green). Unit-test a mismatch caused by a page override. Also enable S12 &#x27;Edit this page&#x27; (per-page override of printed values, logged) and mark edited pages &#x27;edited since generated&#x27;.</pre></details>
 </article>
 <article class="fix P1" id="F6">
   <h3><span class="fid">F6</span>Visit entry: only what changes per visit<span class="pill P1">P1</span><span class="pill">Day 2 (25 Sep)</span><span class="pill st">Status: To do</span></h3>
@@ -259,9 +325,9 @@
     <dt>Screens</dt><dd>S1 · S2 · S4 · S6 · S8 · S9 · S11–S13 · S18 · S19</dd>
     <dt>Problem</dt><dd>Smaller gaps found in the 24 Sep review.</dd>
     <dt>Why</dt><dd>Screen spec rev 7 (S1, S2, S19, “Patterns to design once”).</dd>
-    <dt>Done when</dt><dd><ul><li>S19: test-fax field (a number she types, no patient data), retention (packets 120 months · logs 72 months), practice email, offices and VA facilities lists, and a Save button. SRFax fields stay write-only.</li><li>S1: the four states from the spec are shown — default · wrong details · locked after repeated attempts · signed out for inactivity. Email and password are NOT pre-filled.</li><li>PatientChip on every screen that shows patient data: S9, S11, S12, S13 (not just breadcrumb text).</li><li>Validation is inline, on the field, as the user moves on (S4, S6, S8, S9) — not only on Save.</li><li>S2 summary tiles sit on one row (or an even grid) at 1280 and 1440 wide.</li><li>S18 destination rule reads as one clean sentence with its two choices (cover sheet, RFS yes/no).</li><li>Demo data is consistent: the S2 “Recently sent” packet for Jane Doe · LBP – Left appears in that authorization&#x27;s packets on S7 (or is removed).</li></ul></dd>
+    <dt>Done when</dt><dd><ul><li>S19: test-fax field (a number she types, no patient data), retention (packets 120 months · logs 72 months), practice email, offices and VA facilities lists, and a Save button. SRFax fields stay write-only.</li><li>S1: the four states from the spec are shown — default · wrong details · locked after repeated attempts · signed out for inactivity. Email and password are NOT pre-filled.</li><li>PatientChip on every screen that shows patient data: S9, S11, S12, S13 (not just breadcrumb text).</li><li>Validation is inline, on the field, as the user moves on (S4, S6, S8, S9) — not only on Save.</li><li>S2 summary tiles sit on one row (or an even grid) at 1280 and 1440 wide.</li><li>S18 destination rule reads as one clean sentence with its two choices (cover sheet, RFS yes/no).</li><li>Demo data is consistent: the S2 “Recently sent” packet for Jane Doe · LBP – Left appears in that authorization&#x27;s packets on S7 (or is removed).</li><li>Fax log demo data: the test fax goes to a separate test number, not 404-738-1714 (that is the practice&#x27;s own sending number).</li></ul></dd>
   </dl>
-  <details><summary>Claude Code prompt</summary><pre class="prompt">Apply screen spec rev 7 to the listed screens without changing flows: S19 add test_fax_number (no patient data; logged as a test), retention_months_packets=120 and retention_months_logs=72, practice email, read-only offices/facilities lists, Save. S1 remove pre-filled credentials and add the wrong-details, locked and idle-signed-out states (UI only until real auth lands). Use PatientChip on S9, S11, S12, S13. Switch S4/S6/S8/S9 validation to inline on blur using the shared validation module. Fix the S2 tile grid at 1280/1440 and the S18 rule sentence layout. Make demo fixtures consistent between S2 and S7. Jane/John data only.</pre></details>
+  <details><summary>Claude Code prompt</summary><pre class="prompt">Apply screen spec rev 7 to the listed screens without changing flows: S19 add test_fax_number (no patient data; logged as a test), retention_months_packets=120 and retention_months_logs=72, practice email, read-only offices/facilities lists, Save. S1 remove pre-filled credentials and add the wrong-details, locked and idle-signed-out states (UI only until real auth lands). Use PatientChip on S9, S11, S12, S13. Switch S4/S6/S8/S9 validation to inline on blur using the shared validation module. Fix the S2 tile grid at 1280/1440 and the S18 rule sentence layout. Make demo fixtures consistent between S2 and S7. Jane/John data only. Change the demo fax-log test entry to a separate test number (not 404-738-1714).</pre></details>
 </article>
 
 <section class="pend">
@@ -269,6 +335,11 @@
   <ul><li><b>Responsive tablet/mobile layouts</b>: The tool runs in a browser on the office Mac; mobile apps are out of scope. Keep desktop layouts clean at 1280px+ and don&#x27;t break at 1024px. Nothing more for now.</li><li><b>On-screen RFS signature</b>: Waiting on the client&#x27;s answer about box 21 (F3 keeps it as a setting).</li><li><b>Grok integration</b>: Milestone 3. Until then S10 shows the &#x27;not connected&#x27; state (F9).</li><li><b>SRFax sending</b>: Milestone 3. Needs the SRFax API details and a test fax destination (not 404-738-1714).</li><li><b>New features from open-ended feedback</b>: Log any new request on feedback.html and raise it with Poonam before building; the budget is fixed.</li><li><b>Cover-sheet wording when no RFS is sent</b>: The Atlanta &#x27;Request for Services&#x27; cover sheet has pre-printed text saying an RFS is attached. Don&#x27;t change or cover it; Poonam/Shikha will ask the practice.</li><li><b>Real sign-in and saving (API)</b>: Backend milestone per handbook order. F14 only fixes the sign-in screen states and removes pre-filled credentials.</li></ul>
 </section>
 </div>
+<script>
+document.addEventListener("click",function(ev){var b=ev.target.closest("button.copy");if(!b)return;var el=document.getElementById(b.dataset.target);if(!el)return;var t=el.innerText;
+function done(ok){var o=b.textContent;b.textContent=ok?"Copied":"Select the text and copy";setTimeout(function(){b.textContent=o;},1800);}
+try{navigator.clipboard.writeText(t).then(function(){done(true)},function(){done(false)});}catch(e){done(false);}});
+</script>
 <script type="application/json" id="build-fixes-data">
 {
   "updated": "2026-09-24",
@@ -376,13 +447,15 @@
       "done_when": [
         "The panel compares name, VA number and last four across cover sheet(s), notes and RFS from the packet's actual data.",
         "Until PDFs exist, it says “Checks run when the files are generated” instead of a green OK.",
-        "A deliberately mismatched override shows a warning."
+        "A deliberately mismatched override shows a warning.",
+        "S12 “Edit this page” works (per-page override), and an edited page shows “edited since generated”."
       ],
-      "prompt": "Replace the hard-coded OK in the S12 consistency panel with a function that compares patient name, VA authorization number and last four across each cover sheet, the clinical notes pages (including per-page overrides) and the RFS, using the packet's data. If files have not been generated yet, show \"Checks run when the files are generated\" (neutral, not green). Unit-test a mismatch caused by a page override.",
+      "prompt": "Replace the hard-coded OK in the S12 consistency panel with a function that compares patient name, VA authorization number and last four across each cover sheet, the clinical notes pages (including per-page overrides) and the RFS, using the packet's data. If files have not been generated yet, show \"Checks run when the files are generated\" (neutral, not green). Unit-test a mismatch caused by a page override. Also enable S12 'Edit this page' (per-page override of printed values, logged) and mark edited pages 'edited since generated'.",
       "status": "In progress",
       "checked_24_sep": [
-        "Panel shows “All consistent” with real data, but a mismatch could not be triggered from the UI, so the check could not be confirmed.",
-        "To close: show a page override with a different last four producing a warning, and the unit test."
+        "Panel shows “All consistent” with real data.",
+        "“Edit this page” on S12 is disabled, so a per-page override (and the mismatch warning it should trigger) can't be tried. Screen spec S12 needs per-page edit.",
+        "To close: enable per-page edit, show an override with a different last four producing a warning, and add the unit test."
       ]
     },
     {
@@ -561,9 +634,10 @@
         "Validation is inline, on the field, as the user moves on (S4, S6, S8, S9) — not only on Save.",
         "S2 summary tiles sit on one row (or an even grid) at 1280 and 1440 wide.",
         "S18 destination rule reads as one clean sentence with its two choices (cover sheet, RFS yes/no).",
-        "Demo data is consistent: the S2 “Recently sent” packet for Jane Doe · LBP – Left appears in that authorization's packets on S7 (or is removed)."
+        "Demo data is consistent: the S2 “Recently sent” packet for Jane Doe · LBP – Left appears in that authorization's packets on S7 (or is removed).",
+        "Fax log demo data: the test fax goes to a separate test number, not 404-738-1714 (that is the practice's own sending number)."
       ],
-      "prompt": "Apply screen spec rev 7 to the listed screens without changing flows: S19 add test_fax_number (no patient data; logged as a test), retention_months_packets=120 and retention_months_logs=72, practice email, read-only offices/facilities lists, Save. S1 remove pre-filled credentials and add the wrong-details, locked and idle-signed-out states (UI only until real auth lands). Use PatientChip on S9, S11, S12, S13. Switch S4/S6/S8/S9 validation to inline on blur using the shared validation module. Fix the S2 tile grid at 1280/1440 and the S18 rule sentence layout. Make demo fixtures consistent between S2 and S7. Jane/John data only.",
+      "prompt": "Apply screen spec rev 7 to the listed screens without changing flows: S19 add test_fax_number (no patient data; logged as a test), retention_months_packets=120 and retention_months_logs=72, practice email, read-only offices/facilities lists, Save. S1 remove pre-filled credentials and add the wrong-details, locked and idle-signed-out states (UI only until real auth lands). Use PatientChip on S9, S11, S12, S13. Switch S4/S6/S8/S9 validation to inline on blur using the shared validation module. Fix the S2 tile grid at 1280/1440 and the S18 rule sentence layout. Make demo fixtures consistent between S2 and S7. Jane/John data only. Change the demo fax-log test entry to a separate test number (not 404-738-1714).",
       "status": "To do"
     }
   ],
@@ -639,7 +713,171 @@
       ]
     }
   ],
-  "session_prompt": "You are working on the DeYoe Wellness packet tool. Before writing code, read docs/changelog.html (top entry first), then docs/build-fixes.html; the handbook docs/index.html wins if anything disagrees, then docs/screen-spec.html (rev 7). Seed data comes only from docs/json-example/diagnoses.v2.json (codes, body areas) and docs/json-example/templates-intake.v2.json (template readiness, cover-ups, notes) — never type diagnosis names, ICD-10 codes, statuses or print coordinates into components. Work on one fix at a time, in the order on build-fixes.html (next: F6, F11, F5, then F13, F12, F14, then the rest of F10). For each fix: create branch fix/F<n>-<short-name>; do exactly what its card's prompt says and nothing outside it; add the tests the card names; run the app and check every “Done when” line yourself at 1440 and 1280 wide; then set the card's status on the page and in the #build-fixes-data JSON, and add a line to the changelog if a doc changed. Rules: Jane Doe and John Doe only — no other names and no real patient data; Dr. DeYoe does not use the tool; pain level is always entered by Lorraine; no identifiers go to Grok; don't work on anything in the Parked list. If something is unclear or conflicts, stop and ask Poonam or Shikha — never the client."
+  "session_prompt": "You are working on the DeYoe Wellness packet tool. Before writing code, read docs/changelog.html (top entry first), then docs/build-fixes.html; the handbook docs/index.html wins if anything disagrees, then docs/screen-spec.html (rev 7). Seed data comes only from docs/json-example/diagnoses.v2.json (codes, body areas) and docs/json-example/templates-intake.v2.json (template readiness, cover-ups, notes) — never type diagnosis names, ICD-10 codes, statuses or print coordinates into components. Work on one fix at a time, in the order on build-fixes.html (next: F6, F11, F5, then F13, F12, F14, then the rest of F10). For each fix: create branch fix/F<n>-<short-name>; do exactly what its card's prompt says and nothing outside it; add the tests the card names; run the app and check every “Done when” line yourself at 1440 and 1280 wide; then set the card's status on the page and in the #build-fixes-data JSON, and add a line to the changelog if a doc changed. Rules: Jane Doe and John Doe only — no other names and no real patient data; Dr. DeYoe does not use the tool; pain level is always entered by Lorraine; no identifiers go to Grok; don't work on anything in the Parked list. If something is unclear or conflicts, stop and ask Poonam or Shikha — never the client.",
+  "design_exit": {
+    "as_of": "2026-09-24",
+    "build": "assets/index-mMAhix-i.js (deployed 24 Sep 07:59 GMT)",
+    "client_email_23_sep": [
+      {
+        "promised": "All 20 diagnoses on her new clean templates",
+        "today": "Partly: Low Back Pain – Left prints correctly on her scan. The other 19 aren't set up yet. S16/S6 still show the old template state (Fibromyalgia and Vertebrogenic LBP – Right can't be picked).",
+        "fix": "F11 (screens) · F10 (PDFs)"
+      },
+      {
+        "promised": "ICD-10 codes fill the RFS automatically",
+        "today": "Mostly: all 20 codes loaded; the 3 unconfirmed switch the RFS off with a reason. The RFS is still an HTML form, not a PDF on her form.",
+        "fix": "F13"
+      },
+      {
+        "promised": "A simpler visit screen",
+        "today": "Not started: S9 still has the full clinical sections.",
+        "fix": "F6"
+      },
+      {
+        "promised": "Middle initial and his/her in patient details",
+        "today": "Done, plus the duplicate-patient warning.",
+        "fix": "F7 ✓"
+      },
+      {
+        "promised": "Saving work, with her own secure sign-in",
+        "today": "Not started: any email/password signs in and nothing is saved (frontend only). This is development work (M2), not design.",
+        "fix": "M2 · F14 (S1 screen states)"
+      },
+      {
+        "promised": "Name, VA number and last four checks",
+        "today": "Can't be confirmed: panel says “All consistent”, per-page edit is disabled so a mismatch can't be shown.",
+        "fix": "F5"
+      },
+      {
+        "promised": "(Question 3) On-screen signature for RFS box 21",
+        "today": "Removed as agreed; RFS goes out unsigned with a reminder on Review. Tell Lorraine in the next update.",
+        "fix": "F3 ✓"
+      }
+    ],
+    "passes": [
+      {
+        "pass": "Pass 1 · Foundations",
+        "screens": "Tokens + component board (handbook §17)",
+        "result": "Not met",
+        "gap": "shadcn/ui still on its default theme; §17 names and status colours missing; §17 components not built as named components; product named “lorraine.ai”.",
+        "fix": "F12"
+      },
+      {
+        "pass": "Pass 2 · Core flow",
+        "screens": "S2 Dashboard",
+        "result": "Met (polish)",
+        "gap": "Tile grid wraps 4+2.",
+        "fix": "F14"
+      },
+      {
+        "pass": "",
+        "screens": "S7 Authorization",
+        "result": "Met",
+        "gap": "Header chips, visit list, limits and markers correct.",
+        "fix": "—"
+      },
+      {
+        "pass": "",
+        "screens": "S9 Visit entry",
+        "result": "Not met",
+        "gap": "Full clinical sections per visit; extra “Other” in Type of pain; no PatientChip.",
+        "fix": "F6 · F14"
+      },
+      {
+        "pass": "",
+        "screens": "S11 Build packet",
+        "result": "Not met",
+        "gap": "Full editable RFS form on the screen; not-set-up templates not blocked.",
+        "fix": "F13 · F11"
+      },
+      {
+        "pass": "",
+        "screens": "S12 Preview",
+        "result": "Partly",
+        "gap": "Per-page edit disabled; mismatch warning unproven; no RFS PDF tab.",
+        "fix": "F5 · F13"
+      },
+      {
+        "pass": "",
+        "screens": "S13 Review and send",
+        "result": "Met",
+        "gap": "Both numbers shown, RFS-unsigned acknowledgement, confirm dialog.",
+        "fix": "—"
+      },
+      {
+        "pass": "",
+        "screens": "S14 Send result",
+        "result": "Met",
+        "gap": "Per destination, “queued is never shown as sent”.",
+        "fix": "—"
+      },
+      {
+        "pass": "Pass 3 · Everything else",
+        "screens": "S1 Sign in",
+        "result": "Not met",
+        "gap": "Pre-filled credentials; no wrong-details / locked / idle states.",
+        "fix": "F14"
+      },
+      {
+        "pass": "",
+        "screens": "S3–S6, S8, S10",
+        "result": "Met",
+        "gap": "S4 and S8 validation work; S6 picker needs F11; inline validation in F14.",
+        "fix": "F11 · F14"
+      },
+      {
+        "pass": "",
+        "screens": "S15 Fax log · S21 Correct and re-send",
+        "result": "Met (data fix)",
+        "gap": "Demo test fax goes to 404-738-1714.",
+        "fix": "F14"
+      },
+      {
+        "pass": "",
+        "screens": "S16 Diagnoses",
+        "result": "Not met",
+        "gap": "Template state from before 22 Sep.",
+        "fix": "F11"
+      },
+      {
+        "pass": "",
+        "screens": "S18 Cover sheets & RFS · S20 Users",
+        "result": "Met (polish)",
+        "gap": "S18 rule sentence wraps.",
+        "fix": "F14"
+      },
+      {
+        "pass": "",
+        "screens": "S19 Practice & sending",
+        "result": "Not met",
+        "gap": "No test-fax number, retention, email, offices/facilities, Save.",
+        "fix": "F14"
+      }
+    ],
+    "design_done_when": [
+      "F6, F11, F12, F14 done and F13's S11 part done (RFS shows office + body area only).",
+      "F5: per-page edit works and a mismatch shows a warning.",
+      "Poonam/Shikha re-review every screen against screen spec rev 7 at 1440 and 1280 wide.",
+      "Lorraine's feedback on the 23 Sep demo is logged on feedback.html and either done or agreed for later."
+    ],
+    "target": "Design sign-off Fri 26 Sep, so the staff screens (M1, M5–M7) start on approved designs.",
+    "development": {
+      "start_now": [
+        "M0 Project set-up (repo under DeYoeWellness714, arm64 images)",
+        "M2 Data layer, tenancy, fixtures + real sign-in (sessions, Argon2, lock-out, idle sign-out) — this is the “saving + secure sign-in” promised to Lorraine",
+        "M3 Form engine (progress_note.v1.json + per-diagnosis settings)",
+        "M4 Templates and PDF engine — the other 19 templates from templates-intake.v2.json, then the RFS PDF (F10, F13)"
+      ],
+      "after_design_sign_off": [
+        "M1 Design system and app shell (from the F12 theme + components)",
+        "M5 Patients and authorizations · M6 Visit entry · M7 Packet builder and preview"
+      ],
+      "later": [
+        "M8 SRFax (needs API details + a test fax destination) · M9 Grok · M10 Settings/admin · M11 Testing, Mac install, handoff"
+      ]
+    }
+  },
+  "finish_design_prompt": "You are finishing the DESIGN PHASE of the DeYoe Wellness packet tool (React + Vite + TypeScript + Tailwind + shadcn/ui, frontend demo). Work through every open item on docs/build-fixes.html until each one meets its \"Done when\" lines, then stop and report.\n\nREAD FIRST, IN THIS ORDER\n1. docs/changelog.html — top entry (v2.3).\n2. docs/build-fixes.html — the \"Design phase\" section, then every card whose status is not Done. The card's \"Done when\" lines are the acceptance criteria; its prompt is the instruction.\n3. docs/index.html (handbook) — §05 visit rules, §07 reference data, §17 design conventions, §18 review checklist. The handbook wins if anything disagrees.\n4. docs/screen-spec.html (rev 7) — fields and states for every screen you touch.\n5. docs/json-example/diagnoses.v2.json, templates-intake.v2.json, progress_note.v1.json — the only sources for diagnoses, ICD-10 codes, template readiness and form options.\n\nWORK ORDER (one branch and one pull request per fix: fix/F<n>-<short-name>)\n1. F6  Visit entry — only what changes per visit. Remove the clinical sections from S9; Type of pain = exactly the 11 options from progress_note.v1.json.\n2. F11 Template readiness from templates-intake.v2.json — all 20 received 22 Sep; Fibromyalgia and Vertebrogenic LBP – Right selectable; per-template notes; Anosmia RFS off by default; S11 blocks \"Build and preview\" for templates not set up yet.\n3. F5  Consistency checks — enable S12 \"Edit this page\" (per-page override, logged, \"edited since generated\"); an override with a different name / VA number / last four must raise a warning.\n4. F13 (screen part only) — S11 shows the Include RFS toggle, RFS office (read-only) and body area (text) — remove the embedded HTML RFS form. The RFS PDF itself is development work (M4); leave a clear \"RFS PDF comes with the PDF engine\" placeholder in the S12 RFS tab and do not fake it.\n5. F12 Theme shadcn/ui with the §17 tokens — KEEP shadcn/ui. Map its CSS variables to the §17 names (light first with a calm clinical accent, dark defined), add success/warning/info, remove --blue-*/--green-*/--amber-*/--rose-*/--slate-* aliases and raw colours from screens, add a CI grep/lint check. Build the §17 components on shadcn primitives with data-component attributes and use them everywhere (PatientChip, StatusPill with icon+colour, FileCard, DestinationRow, DiagnosisPicker, VisitForm, AnswerSourceMarker, PdfPreview, ConsistencyPanel, EmptyState, InlineError, ConfirmBar, ConcurrencyNotice). Rename the product to \"DeYoe Wellness · Packet tool\" (sidebar, sign-in, <title>); remove \"lorraine.ai\" and the \"L\" tile.\n6. F14 Screen polish — S19 settings fields + Save; S1 states and no pre-filled credentials; PatientChip on S9/S11/S12/S13; inline validation on blur (S4, S6, S8, S9); S2 tile grid; S18 rule sentence; consistent demo data (S2 vs S7; fax-log test fax to a separate test number, not 404-738-1714).\nSkip any card already marked Done unless your change breaks one of its \"Done when\" lines — then fix it.\n\nHARD RULES\n- Fake data only: Jane Doe and John Doe from the handbook/json-example. No other names, no real patient data, anywhere.\n- Never type diagnosis names, ICD-10 codes, template statuses, notes or print coordinates in components — read them from the json-example files.\n- Keep the demo banner on every screen. Desktop only: check at 1440 and 1280 wide (don't break at 1024). No mobile work.\n- Dr. DeYoe does not use the tool; Lorraine is the only user. Pain level is always entered, never pre-filled or suggested. No signature pad for RFS box 21 (unsigned + flagged, not blocking).\n- Don't change flows or add features that aren't on a card. Nothing from the Parked list (real sign-in/API, SRFax, Grok, responsive, on-screen signature, cover-sheet wording).\n- If a card, the handbook and the screen spec disagree, or something is unclear: stop that item, write the question in your report, and carry on with the next item. Don't guess and don't contact the client.\n\nFOR EACH FIX, BEFORE YOU MARK IT DONE\n- Add the tests the card names (unit / Playwright). All tests, lint and type checks pass.\n- Run the app and check every \"Done when\" line yourself on the screens listed, at 1440 and 1280 wide, light theme (then glance at dark).\n- Walk the §18 review checklist for each touched screen: every field in the spec present with the right example value; every state shown; only board components; only tokens; PatientChip wherever patient data appears; no patient details in the page title.\n- Update docs/build-fixes.html: the card's status (To do → Done, or Blocked with the reason) on the card AND in the #build-fixes-data JSON, and the matching row in the \"Design phase\" tables. Add a line to the top changelog entry if you changed a doc.\n\nWHEN ALL ITEMS ARE DONE (OR BLOCKED)\n1. Run the full design-pass check from the \"Design phase\" section: every screen S1–S21 (except S17) against screen spec rev 7. Fix anything small; list anything else.\n2. Deploy to the demo (148.113.35.97:7678) and re-check the core flow end to end: Dashboard → Jane Doe · Low Back Pain – Left → visit entry → Build packet → Preview → Review and send → Send result → Fax log. Then John Doe · Pain in Hip – Left (Blairsville VA + automatic Atlanta copy, RFS off with the ICD-10 reason).\n3. Reply with a report:\n   - a table: fix · status · PR link · tests added · anything not done and why;\n   - the design passes table (Pass 1, Pass 2 screens, Pass 3 screens) with Met / Not met;\n   - screenshots at 1440 of S2, S9 (Low Back Pain – Left and one short diagnosis), S11, S12, S13, S16;\n   - open questions for Poonam or Shikha.\nDo not start M1/M5–M7 production screens or any backend module in this task."
 }
 </script>
 </body>

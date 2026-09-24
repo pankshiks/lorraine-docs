@@ -97,6 +97,9 @@
 <tr><td class="area">Clarification</td><td>&#x27;carried forward&#x27; is a valid answer-source marker on S9 (screen spec S9 and &#x27;Patterns to design once&#x27;). Keep it.</td><td class="where"><code>screen-spec.html S9</code></td></tr>
 <tr><td class="area">Parked</td><td>Added: cover-sheet wording when no RFS is sent (the Atlanta &#x27;Request for Services&#x27; sheet says an RFS is attached; don&#x27;t change it; we will ask the practice) · real sign-in and saving (backend milestone; F14 only fixes sign-in screen states).</td><td class="where"><code>build-fixes.html</code></td></tr>
 <tr><td class="area">Client feedback page</td><td>Updated for 24 Sep: moved patient details, ICD-10 on the RFS and the RFS box-21 handling to &#x27;Ready in the demo&#x27;; the rest stays in progress.</td><td class="where"><code>feedback.html</code></td></tr>
+<tr><td class="area">Design phase</td><td>New section on build-fixes.html: what we told Lorraine on 23 Sep vs the demo today, each design pass (handbook §18) screen by screen with the fix that closes it, &#x27;design is complete when&#x27;, target sign-off Fri 26 Sep, and which modules start now (M0, M2 incl. real sign-in, M3, M4) vs after sign-off (M1, M5–M7).</td><td class="where"><code>build-fixes.html#design-exit</code></td></tr>
+<tr><td class="area">F5 / F14 updated</td><td>F5 also needs S12 &#x27;Edit this page&#x27; (disabled in the demo) so an override can raise the mismatch warning. F14 adds: the demo fax-log test fax must go to a separate test number, not 404-738-1714.</td><td class="where"><code>build-fixes.html#F5 · #F14</code></td></tr>
+<tr><td class="area">Finish-design prompt</td><td>New &#x27;One prompt to finish the design phase&#x27; on build-fixes.html (with a copy button): Claude Code works through F6, F11, F5, F13 (screen part), F12, F14 in order, checks each against its &#x27;Done when&#x27; lines and the §18 checklist, updates statuses, re-checks the demo end to end and reports back. Backend modules and M1/M5–M7 are out of this task.</td><td class="where"><code>build-fixes.html#finish-design</code></td></tr>
   </tbody></table></div>
 </section>
 <section class="rel" id="v2-2">
@@ -195,6 +198,21 @@
           "area": "Client feedback page",
           "change": "Updated for 24 Sep: moved patient details, ICD-10 on the RFS and the RFS box-21 handling to 'Ready in the demo'; the rest stays in progress.",
           "where": "feedback.html"
+        },
+        {
+          "area": "Design phase",
+          "change": "New section on build-fixes.html: what we told Lorraine on 23 Sep vs the demo today, each design pass (handbook §18) screen by screen with the fix that closes it, 'design is complete when', target sign-off Fri 26 Sep, and which modules start now (M0, M2 incl. real sign-in, M3, M4) vs after sign-off (M1, M5–M7).",
+          "where": "build-fixes.html#design-exit"
+        },
+        {
+          "area": "F5 / F14 updated",
+          "change": "F5 also needs S12 'Edit this page' (disabled in the demo) so an override can raise the mismatch warning. F14 adds: the demo fax-log test fax must go to a separate test number, not 404-738-1714.",
+          "where": "build-fixes.html#F5 · #F14"
+        },
+        {
+          "area": "Finish-design prompt",
+          "change": "New 'One prompt to finish the design phase' on build-fixes.html (with a copy button): Claude Code works through F6, F11, F5, F13 (screen part), F12, F14 in order, checks each against its 'Done when' lines and the §18 checklist, updates statuses, re-checks the demo end to end and reports back. Backend modules and M1/M5–M7 are out of this task.",
+          "where": "build-fixes.html#finish-design"
         }
       ]
     },
