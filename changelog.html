@@ -101,6 +101,8 @@
 <tr><td class="area">F5 / F14 updated</td><td>F5 also needs S12 &#x27;Edit this page&#x27; (disabled in the demo) so an override can raise the mismatch warning. F14 adds: the demo fax-log test fax must go to a separate test number, not 404-738-1714.</td><td class="where"><code>build-fixes.html#F5 · #F14</code></td></tr>
 <tr><td class="area">Finish-design prompt</td><td>New &#x27;One prompt to finish the design phase&#x27; on build-fixes.html (with a copy button): Claude Code works through F6, F11, F5, F13 (screen part), F12, F14 in order, checks each against its &#x27;Done when&#x27; lines and the §18 checklist, updates statuses, re-checks the demo end to end and reports back. Backend modules and M1/M5–M7 are out of this task.</td><td class="where"><code>build-fixes.html#finish-design</code></td></tr>
 <tr><td class="area">Decision: no parallel backend</td><td>Development does not start in parallel with design. M0, M2, M3, M4 and then M1, M5–M7 start only after design sign-off (target Fri 26 Sep). Handbook §10 and §21 updated with a decision note; build-fixes Design phase and the finish-design prompt updated.</td><td class="where"><code>index.html#phases · index.html#order · build-fixes.html#design-exit</code></td></tr>
+<tr><td class="area">S9 (awaiting approval)</td><td>Clinical sections of the selected diagnosis template shown again on S9, pre-filled from the scan or previous visit and saved with the visit; Type of pain gets the &#x27;Other ____&#x27; write-in every scan prints; Painful activities Other except Shoulder (May 30). Reverses F6 at the user&#x27;s request — branch feature/clinical-and-rfs-forms.</td><td class="where"><code>build-fixes.html#F6 · data-model.html</code></td></tr>
+<tr><td class="area">S11 · S12 (awaiting approval)</td><td>Include RFS again shows the full VA Form 10-10172 form on S11; the S12 RFS tab shows it filled in like both paper pages. Reverses F13&#x27;s screen part at the user&#x27;s request; the RFS PDF is still M4.</td><td class="where"><code>build-fixes.html#F13</code></td></tr>
   </tbody></table></div>
 </section>
 <section class="rel" id="v2-2">
@@ -220,6 +222,16 @@
           "area": "Decision: no parallel backend",
           "change": "Development does not start in parallel with design. M0, M2, M3, M4 and then M1, M5–M7 start only after design sign-off (target Fri 26 Sep). Handbook §10 and §21 updated with a decision note; build-fixes Design phase and the finish-design prompt updated.",
           "where": "index.html#phases · index.html#order · build-fixes.html#design-exit"
+        },
+        {
+          "area": "S9 (awaiting approval)",
+          "change": "Clinical sections of the selected diagnosis template shown again on S9, pre-filled from the scan or previous visit and saved with the visit; Type of pain gets the 'Other ____' write-in every scan prints; Painful activities Other except Shoulder (May 30). Reverses F6 at the user's request — branch feature/clinical-and-rfs-forms.",
+          "where": "build-fixes.html#F6 · data-model.html"
+        },
+        {
+          "area": "S11 · S12 (awaiting approval)",
+          "change": "Include RFS again shows the full VA Form 10-10172 form on S11; the S12 RFS tab shows it filled in like both paper pages. Reverses F13's screen part at the user's request; the RFS PDF is still M4.",
+          "where": "build-fixes.html#F13"
         }
       ]
     },
