@@ -73,7 +73,7 @@
   <p class="eyebrow">DeYoe Wellness Acupuncture — for the development team</p>
   <h1>Changelog</h1>
   <p class="standfirst">Every change to these documents, newest first: what changed, why, and where. Read this before starting work, so you build against the current rules and not an older version.</p>
-  <div class="meta"><span><b>Latest</b> v2.2 · 2026-09-23</span><span><b>Internal</b> not for the client</span></div>
+  <div class="meta"><span><b>Latest</b> v2.3 · 2026-09-24</span><span><b>Internal</b> not for the client</span></div>
 </header>
 
 <div class="callout"><b>For Claude Code and anyone building from these docs</b>
@@ -84,6 +84,21 @@
   <li>Never put real patient data in these docs or in a changelog entry.</li>
 </ol></div>
 
+<section class="rel" id="v2-3">
+  <header><h2>v2.3</h2><span class="date">2026-09-24</span></header>
+  <p class="src"><b>Source:</b> Design and spec review of the build on 24 Sep 2026 (148.113.35.97:7678) against handbook v2.2, screen spec rev 7, build-fixes F1–F10 and json-example v2. No business rules changed.</p>
+  <p class="pages"><code>build-fixes.html</code> statuses + F11–F14 + start-of-session prompt · <code>feedback.html</code> 24 Sep · <code>changelog.html</code> v2.3 · handbook, screen spec, data model unchanged</p>
+  <div class="tblwrap"><table><thead><tr><th>Area</th><th>Change</th><th>Where</th></tr></thead><tbody>
+<tr><td class="area">Build fixes — status</td><td>After the 24 Sep review of the build: F1, F2, F3, F4, F7, F8, F9 Done · F5 In progress (mismatch warning not yet shown) · F10 In progress (Low Back Pain – Left notes PDF correct on the 22 Sep scan; RFS PDF and the other 19 templates to do) · F6 To do (visit screen still has the full clinical sections; Type of pain has an extra &#x27;Other&#x27;). Each card now has a &#x27;Checked 24 Sep&#x27; line saying what was verified.</td><td class="where"><code>build-fixes.html</code></td></tr>
+<tr><td class="area">Build fixes — new</td><td>F11 Template readiness from templates-intake.v2.json (S16/S6/S11: all 20 received 22 Sep; Fibromyalgia and Vertebrogenic LBP – Right must be selectable; per-template notes; Anosmia RFS off by default). F12 Design tokens, components and product name (handbook §17; rename &#x27;lorraine.ai&#x27; to &#x27;DeYoe Wellness · Packet tool&#x27;). F13 RFS on Build packet: derived fields only + a real RFS PDF. F14 Screen polish against screen spec rev 7 (S19 settings, S1 states, PatientChip, inline validation, S2 grid, S18 sentence, demo data).</td><td class="where"><code>build-fixes.html#F11</code></td></tr>
+<tr><td class="area">Start-of-session prompt</td><td>New prompt at the top of build-fixes.html. Paste it at the start of every Claude Code session, then paste the prompt of the fix being worked on.</td><td class="where"><code>build-fixes.html#session-prompt</code></td></tr>
+<tr><td class="area">Order</td><td>Next: F6, F11, F5 (25 Sep) → F13, F12 (26 Sep) → F14 → rest of F10 for Milestone 1 (by 28 Sep).</td><td class="where"><code>build-fixes.html</code></td></tr>
+<tr><td class="area">Default decided (internal)</td><td>A template that is received but not yet set up (no settings.json) can be chosen on S6 and can record visits; S11 blocks &#x27;Build and preview&#x27; with the reason &#x27;Template not set up yet — notes can&#x27;t be generated&#x27;. Anosmia&#x27;s Include RFS starts off, with its reason, and can still be switched on.</td><td class="where"><code>build-fixes.html#F11 · screen-spec.html S6/S11</code></td></tr>
+<tr><td class="area">Clarification</td><td>&#x27;carried forward&#x27; is a valid answer-source marker on S9 (screen spec S9 and &#x27;Patterns to design once&#x27;). Keep it.</td><td class="where"><code>screen-spec.html S9</code></td></tr>
+<tr><td class="area">Parked</td><td>Added: cover-sheet wording when no RFS is sent (the Atlanta &#x27;Request for Services&#x27; sheet says an RFS is attached; don&#x27;t change it; we will ask the practice) · real sign-in and saving (backend milestone; F14 only fixes sign-in screen states).</td><td class="where"><code>build-fixes.html</code></td></tr>
+<tr><td class="area">Client feedback page</td><td>Updated for 24 Sep: moved patient details, ICD-10 on the RFS and the RFS box-21 handling to &#x27;Ready in the demo&#x27;; the rest stays in progress.</td><td class="where"><code>feedback.html</code></td></tr>
+  </tbody></table></div>
+</section>
 <section class="rel" id="v2-2">
   <header><h2>v2.2</h2><span class="date">2026-09-23</span></header>
   <p class="src"><b>Source:</b> Practice delivery of 22 Sep 2026 (ICD-10 list, 20 clean templates, answers to 'What we need from you')</p>
@@ -113,7 +128,7 @@
 </section>
 
 <section class="pend" id="pending">
-  <h3>Waiting on the practice (as of v2.2)</h3>
+  <h3>Waiting on the practice (as of v2.3)</h3>
   <ul>
     <li>Confirm ICD-10 for Hip – Left, Knee – Right, Shoulder – Right</li>
     <li>A test fax destination (not 404-738-1714)</li>
@@ -122,14 +137,67 @@
     <li>Anosmia RFS field 18 wording · Fibromyalgia body area</li>
     <li>Are the two Right Shoulder files the same?</li>
     <li>Hip – Left 'ashi r hip' and Dorsalgia matching Cervicalgia: intended?</li>
+    <li>Atlanta 'Request for Services' cover sheet: its pre-printed text says an RFS is attached. OK to send it when no RFS is included?</li>
     <li>Visual checks on scans: signatures, pre-ticked boxes, overlap on LBP – Left / VLBP – Left / Dorsalgia – Left</li>
   </ul>
 </section>
 </div>
 <script type="application/json" id="changelog-data">
 {
-  "latest": "2.2",
+  "latest": "2.3",
   "entries": [
+    {
+      "version": "2.3",
+      "date": "2026-09-24",
+      "source": "Design and spec review of the build on 24 Sep 2026 against handbook v2.2, screen spec rev 7, build-fixes F1–F10 and json-example v2. No business rules changed.",
+      "pages": {
+        "build-fixes.html": "statuses, F11–F14, start-of-session prompt",
+        "feedback.html": "24 Sep update",
+        "changelog.html": "v2.3"
+      },
+      "changes": [
+        {
+          "area": "Build fixes — status",
+          "change": "After the 24 Sep review of the build: F1, F2, F3, F4, F7, F8, F9 Done · F5 In progress (mismatch warning not yet shown) · F10 In progress (Low Back Pain – Left notes PDF correct on the 22 Sep scan; RFS PDF and the other 19 templates to do) · F6 To do (visit screen still has the full clinical sections; Type of pain has an extra 'Other'). Each card now has a 'Checked 24 Sep' line saying what was verified.",
+          "where": "build-fixes.html"
+        },
+        {
+          "area": "Build fixes — new",
+          "change": "F11 Template readiness from templates-intake.v2.json (S16/S6/S11: all 20 received 22 Sep; Fibromyalgia and Vertebrogenic LBP – Right must be selectable; per-template notes; Anosmia RFS off by default). F12 Design tokens, components and product name (handbook §17; rename 'lorraine.ai' to 'DeYoe Wellness · Packet tool'). F13 RFS on Build packet: derived fields only + a real RFS PDF. F14 Screen polish against screen spec rev 7 (S19 settings, S1 states, PatientChip, inline validation, S2 grid, S18 sentence, demo data).",
+          "where": "build-fixes.html#F11"
+        },
+        {
+          "area": "Start-of-session prompt",
+          "change": "New prompt at the top of build-fixes.html. Paste it at the start of every Claude Code session, then paste the prompt of the fix being worked on.",
+          "where": "build-fixes.html#session-prompt"
+        },
+        {
+          "area": "Order",
+          "change": "Next: F6, F11, F5 (25 Sep) → F13, F12 (26 Sep) → F14 → rest of F10 for Milestone 1 (by 28 Sep).",
+          "where": "build-fixes.html"
+        },
+        {
+          "area": "Default decided (internal)",
+          "change": "A template that is received but not yet set up (no settings.json) can be chosen on S6 and can record visits; S11 blocks 'Build and preview' with the reason 'Template not set up yet — notes can't be generated'. Anosmia's Include RFS starts off, with its reason, and can still be switched on.",
+          "where": "build-fixes.html#F11 · screen-spec.html S6/S11"
+        },
+        {
+          "area": "Clarification",
+          "change": "'carried forward' is a valid answer-source marker on S9 (screen spec S9 and 'Patterns to design once'). Keep it.",
+          "where": "screen-spec.html S9"
+        },
+        {
+          "area": "Parked",
+          "change": "Added: cover-sheet wording when no RFS is sent (the Atlanta 'Request for Services' sheet says an RFS is attached; don't change it; we will ask the practice) · real sign-in and saving (backend milestone; F14 only fixes sign-in screen states).",
+          "where": "build-fixes.html"
+        },
+        {
+          "area": "Client feedback page",
+          "change": "Updated for 24 Sep: moved patient details, ICD-10 on the RFS and the RFS box-21 handling to 'Ready in the demo'; the rest stays in progress.",
+          "where": "feedback.html"
+        }
+      ]
+    },
     {
       "version": "2.2",
       "date": "2026-09-23",
@@ -232,6 +300,7 @@
     "Anosmia RFS field 18 wording · Fibromyalgia body area",
     "Are the two Right Shoulder files the same?",
     "Hip – Left 'ashi r hip' and Dorsalgia matching Cervicalgia: intended?",
+    "Atlanta 'Request for Services' cover sheet: pre-printed text says an RFS is attached. OK to send it when no RFS is included?",
     "Visual checks on scans: signatures, pre-ticked boxes, overlap on LBP – Left / VLBP – Left / Dorsalgia – Left"
   ]
 }

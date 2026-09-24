@@ -79,6 +79,9 @@
   details { margin-top:10px; } summary { cursor:pointer; font-size:13px; color:var(--navy); }
   pre.prompt { white-space:pre-wrap; background:var(--paper); border:1px solid var(--rule-soft); padding:10px 12px; font-family:var(--mono); font-size:12.5px; margin:8px 0 0; }
   .order { margin-top:18px; font-size:14px; } .order td:first-child { white-space:nowrap; font-weight:600; }
+  .pill.st.done { background:var(--moss-wash); color:var(--moss); } .pill.st.prog { background:var(--navy-wash); color:var(--navy); } .pill.st.blk { background:var(--amber-wash); color:var(--amber); }
+  .fix dd.chk { color:var(--ink-soft); } .callout.review { background:var(--moss-wash); border-left-color:var(--moss); }
+  .session { margin-top:26px; } .session h3 { margin-top:0; }
 </style>
 </head>
 <body>
@@ -88,7 +91,7 @@
   <p class="eyebrow">DeYoe Wellness Acupuncture — for the development team</p>
   <h1>Build fixes</h1>
   <p class="standfirst">What to fix in the current build, in order, with the reason, what “done” looks like, and a prompt to paste into Claude Code. Work top to bottom; P0 first.</p>
-  <div class="meta"><span><b>Updated</b> 23 Sep 2026</span><span><b>Build</b> 148.113.35.97:7678</span><span><b>Rules from</b> handbook v2.2</span><span><b>Internal</b> not for the client</span></div>
+  <div class="meta"><span><b>Updated</b> 24 Sep 2026</span><span><b>Build</b> 148.113.35.97:7678</span><span><b>Rules from</b> handbook v2.2</span><span><b>Internal</b> not for the client</span></div>
 </header>
 
 <div class="callout"><b>How to use this page</b>
@@ -99,58 +102,69 @@
   <li>If a fix disagrees with the handbook, the handbook wins. Ask Poonam or Shikha; don't ask the client.</li>
 </ol></div>
 
+<div class="callout review"><b>24 Sep review — where things stand.</b> F1–F4 and F7–F9 are done. F5 and F10 are in progress. F6 is not started. New: F11 (template readiness), F12 (design tokens and product name), F13 (RFS on Build packet) and F14 (screen polish). <i>Checked in the running build (UI only); tests and code rules not reviewed.</i></div>
+<section class="session" id="session-prompt">
+  <h3>Start-of-session prompt (paste this first into Claude Code)</h3>
+  <p class="src">Use it at the start of every Claude Code session, then paste the prompt of the fix you are working on.</p>
+  <pre class="prompt">You are working on the DeYoe Wellness packet tool. Before writing code, read docs/changelog.html (top entry first), then docs/build-fixes.html; the handbook docs/index.html wins if anything disagrees, then docs/screen-spec.html (rev 7). Seed data comes only from docs/json-example/diagnoses.v2.json (codes, body areas) and docs/json-example/templates-intake.v2.json (template readiness, cover-ups, notes) — never type diagnosis names, ICD-10 codes, statuses or print coordinates into components. Work on one fix at a time, in the order on build-fixes.html (next: F6, F11, F5, then F13, F12, F14, then the rest of F10). For each fix: create branch fix/F&lt;n&gt;-&lt;short-name&gt;; do exactly what its card&#x27;s prompt says and nothing outside it; add the tests the card names; run the app and check every “Done when” line yourself at 1440 and 1280 wide; then set the card&#x27;s status on the page and in the #build-fixes-data JSON, and add a line to the changelog if a doc changed. Rules: Jane Doe and John Doe only — no other names and no real patient data; Dr. DeYoe does not use the tool; pain level is always entered by Lorraine; no identifiers go to Grok; don&#x27;t work on anything in the Parked list. If something is unclear or conflicts, stop and ask Poonam or Shikha — never the client.</pre>
+</section>
 <section>
   <h3>Order</h3>
-  <div class="tblwrap order"><table><thead><tr><th>When</th><th>Fixes</th></tr></thead><tbody><tr><td>Day 1 (24 Sep)</td><td><a href="#F1">F1</a>, <a href="#F2">F2</a>, <a href="#F3">F3</a>, <a href="#F4">F4</a>, <a href="#F5">F5</a></td></tr><tr><td>Day 2 (25 Sep)</td><td><a href="#F6">F6</a>, <a href="#F7">F7</a>, <a href="#F8">F8</a>, <a href="#F9">F9</a></td></tr><tr><td>Milestone 1 · by 28 Sep</td><td><a href="#F10">F10</a></td></tr></tbody></table></div>
+  <div class="tblwrap order"><table><thead><tr><th>When</th><th>Fixes</th></tr></thead><tbody><tr><td>Done 24 Sep</td><td><a href="#F1">F1</a>, <a href="#F2">F2</a>, <a href="#F3">F3</a>, <a href="#F4">F4</a>, <a href="#F7">F7</a>, <a href="#F8">F8</a>, <a href="#F9">F9</a></td></tr><tr><td>25 Sep</td><td><a href="#F6">F6</a>, <a href="#F11">F11</a>, <a href="#F5">F5</a></td></tr><tr><td>26 Sep</td><td><a href="#F13">F13</a>, <a href="#F12">F12</a></td></tr><tr><td>After F11–F13</td><td><a href="#F14">F14</a></td></tr><tr><td>Milestone 1 · by 28 Sep</td><td><a href="#F10">F10</a></td></tr></tbody></table></div>
 </section>
 
 <article class="fix P0" id="F1">
-  <h3><span class="fid">F1</span>Demo safety: fake data only<span class="pill P0">P0</span><span class="pill">Day 1 (24 Sep)</span><span class="pill st">Status: To do</span></h3>
+  <h3><span class="fid">F1</span>Demo safety: fake data only<span class="pill P0">P0</span><span class="pill">Day 1 (24 Sep)</span><span class="pill st done">Status: Done</span></h3>
   <dl>
     <dt>Screens</dt><dd>All</dd>
     <dt>Problem</dt><dd>The demo is on a public HTTP address and any credentials sign in. The client could type real patient details into it.</dd>
     <dt>Why</dt><dd>Golden rule 1 (no real patient data until go-live). Build review C1.</dd>
     <dt>Done when</dt><dd><ul><li>A banner on every screen reads: “Demo — use made-up names and numbers only. Nothing is saved or faxed.”</li><li>All sample data is Jane Doe and John Doe only (no “Susan”, no other names).</li><li>Demo links in messages use 148.113.35.97 (the 148.113.113.97 typo is gone).</li></ul></dd>
+    <dt>Checked 24 Sep</dt><dd class="chk"><ul><li>Banner shows on every screen, including sign-in.</li><li>Only Jane Doe and John Doe appear.</li></ul></dd>
   </dl>
   <details><summary>Claude Code prompt</summary><pre class="prompt">Add a persistent, non-dismissable banner to the app shell on every screen: &quot;Demo — use made-up names and numbers only. Nothing is saved or faxed.&quot; Replace every sample patient that is not Jane Doe or John Doe (e.g. auth_susan_dorsalgia) with Jane/John data from docs/json-example and the handbook section 16 fixtures; update routes that referenced them. Do not add real-looking names anywhere.</pre></details>
 </article>
 <article class="fix P0" id="F2">
-  <h3><span class="fid">F2</span>Load the final 20 diagnoses and ICD-10 codes<span class="pill P0">P0</span><span class="pill">Day 1 (24 Sep)</span><span class="pill st">Status: To do</span></h3>
+  <h3><span class="fid">F2</span>Load the final 20 diagnoses and ICD-10 codes<span class="pill P0">P0</span><span class="pill">Day 1 (24 Sep)</span><span class="pill st done">Status: Done</span></h3>
   <dl>
     <dt>Screens</dt><dd>S6 · S11 · S16 · RFS</dd>
     <dt>Problem</dt><dd>The build shows placeholder ICD-10 codes (M54.50, M25.552), a count of 16, and missing ICD-10 doesn&#x27;t block the RFS. The old diagnosis list is still in use.</dd>
     <dt>Why</dt><dd>Handbook v2.2 §07. Build review C5, H4. Data model rev 10 (icd10_description, icd10_confirmed).</dd>
     <dt>Done when</dt><dd><ul><li>The diagnosis list comes from docs/json-example/diagnoses.v2.json: 20 diagnoses, exact names, groups, body areas, codes with the dot.</li><li>Hip – Left, Knee – Right and Shoulder – Right show “ICD-10 awaiting confirmation” and their RFS toggle is disabled with that reason.</li><li>S16 lists all 20 with ICD-10 code, description and status; S2 shows a “3 ICD-10 codes awaiting confirmation” item.</li><li>No ICD-10 code is typed anywhere in components; everything reads from the seed.</li></ul></dd>
+    <dt>Checked 24 Sep</dt><dd class="chk"><ul><li>All 20 names, groups, body areas and ICD-10 codes on S16 match diagnoses.v2.json.</li><li>Hip – Left, Knee – Right, Shoulder – Right show “ICD-10 awaiting confirmation”; RFS toggle disabled with the reason on S11 (tested on John Doe · Hip – Left).</li><li>S2 shows “3 ICD-10 codes awaiting confirmation”.</li><li>Template status/readiness on S16 and S6 is still wrong — moved to F11.</li></ul></dd>
   </dl>
   <details><summary>Claude Code prompt</summary><pre class="prompt">Replace the hard-coded diagnosis list with docs/json-example/diagnoses.v2.json as the single source (seed file). Fields: slug, display_name, printed_wording, body_group, body_area, icd10_code, icd10_description, icd10_confirmed. RFS rules: if icd10_code is null or icd10_confirmed is false, the Include RFS toggle on S11 is disabled with the reason &quot;ICD-10 code awaiting confirmation&quot;; RFS fields 13–14 print icd10_code and icd10_description only when confirmed. S16: list all 20 with code, description and status. S2: add a needs-attention item counting unconfirmed codes. Remove every placeholder code from components and fixtures. Add tests: RFS disabled for pain-in-hip-left; RFS field 13 = M54.50 for low-back-pain-left.</pre></details>
 </article>
 <article class="fix P0" id="F3">
-  <h3><span class="fid">F3</span>RFS signature: flag, don&#x27;t sign or block<span class="pill P0">P0</span><span class="pill">Day 1 (24 Sep)</span><span class="pill st">Status: To do</span></h3>
+  <h3><span class="fid">F3</span>RFS signature: flag, don&#x27;t sign or block<span class="pill P0">P0</span><span class="pill">Day 1 (24 Sep)</span><span class="pill st done">Status: Done</span></h3>
   <dl>
     <dt>Screens</dt><dd>S12 · S13</dd>
     <dt>Problem</dt><dd>The demo lets “Dr. DeYoe sign Box 21 on screen” and blocks sending when unsigned. Dr. DeYoe takes no part in the tool, and how box 21 is signed is still an open question for the client.</dd>
     <dt>Why</dt><dd>Client decision 4 (Lorraine only). Handbook §06 default: unsigned, flagged in preview and review.</dd>
     <dt>Done when</dt><dd><ul><li>No on-screen signature pad.</li><li>Preview and Review show an amber “RFS not signed (box 21)” notice.</li><li>Sending is NOT blocked by the missing signature (it is a warning Lorraine acknowledges).</li><li>“Print / save as PDF” of the HTML preview is removed (real PDFs come from the PDF engine).</li></ul></dd>
+    <dt>Checked 24 Sep</dt><dd class="chk"><ul><li>No signature pad.</li><li>S12 consistency panel: “RFS signature (box 21) · Not signed”.</li><li>S13: amber notice + “I understand…” checkbox; sending not blocked.</li></ul></dd>
   </dl>
   <details><summary>Claude Code prompt</summary><pre class="prompt">Remove the Box 21 signature pad from the RFS preview. Show a warning &quot;RFS not signed (box 21)&quot; on S12 and S13; on S13 it is an acknowledge-to-continue warning, not a blocker. Remove the browser print / save-as-PDF option for the HTML preview; downloads will only be the generated PDFs later (and are logged). Keep this behind a setting rfs_signature_mode = &#x27;unsigned_flagged&#x27; so a future decision is a config change.</pre></details>
 </article>
 <article class="fix P0" id="F4">
-  <h3><span class="fid">F4</span>Keep each authorization&#x27;s packet data separate<span class="pill P0">P0</span><span class="pill">Day 1 (24 Sep)</span><span class="pill st">Status: To do</span></h3>
+  <h3><span class="fid">F4</span>Keep each authorization&#x27;s packet data separate<span class="pill P0">P0</span><span class="pill">Day 1 (24 Sep)</span><span class="pill st done">Status: Done</span></h3>
   <dl>
     <dt>Screens</dt><dd>S11 · S12 · S13</dd>
     <dt>Problem</dt><dd>RFS/packet data from John&#x27;s authorization appears on Jane&#x27;s packet build.</dd>
     <dt>Why</dt><dd>Build review C3. Consistency is the core promise (name, VA number and last four must match).</dd>
     <dt>Done when</dt><dd><ul><li>Opening Build Packet for Jane after John shows only Jane&#x27;s data in every tab and field.</li><li>Packet state is keyed by authorization id; a page refresh or route change can&#x27;t carry data across.</li><li>A Playwright test covers John → Jane → John.</li></ul></dd>
+    <dt>Checked 24 Sep</dt><dd class="chk"><ul><li>Built John Doe&#x27;s packet, then Jane Doe&#x27;s: build, preview and review show only Jane&#x27;s name, VA number and last four.</li><li>Playwright test John → Jane → John not seen — add it if missing.</li></ul></dd>
   </dl>
   <details><summary>Claude Code prompt</summary><pre class="prompt">Packet/RFS state leaks between authorizations. Key all packet and RFS state by authorization id (route param), reset it on authorization change, and derive every printed value from the patient + authorization + practice settings, never from a shared store. Add a Playwright test: build John&#x27;s packet with RFS, then open Jane&#x27;s — every field shows Jane&#x27;s name, VA number and last four; then back to John.</pre></details>
 </article>
 <article class="fix P0" id="F5">
-  <h3><span class="fid">F5</span>Consistency checks: real or clearly “not yet”<span class="pill P0">P0</span><span class="pill">Day 1 (24 Sep)</span><span class="pill st">Status: To do</span></h3>
+  <h3><span class="fid">F5</span>Consistency checks: real or clearly “not yet”<span class="pill P0">P0</span><span class="pill">Day 1 (24 Sep)</span><span class="pill st prog">Status: In progress</span></h3>
   <dl>
     <dt>Screens</dt><dd>S12</dd>
     <dt>Problem</dt><dd>The consistency panel always says OK, even with no PDF built.</dd>
     <dt>Why</dt><dd>Build review C2. Screen spec S12.</dd>
     <dt>Done when</dt><dd><ul><li>The panel compares name, VA number and last four across cover sheet(s), notes and RFS from the packet&#x27;s actual data.</li><li>Until PDFs exist, it says “Checks run when the files are generated” instead of a green OK.</li><li>A deliberately mismatched override shows a warning.</li></ul></dd>
+    <dt>Checked 24 Sep</dt><dd class="chk"><ul><li>Panel shows “All consistent” with real data, but a mismatch could not be triggered from the UI, so the check could not be confirmed.</li><li>To close: show a page override with a different last four producing a warning, and the unit test.</li></ul></dd>
   </dl>
   <details><summary>Claude Code prompt</summary><pre class="prompt">Replace the hard-coded OK in the S12 consistency panel with a function that compares patient name, VA authorization number and last four across each cover sheet, the clinical notes pages (including per-page overrides) and the RFS, using the packet&#x27;s data. If files have not been generated yet, show &quot;Checks run when the files are generated&quot; (neutral, not green). Unit-test a mismatch caused by a page override.</pre></details>
 </article>
@@ -161,59 +175,104 @@
     <dt>Problem</dt><dd>The visit screen lets staff edit Objective, Pulse, Tongue, Assessment, Prognosis, Plan, Treatments, Point prescription and Therapies 1–9 per visit. That&#x27;s out of scope and changes the client&#x27;s clinical record.</dd>
     <dt>Why</dt><dd>Handbook §05 and screen spec S9; data model “deliberately not built: editing clinical ticks per visit”. Build review H1.</dd>
     <dt>Done when</dt><dd><ul><li>Per visit: date, pain level (0–10, required, never pre-filled), type of pain, painful activities (+ other text), interferes with, final-visit switch, and the physician&#x27;s note on first/last visit only.</li><li>Everything else on the page comes from the diagnosis template as printed.</li><li>“Excellent” is applied by rule on the final visit, not as a field.</li></ul></dd>
+    <dt>Checked 24 Sep</dt><dd class="chk"><ul><li>Not started. S9 still shows the full clinical sections (Objective grid, Pulse, Tongue, Assessment, Prognosis, Plan, Treatments, Point prescription, Therapies 1–9, Post-treatment location, Today&#x27;s response, Patient progress).</li><li>Type of pain has 12 options — an extra “Other”. The form definition has 11 (screen spec S9). Painful activities (6 + Other) is correct.</li><li>Keep the “carried forward” marker — it is a valid answer source in the screen spec.</li></ul></dd>
   </dl>
-  <details><summary>Claude Code prompt</summary><pre class="prompt">Trim S9 to the scope in the handbook §05 and screen spec S9. Keep: visit date, pain level (required, 0–10, last value shown as a hint only), pain_type, activities (+ other text), interferes, is_final switch, page role (read-only), physician&#x27;s note on first/last visit. Remove per-visit editing of objective, pulse, tongue, assessment, prognosis, plan, treatments, point prescription, therapies and post-treatment; those come from the template settings. Render the sections from the form definition (docs/json-example/progress_note.v1.json) plus the diagnosis settings, not hard-coded per diagnosis.</pre></details>
+  <details><summary>Claude Code prompt</summary><pre class="prompt">Trim S9 to the scope in the handbook §05 and screen spec S9. Keep: visit date, pain level (required, 0–10, last value shown as a hint only), pain_type, activities (+ other text), interferes, is_final switch, page role (read-only), physician&#x27;s note on first/last visit. Remove per-visit editing of objective, pulse, tongue, assessment, prognosis, plan, treatments, point prescription, therapies and post-treatment; those come from the template settings. Render the sections from the form definition (docs/json-example/progress_note.v1.json) plus the diagnosis settings, not hard-coded per diagnosis. Also: Type of pain must render exactly the 11 options from the form definition (no extra &#x27;Other&#x27;); keep the answer-source markers (carried forward · from doctor&#x27;s note · changed today) as in screen spec S9.</pre></details>
 </article>
 <article class="fix P1" id="F7">
-  <h3><span class="fid">F7</span>Patient form: correct fields and checks<span class="pill P1">P1</span><span class="pill">Day 2 (25 Sep)</span><span class="pill st">Status: To do</span></h3>
+  <h3><span class="fid">F7</span>Patient form: correct fields and checks<span class="pill P1">P1</span><span class="pill">Day 2 (25 Sep)</span><span class="pill st done">Status: Done</span></h3>
   <dl>
     <dt>Screens</dt><dd>S4 · S6</dd>
     <dt>Problem</dt><dd>Add Patient is missing middle initial, his/her and VA patient ID, and includes Office. A DOB in 2030 is accepted. New Authorization includes a cover-sheet field.</dd>
     <dt>Why</dt><dd>Screen spec S4, S6, S11; data model patient/authorization. Build review H3. His/her feeds RFS field 18.</dd>
     <dt>Done when</dt><dd><ul><li>S4: first, middle initial, last, DOB (not in the future, sensible age), last four (exactly 4 digits), title (Mr./Ms./Mrs.), pronoun (his/her), VA patient ID (optional).</li><li>Office is chosen on the authorization (S6), not the patient.</li><li>Cover sheet is chosen on Build Packet (S11), not the authorization.</li><li>Duplicate warning on last name + DOB + last four (never auto-merge).</li></ul></dd>
+    <dt>Checked 24 Sep</dt><dd class="chk"><ul><li>S4 has first, MI, last, DOB, last four, title, his/her, VA patient ID; office is on S6.</li><li>Future DOB and non-4-digit last four rejected; duplicate Jane Doe warning with “different person” override.</li><li>Errors appear only on Save — inline-on-blur is in F14.</li></ul></dd>
   </dl>
   <details><summary>Claude Code prompt</summary><pre class="prompt">Update S4 to match screen spec S4 exactly: first_name, middle_initial, last_name, date_of_birth (reject future dates and ages over 120), ssn_last_four (exactly 4 digits), title (Mr./Ms./Mrs.), pronoun (his/her), va_patient_id (optional). Remove Office from the patient form; it belongs to the authorization (S6). Remove Cover sheet from S6; it is chosen per destination on S11. Duplicate check on last name + DOB + last four shows a warning with a link to the existing patient, never merges. Zod schemas mirror these rules.</pre></details>
 </article>
 <article class="fix P1" id="F8">
-  <h3><span class="fid">F8</span>Edit authorization: save and validate<span class="pill P1">P1</span><span class="pill">Day 2 (25 Sep)</span><span class="pill st">Status: To do</span></h3>
+  <h3><span class="fid">F8</span>Edit authorization: save and validate<span class="pill P1">P1</span><span class="pill">Day 2 (25 Sep)</span><span class="pill st done">Status: Done</span></h3>
   <dl>
     <dt>Screens</dt><dd>S8</dd>
     <dt>Problem</dt><dd>Edit/extend doesn&#x27;t save or validate; some fields are missing and the reason is pre-filled.</dd>
     <dt>Why</dt><dd>Build review C4. Handbook §05 visit limits.</dd>
     <dt>Done when</dt><dd><ul><li>All S6 fields editable except diagnosis once visits exist (locked, with the reason shown).</li><li>Can&#x27;t reduce approved visits below recorded visits, or shorten the period past a recorded visit.</li><li>Any change to approved visits or dates needs a typed reason (empty by default) and is logged.</li></ul></dd>
+    <dt>Checked 24 Sep</dt><dd class="chk"><ul><li>Diagnosis locked with the reason.</li><li>Approved visits below 12 rejected, naming visit 12 (05/20/2026).</li><li>Reason field starts empty and is required.</li></ul></dd>
   </dl>
   <details><summary>Claude Code prompt</summary><pre class="prompt">Make S8 save and validate. Fields: VA number, facility, office, visits approved, period start/end. Diagnosis read-only once any visit exists, with the reason. Validation: visits_approved &gt;= recorded visits; period must still contain every recorded visit date; a reason is required (start empty) whenever visits_approved or the period changes, and is written to the activity log. Until the API exists, implement the rules in a shared validation module the API will reuse.</pre></details>
 </article>
 <article class="fix P2" id="F9">
-  <h3><span class="fid">F9</span>Authorization header and AI assist behaviour<span class="pill P2">P2</span><span class="pill">Day 2 (25 Sep)</span><span class="pill st">Status: To do</span></h3>
+  <h3><span class="fid">F9</span>Authorization header and AI assist behaviour<span class="pill P2">P2</span><span class="pill">Day 2 (25 Sep)</span><span class="pill st done">Status: Done</span></h3>
   <dl>
     <dt>Screens</dt><dd>S7 · S10</dd>
     <dt>Problem</dt><dd>S7&#x27;s header lacks the diagnosis and patient chip. AI assist shows canned output and proposes a pain level.</dd>
     <dt>Why</dt><dd>Build review H5, H2. Handbook Grok rules.</dd>
     <dt>Done when</dt><dd><ul><li>S7 header: patient chip (name · last four · DOB), VA number, diagnosis, office, facility (+ “also sent to Atlanta VA” for Blairsville VA).</li><li>S10 never proposes a pain level. Until Grok is connected it shows “AI assist isn&#x27;t connected yet — enter answers manually”, not fake suggestions.</li></ul></dd>
+    <dt>Checked 24 Sep</dt><dd class="chk"><ul><li>S7 header shows PatientChip, diagnosis, status, VA number, office, facility.</li><li>S10 shows “AI assist isn&#x27;t connected yet — enter answers manually”; no pain level.</li></ul></dd>
   </dl>
   <details><summary>Claude Code prompt</summary><pre class="prompt">S7: add the PatientChip and diagnosis to the header per screen spec S7. S10: remove canned suggestions; show a clear &#x27;not connected yet&#x27; state with manual entry. The suggestion model must never include pain_level (pain is always entered by Lorraine).</pre></details>
 </article>
 <article class="fix P0" id="F10">
-  <h3><span class="fid">F10</span>PDF engine on the real scans<span class="pill P0">P0</span><span class="pill">Milestone 1 · by 28 Sep</span><span class="pill st">Status: To do</span></h3>
+  <h3><span class="fid">F10</span>PDF engine on the real scans<span class="pill P0">P0</span><span class="pill">Milestone 1 · by 28 Sep</span><span class="pill st prog">Status: In progress</span></h3>
   <dl>
     <dt>Screens</dt><dd>Notes PDF</dd>
     <dt>Problem</dt><dd>No page is printed onto the practice&#x27;s scans yet. Milestone 1 (week of 28 Sep) is sample packets on all 20 templates.</dd>
     <dt>Why</dt><dd>Handbook M4, golden rule 2 (print on scans, never redraw). Use only the 22 Sep scans.</dd>
     <dt>Done when</dt><dd><ul><li>Low Back Pain – Left: Jane Doe&#x27;s 12-visit notes PDF renders on the 22 Sep scan: labels on first/last page, 8/10 covered, top/bottom dates match, 1/10 post-treatment, Excellent on the last page.</li><li>Golden-image tests for first, middle and last page.</li><li>Then the other 19, one settings.json each, following docs/json-example/templates-intake.v2.json (no invented coordinates; measure with make new-diagnosis and check by eye).</li></ul></dd>
+    <dt>Checked 24 Sep</dt><dd class="chk"><ul><li>Low Back Pain – Left notes PDF (12 pages) renders on the 22 Sep scan: INITIAL VISIT label on page 1, pre-printed 8/10 covered (page 2 prints 7/10), top/bottom dates match, 1/10 post-treatment, page 12 has Last Visit label + closing note + Excellent (Good cleared).</li><li>The RFS is still not a generated PDF (S12 offers “Download the 2 PDFs” for 3 files) — see F13.</li><li>Other 19 templates not started. Golden-image tests not seen.</li></ul></dd>
   </dl>
   <details><summary>Claude Code prompt</summary><pre class="prompt">Implement M4 as in the handbook: reportlab + pypdf only (no PyMuPDF). Start with low-back-pain-left using the 22 Sep scan and docs/json-example/settings.low-back-pain-left.v1.json (re-check every coordinate against the new scan). Render Jane Doe&#x27;s 12 visits; first page INITIAL VISIT label + first note; last page Last Visit label + closing note + Excellent (cover Good); cover the pre-printed 8/10 and print the visit&#x27;s pain; dates top and bottom from the same value. Add golden-image tests for first/middle/last. Then create settings for the other 19 diagnoses one by one from templates-intake.v2.json; never guess coordinates.</pre></details>
+</article>
+<article class="fix P0" id="F11">
+  <h3><span class="fid">F11</span>Template readiness from templates-intake.v2.json<span class="pill P0">P0</span><span class="pill">25 Sep</span><span class="pill st">Status: To do</span></h3>
+  <dl>
+    <dt>Screens</dt><dd>S16 · S6 · S11 · S2</dd>
+    <dt>Problem</dt><dd>S16 and the S6 picker still show the pre-22 Sep template state. Fibromyalgia and Vertebrogenic LBP – Right show “Not received” and can&#x27;t be picked. Cervicalgia – Left and Headache show “awaited”, Vertebrogenic LBP – Left “corrected copy awaited”, Shoulder – Left “May 30 scan — side to confirm”, both Hips “Side printed on the scan (kept)”, Spondylosis – Right “19 Sep copy”. Footer says 2 set up / 16 received / 2 not received.</dd>
+    <dt>Why</dt><dd>Changelog v2.2 (all 20 clean scans received 22 Sep). Handbook §07. json-example/templates-intake.v2.json. Screen spec S6 and S16.</dd>
+    <dt>Done when</dt><dd><ul><li>S16 status and notes are read from templates-intake.v2.json (received, calibration_status, title_cover, top_pain, rfs_default, duplicate_file, scan_quality) — nothing typed in components.</li><li>All 20 show “Received 22 Sep”. Only calibrated templates show “Set up · v1”; the rest show “Received · not set up yet”.</li><li>S6 picker: all 20 selectable. A template that isn&#x27;t set up yet can still record visits; S11 blocks “Build and preview” with the reason “Template not set up yet — notes can&#x27;t be generated”.</li><li>Notes shown per template: Shoulder – Left “Title covered, prints ‘Pain in shoulder’”; Hips and Low Back Pain – Left “Pre-printed 8/10 covered”; no side printed on Hip/Knee titles; Anosmia “Short layout · RFS off by default (field 18 wording to confirm)”; Fibromyalgia “Body area BODY until confirmed”; Shoulder – Right “One of two identical files registered”; Spondylosis L/R “Low-quality scan — calibrated by hand”.</li><li>S11: Anosmia&#x27;s Include RFS is off by default with its reason (still switchable).</li><li>S16 footer: “20 received · N set up · 3 ICD-10 codes awaiting confirmation”.</li><li>S16 actions: sample first / middle / last page for set-up templates (screen spec S16) instead of “View blank template”.</li></ul></dd>
+  </dl>
+  <details><summary>Claude Code prompt</summary><pre class="prompt">Make docs/json-example/templates-intake.v2.json the single source for template readiness, next to diagnoses.v2.json for codes. Load both into the diagnosis catalogue (join on slug). S16: show received date, set-up state (calibration_status), and a short note built from title_cover, top_pain.action, rfs_default, duplicate_file and scan_quality; footer counts from the data. S6: every received template is selectable; S11: disable &#x27;Build and preview&#x27; with reason &#x27;Template not set up yet — notes can&#x27;t be generated&#x27; when the template has no settings.json. Anosmia: Include RFS defaults off with the reason from rfs_default. Replace &#x27;View blank template&#x27; with sample first/middle/last pages for templates that are set up. Do not type any diagnosis names, statuses or notes in components. Add tests: fibromyalgia selectable on S6; pain-in-hip-left note mentions the 8/10 cover; anosmia RFS default off.</pre></details>
+</article>
+<article class="fix P1" id="F12">
+  <h3><span class="fid">F12</span>Design tokens, components and product name (handbook §17)<span class="pill P1">P1</span><span class="pill">26 Sep</span><span class="pill st">Status: To do</span></h3>
+  <dl>
+    <dt>Screens</dt><dd>All</dd>
+    <dt>Problem</dt><dd>The build uses the UI library&#x27;s default neutral theme. None of the §17 colour tokens exist (accent, accent-soft, success, warning, danger, info); status colours are raw Tailwind green/amber/rose values; variables named --blue-* are mapped to greys. Type, spacing and shadow tokens aren&#x27;t named. The app is branded “lorraine.ai”, the tab title is “Lorraine AI”, and the logo is an “L” tile.</dd>
+    <dt>Why</dt><dd>Handbook §17 (tokens become the Tailwind theme in M1; screens use tokens only) and §18 review checklist. The product belongs to the practice, not a staff member.</dd>
+    <dt>Done when</dt><dd><ul><li>Tokens exist with exactly these names and are the Tailwind theme: color bg · surface · border · text · text-muted · accent · accent-soft · success · warning · danger · info; type display · h1 · h2 · h3 · body · small · label · mono; space 1 · 2 · 3 · 4 · 6 · 8 · 12; radius sm · md; shadow card · popover.</li><li>Light theme first (a calm clinical accent, not black); dark theme defined.</li><li>No raw hex/oklch values or Tailwind palette colours (green-500, amber-600 …) in screen code — a lint/grep check fails the build if found.</li><li>StatusPill (draft · ready · queued · sent · failed · test) differs by shape/icon as well as colour; one vocabulary everywhere.</li><li>Components from §17 exist and are used: PatientChip, StatusPill, FileCard, DestinationRow, DiagnosisPicker, VisitForm, AnswerSourceMarker, PdfPreview, ConsistencyPanel, EmptyState, InlineError, ConfirmBar, ConcurrencyNotice.</li><li>Product name “DeYoe Wellness · Packet tool” in the sidebar and sign-in; browser tab title never contains patient details; the “L” tile and “lorraine.ai” are gone.</li><li>S13 Review and send is visually distinct (the one irreversible step).</li></ul></dd>
+  </dl>
+  <details><summary>Claude Code prompt</summary><pre class="prompt">Implement handbook §17 design conventions. Create a tokens file (CSS variables + Tailwind theme) with exactly the §17 names; light theme with a calm clinical accent and matching accent-soft, status colours success/warning/danger/info separate from accent; define dark theme too. Replace every raw colour, --blue-*/--green-*/--amber-*/--rose-*/--slate-* alias and Tailwind palette class in screens with tokens; add an ESLint/stylelint (or grep in CI) rule that rejects raw colours outside the tokens file. Build the §17 components (PatientChip, StatusPill with shape+colour per status, FileCard, DestinationRow, DiagnosisPicker, VisitForm, AnswerSourceMarker, PdfPreview, ConsistencyPanel, EmptyState, InlineError, ConfirmBar, ConcurrencyNotice) with data-component attributes, and use them on every screen. Rename the product to &#x27;DeYoe Wellness · Packet tool&#x27; (sidebar, sign-in, &lt;title&gt;); remove &#x27;lorraine.ai&#x27; and the &#x27;L&#x27; tile. Check every screen at 1440 and 1280 wide. Do not change layouts or flows beyond this.</pre></details>
+</article>
+<article class="fix P1" id="F13">
+  <h3><span class="fid">F13</span>RFS on Build packet: derived fields and a real PDF<span class="pill P1">P1</span><span class="pill">26 Sep</span><span class="pill st">Status: To do</span></h3>
+  <dl>
+    <dt>Screens</dt><dd>S11 · S12 · S13</dd>
+    <dt>Problem</dt><dd>S11 embeds a full editable copy of VA Form 10-10172 (“check and complete it”, including field 6, field 17 geriatric care and page 2 DME). The RFS is not generated by the PDF engine yet, so S12 offers “Download the 2 PDFs” for a 3-file packet.</dd>
+    <dt>Why</dt><dd>Screen spec S11 (RFS office · body area only; everything else derived) and RFS field table; handbook §07 RFS sources; golden rule 2 (print on the practice&#x27;s forms).</dd>
+    <dt>Done when</dt><dd><ul><li>S11 shows the RFS toggle, the RFS office (from the authorization) and the body area (from the diagnosis, editable text) — no other RFS fields.</li><li>The RFS PDF is printed on the office&#x27;s RFS version (Clarkesville = 1, Blairsville = 2, Decatur = 3), both pages: fields 1, 2, 4 from patient/authorization; 10–12 fixed NO · YES · NO; 13–14 from the diagnosis (only when confirmed); 15–16 blank; 18 assembled wording with title+surname, his/her, body area; 19–20 pre-printed; 21 unsigned; 22 today.</li><li>S12 RFS tab shows the generated two pages; downloads = 3 files; page counts include the RFS.</li><li>Test: Jane Doe LBP – Left RFS field 13 = M54.50, field 18 contains “MS. DOE … HER LOWER BACK”.</li></ul></dd>
+  </dl>
+  <details><summary>Claude Code prompt</summary><pre class="prompt">Remove the HTML RFS form from S11. Keep only: Include RFS toggle (rules from F2/F11), RFS office (read-only, from the authorization), body area (text, default from diagnosis.body_area). Generate the RFS PDF with the PDF engine (reportlab + pypdf) on the office&#x27;s RFS scan, both pages, filling fields exactly as in handbook §07 &#x27;RFS — VA Form 10-10172&#x27;; field 21 left blank and flagged (F3). Show it in the S12 RFS tab, include it in downloads and page counts. Add a golden-image test for Jane Doe (Clarkesville office) and a unit test for the field-18 wording.</pre></details>
+</article>
+<article class="fix P2" id="F14">
+  <h3><span class="fid">F14</span>Screen polish against screen spec rev 7<span class="pill P2">P2</span><span class="pill">After F11–F13</span><span class="pill st">Status: To do</span></h3>
+  <dl>
+    <dt>Screens</dt><dd>S1 · S2 · S4 · S6 · S8 · S9 · S11–S13 · S18 · S19</dd>
+    <dt>Problem</dt><dd>Smaller gaps found in the 24 Sep review.</dd>
+    <dt>Why</dt><dd>Screen spec rev 7 (S1, S2, S19, “Patterns to design once”).</dd>
+    <dt>Done when</dt><dd><ul><li>S19: test-fax field (a number she types, no patient data), retention (packets 120 months · logs 72 months), practice email, offices and VA facilities lists, and a Save button. SRFax fields stay write-only.</li><li>S1: the four states from the spec are shown — default · wrong details · locked after repeated attempts · signed out for inactivity. Email and password are NOT pre-filled.</li><li>PatientChip on every screen that shows patient data: S9, S11, S12, S13 (not just breadcrumb text).</li><li>Validation is inline, on the field, as the user moves on (S4, S6, S8, S9) — not only on Save.</li><li>S2 summary tiles sit on one row (or an even grid) at 1280 and 1440 wide.</li><li>S18 destination rule reads as one clean sentence with its two choices (cover sheet, RFS yes/no).</li><li>Demo data is consistent: the S2 “Recently sent” packet for Jane Doe · LBP – Left appears in that authorization&#x27;s packets on S7 (or is removed).</li></ul></dd>
+  </dl>
+  <details><summary>Claude Code prompt</summary><pre class="prompt">Apply screen spec rev 7 to the listed screens without changing flows: S19 add test_fax_number (no patient data; logged as a test), retention_months_packets=120 and retention_months_logs=72, practice email, read-only offices/facilities lists, Save. S1 remove pre-filled credentials and add the wrong-details, locked and idle-signed-out states (UI only until real auth lands). Use PatientChip on S9, S11, S12, S13. Switch S4/S6/S8/S9 validation to inline on blur using the shared validation module. Fix the S2 tile grid at 1280/1440 and the S18 rule sentence layout. Make demo fixtures consistent between S2 and S7. Jane/John data only.</pre></details>
 </article>
 
 <section class="pend">
   <h3>Parked: don't work on these now</h3>
-  <ul><li><b>Responsive tablet/mobile layouts</b>: The tool runs in a browser on the office Mac; mobile apps are out of scope. Keep desktop layouts clean at 1280px+ and don&#x27;t break at 1024px. Nothing more for now.</li><li><b>On-screen RFS signature</b>: Waiting on the client&#x27;s answer about box 21 (F3 keeps it as a setting).</li><li><b>Grok integration</b>: Milestone 3. Until then S10 shows the &#x27;not connected&#x27; state (F9).</li><li><b>SRFax sending</b>: Milestone 3. Needs the SRFax API details and a test fax destination (not 404-738-1714).</li><li><b>New features from open-ended feedback</b>: Log any new request on feedback.html and raise it with Poonam before building; the budget is fixed.</li></ul>
+  <ul><li><b>Responsive tablet/mobile layouts</b>: The tool runs in a browser on the office Mac; mobile apps are out of scope. Keep desktop layouts clean at 1280px+ and don&#x27;t break at 1024px. Nothing more for now.</li><li><b>On-screen RFS signature</b>: Waiting on the client&#x27;s answer about box 21 (F3 keeps it as a setting).</li><li><b>Grok integration</b>: Milestone 3. Until then S10 shows the &#x27;not connected&#x27; state (F9).</li><li><b>SRFax sending</b>: Milestone 3. Needs the SRFax API details and a test fax destination (not 404-738-1714).</li><li><b>New features from open-ended feedback</b>: Log any new request on feedback.html and raise it with Poonam before building; the budget is fixed.</li><li><b>Cover-sheet wording when no RFS is sent</b>: The Atlanta &#x27;Request for Services&#x27; cover sheet has pre-printed text saying an RFS is attached. Don&#x27;t change or cover it; Poonam/Shikha will ask the practice.</li><li><b>Real sign-in and saving (API)</b>: Backend milestone per handbook order. F14 only fixes the sign-in screen states and removes pre-filled credentials.</li></ul>
 </section>
 </div>
 <script type="application/json" id="build-fixes-data">
 {
-  "updated": "2026-09-23",
-  "source": "Build review 23 Sep (build http://148.113.35.97:7678), developer status message 23 Sep, handbook v2.2",
+  "updated": "2026-09-24",
+  "source": "Build review 23 Sep + design/spec review 24 Sep (build http://148.113.35.97:7678; screen spec rev 7, handbook v2.2, json-example v2)",
   "status_values": [
     "To do",
     "In progress",
@@ -235,7 +294,11 @@
         "Demo links in messages use 148.113.35.97 (the 148.113.113.97 typo is gone)."
       ],
       "prompt": "Add a persistent, non-dismissable banner to the app shell on every screen: \"Demo — use made-up names and numbers only. Nothing is saved or faxed.\" Replace every sample patient that is not Jane Doe or John Doe (e.g. auth_susan_dorsalgia) with Jane/John data from docs/json-example and the handbook section 16 fixtures; update routes that referenced them. Do not add real-looking names anywhere.",
-      "status": "To do"
+      "status": "Done",
+      "checked_24_sep": [
+        "Banner shows on every screen, including sign-in.",
+        "Only Jane Doe and John Doe appear."
+      ]
     },
     {
       "id": "F2",
@@ -252,7 +315,13 @@
         "No ICD-10 code is typed anywhere in components; everything reads from the seed."
       ],
       "prompt": "Replace the hard-coded diagnosis list with docs/json-example/diagnoses.v2.json as the single source (seed file). Fields: slug, display_name, printed_wording, body_group, body_area, icd10_code, icd10_description, icd10_confirmed. RFS rules: if icd10_code is null or icd10_confirmed is false, the Include RFS toggle on S11 is disabled with the reason \"ICD-10 code awaiting confirmation\"; RFS fields 13–14 print icd10_code and icd10_description only when confirmed. S16: list all 20 with code, description and status. S2: add a needs-attention item counting unconfirmed codes. Remove every placeholder code from components and fixtures. Add tests: RFS disabled for pain-in-hip-left; RFS field 13 = M54.50 for low-back-pain-left.",
-      "status": "To do"
+      "status": "Done",
+      "checked_24_sep": [
+        "All 20 names, groups, body areas and ICD-10 codes on S16 match diagnoses.v2.json.",
+        "Hip – Left, Knee – Right, Shoulder – Right show “ICD-10 awaiting confirmation”; RFS toggle disabled with the reason on S11 (tested on John Doe · Hip – Left).",
+        "S2 shows “3 ICD-10 codes awaiting confirmation”.",
+        "Template status/readiness on S16 and S6 is still wrong — moved to F11."
+      ]
     },
     {
       "id": "F3",
@@ -269,7 +338,12 @@
         "“Print / save as PDF” of the HTML preview is removed (real PDFs come from the PDF engine)."
       ],
       "prompt": "Remove the Box 21 signature pad from the RFS preview. Show a warning \"RFS not signed (box 21)\" on S12 and S13; on S13 it is an acknowledge-to-continue warning, not a blocker. Remove the browser print / save-as-PDF option for the HTML preview; downloads will only be the generated PDFs later (and are logged). Keep this behind a setting rfs_signature_mode = 'unsigned_flagged' so a future decision is a config change.",
-      "status": "To do"
+      "status": "Done",
+      "checked_24_sep": [
+        "No signature pad.",
+        "S12 consistency panel: “RFS signature (box 21) · Not signed”.",
+        "S13: amber notice + “I understand…” checkbox; sending not blocked."
+      ]
     },
     {
       "id": "F4",
@@ -285,7 +359,11 @@
         "A Playwright test covers John → Jane → John."
       ],
       "prompt": "Packet/RFS state leaks between authorizations. Key all packet and RFS state by authorization id (route param), reset it on authorization change, and derive every printed value from the patient + authorization + practice settings, never from a shared store. Add a Playwright test: build John's packet with RFS, then open Jane's — every field shows Jane's name, VA number and last four; then back to John.",
-      "status": "To do"
+      "status": "Done",
+      "checked_24_sep": [
+        "Built John Doe's packet, then Jane Doe's: build, preview and review show only Jane's name, VA number and last four.",
+        "Playwright test John → Jane → John not seen — add it if missing."
+      ]
     },
     {
       "id": "F5",
@@ -301,7 +379,11 @@
         "A deliberately mismatched override shows a warning."
       ],
       "prompt": "Replace the hard-coded OK in the S12 consistency panel with a function that compares patient name, VA authorization number and last four across each cover sheet, the clinical notes pages (including per-page overrides) and the RFS, using the packet's data. If files have not been generated yet, show \"Checks run when the files are generated\" (neutral, not green). Unit-test a mismatch caused by a page override.",
-      "status": "To do"
+      "status": "In progress",
+      "checked_24_sep": [
+        "Panel shows “All consistent” with real data, but a mismatch could not be triggered from the UI, so the check could not be confirmed.",
+        "To close: show a page override with a different last four producing a warning, and the unit test."
+      ]
     },
     {
       "id": "F6",
@@ -316,8 +398,13 @@
         "Everything else on the page comes from the diagnosis template as printed.",
         "“Excellent” is applied by rule on the final visit, not as a field."
       ],
-      "prompt": "Trim S9 to the scope in the handbook §05 and screen spec S9. Keep: visit date, pain level (required, 0–10, last value shown as a hint only), pain_type, activities (+ other text), interferes, is_final switch, page role (read-only), physician's note on first/last visit. Remove per-visit editing of objective, pulse, tongue, assessment, prognosis, plan, treatments, point prescription, therapies and post-treatment; those come from the template settings. Render the sections from the form definition (docs/json-example/progress_note.v1.json) plus the diagnosis settings, not hard-coded per diagnosis.",
-      "status": "To do"
+      "prompt": "Trim S9 to the scope in the handbook §05 and screen spec S9. Keep: visit date, pain level (required, 0–10, last value shown as a hint only), pain_type, activities (+ other text), interferes, is_final switch, page role (read-only), physician's note on first/last visit. Remove per-visit editing of objective, pulse, tongue, assessment, prognosis, plan, treatments, point prescription, therapies and post-treatment; those come from the template settings. Render the sections from the form definition (docs/json-example/progress_note.v1.json) plus the diagnosis settings, not hard-coded per diagnosis. Also: Type of pain must render exactly the 11 options from the form definition (no extra 'Other'); keep the answer-source markers (carried forward · from doctor's note · changed today) as in screen spec S9.",
+      "status": "To do",
+      "checked_24_sep": [
+        "Not started. S9 still shows the full clinical sections (Objective grid, Pulse, Tongue, Assessment, Prognosis, Plan, Treatments, Point prescription, Therapies 1–9, Post-treatment location, Today's response, Patient progress).",
+        "Type of pain has 12 options — an extra “Other”. The form definition has 11 (screen spec S9). Painful activities (6 + Other) is correct.",
+        "Keep the “carried forward” marker — it is a valid answer source in the screen spec."
+      ]
     },
     {
       "id": "F7",
@@ -334,7 +421,12 @@
         "Duplicate warning on last name + DOB + last four (never auto-merge)."
       ],
       "prompt": "Update S4 to match screen spec S4 exactly: first_name, middle_initial, last_name, date_of_birth (reject future dates and ages over 120), ssn_last_four (exactly 4 digits), title (Mr./Ms./Mrs.), pronoun (his/her), va_patient_id (optional). Remove Office from the patient form; it belongs to the authorization (S6). Remove Cover sheet from S6; it is chosen per destination on S11. Duplicate check on last name + DOB + last four shows a warning with a link to the existing patient, never merges. Zod schemas mirror these rules.",
-      "status": "To do"
+      "status": "Done",
+      "checked_24_sep": [
+        "S4 has first, MI, last, DOB, last four, title, his/her, VA patient ID; office is on S6.",
+        "Future DOB and non-4-digit last four rejected; duplicate Jane Doe warning with “different person” override.",
+        "Errors appear only on Save — inline-on-blur is in F14."
+      ]
     },
     {
       "id": "F8",
@@ -350,7 +442,12 @@
         "Any change to approved visits or dates needs a typed reason (empty by default) and is logged."
       ],
       "prompt": "Make S8 save and validate. Fields: VA number, facility, office, visits approved, period start/end. Diagnosis read-only once any visit exists, with the reason. Validation: visits_approved >= recorded visits; period must still contain every recorded visit date; a reason is required (start empty) whenever visits_approved or the period changes, and is written to the activity log. Until the API exists, implement the rules in a shared validation module the API will reuse.",
-      "status": "To do"
+      "status": "Done",
+      "checked_24_sep": [
+        "Diagnosis locked with the reason.",
+        "Approved visits below 12 rejected, naming visit 12 (05/20/2026).",
+        "Reason field starts empty and is required."
+      ]
     },
     {
       "id": "F9",
@@ -365,7 +462,11 @@
         "S10 never proposes a pain level. Until Grok is connected it shows “AI assist isn't connected yet — enter answers manually”, not fake suggestions."
       ],
       "prompt": "S7: add the PatientChip and diagnosis to the header per screen spec S7. S10: remove canned suggestions; show a clear 'not connected yet' state with manual entry. The suggestion model must never include pain_level (pain is always entered by Lorraine).",
-      "status": "To do"
+      "status": "Done",
+      "checked_24_sep": [
+        "S7 header shows PatientChip, diagnosis, status, VA number, office, facility.",
+        "S10 shows “AI assist isn't connected yet — enter answers manually”; no pain level."
+      ]
     },
     {
       "id": "F10",
@@ -381,6 +482,88 @@
         "Then the other 19, one settings.json each, following docs/json-example/templates-intake.v2.json (no invented coordinates; measure with make new-diagnosis and check by eye)."
       ],
       "prompt": "Implement M4 as in the handbook: reportlab + pypdf only (no PyMuPDF). Start with low-back-pain-left using the 22 Sep scan and docs/json-example/settings.low-back-pain-left.v1.json (re-check every coordinate against the new scan). Render Jane Doe's 12 visits; first page INITIAL VISIT label + first note; last page Last Visit label + closing note + Excellent (cover Good); cover the pre-printed 8/10 and print the visit's pain; dates top and bottom from the same value. Add golden-image tests for first/middle/last. Then create settings for the other 19 diagnoses one by one from templates-intake.v2.json; never guess coordinates.",
+      "status": "In progress",
+      "checked_24_sep": [
+        "Low Back Pain – Left notes PDF (12 pages) renders on the 22 Sep scan: INITIAL VISIT label on page 1, pre-printed 8/10 covered (page 2 prints 7/10), top/bottom dates match, 1/10 post-treatment, page 12 has Last Visit label + closing note + Excellent (Good cleared).",
+        "The RFS is still not a generated PDF (S12 offers “Download the 2 PDFs” for 3 files) — see F13.",
+        "Other 19 templates not started. Golden-image tests not seen."
+      ]
+    },
+    {
+      "id": "F11",
+      "priority": "P0",
+      "when": "25 Sep",
+      "title": "Template readiness from templates-intake.v2.json",
+      "screens": "S16 · S6 · S11 · S2",
+      "problem": "S16 and the S6 picker still show the pre-22 Sep template state. Fibromyalgia and Vertebrogenic LBP – Right show “Not received” and can't be picked. Cervicalgia – Left and Headache show “awaited”, Vertebrogenic LBP – Left “corrected copy awaited”, Shoulder – Left “May 30 scan — side to confirm”, both Hips “Side printed on the scan (kept)”, Spondylosis – Right “19 Sep copy”. Footer says 2 set up / 16 received / 2 not received.",
+      "why": "Changelog v2.2 (all 20 clean scans received 22 Sep). Handbook §07. json-example/templates-intake.v2.json. Screen spec S6 and S16.",
+      "done_when": [
+        "S16 status and notes are read from templates-intake.v2.json (received, calibration_status, title_cover, top_pain, rfs_default, duplicate_file, scan_quality) — nothing typed in components.",
+        "All 20 show “Received 22 Sep”. Only calibrated templates show “Set up · v1”; the rest show “Received · not set up yet”.",
+        "S6 picker: all 20 selectable. A template that isn't set up yet can still record visits; S11 blocks “Build and preview” with the reason “Template not set up yet — notes can't be generated”.",
+        "Notes shown per template: Shoulder – Left “Title covered, prints ‘Pain in shoulder’”; Hips and Low Back Pain – Left “Pre-printed 8/10 covered”; no side printed on Hip/Knee titles; Anosmia “Short layout · RFS off by default (field 18 wording to confirm)”; Fibromyalgia “Body area BODY until confirmed”; Shoulder – Right “One of two identical files registered”; Spondylosis L/R “Low-quality scan — calibrated by hand”.",
+        "S11: Anosmia's Include RFS is off by default with its reason (still switchable).",
+        "S16 footer: “20 received · N set up · 3 ICD-10 codes awaiting confirmation”.",
+        "S16 actions: sample first / middle / last page for set-up templates (screen spec S16) instead of “View blank template”."
+      ],
+      "prompt": "Make docs/json-example/templates-intake.v2.json the single source for template readiness, next to diagnoses.v2.json for codes. Load both into the diagnosis catalogue (join on slug). S16: show received date, set-up state (calibration_status), and a short note built from title_cover, top_pain.action, rfs_default, duplicate_file and scan_quality; footer counts from the data. S6: every received template is selectable; S11: disable 'Build and preview' with reason 'Template not set up yet — notes can't be generated' when the template has no settings.json. Anosmia: Include RFS defaults off with the reason from rfs_default. Replace 'View blank template' with sample first/middle/last pages for templates that are set up. Do not type any diagnosis names, statuses or notes in components. Add tests: fibromyalgia selectable on S6; pain-in-hip-left note mentions the 8/10 cover; anosmia RFS default off.",
+      "status": "To do"
+    },
+    {
+      "id": "F12",
+      "priority": "P1",
+      "when": "26 Sep",
+      "title": "Design tokens, components and product name (handbook §17)",
+      "screens": "All",
+      "problem": "The build uses the UI library's default neutral theme. None of the §17 colour tokens exist (accent, accent-soft, success, warning, danger, info); status colours are raw Tailwind green/amber/rose values; variables named --blue-* are mapped to greys. Type, spacing and shadow tokens aren't named. The app is branded “lorraine.ai”, the tab title is “Lorraine AI”, and the logo is an “L” tile.",
+      "why": "Handbook §17 (tokens become the Tailwind theme in M1; screens use tokens only) and §18 review checklist. The product belongs to the practice, not a staff member.",
+      "done_when": [
+        "Tokens exist with exactly these names and are the Tailwind theme: color bg · surface · border · text · text-muted · accent · accent-soft · success · warning · danger · info; type display · h1 · h2 · h3 · body · small · label · mono; space 1 · 2 · 3 · 4 · 6 · 8 · 12; radius sm · md; shadow card · popover.",
+        "Light theme first (a calm clinical accent, not black); dark theme defined.",
+        "No raw hex/oklch values or Tailwind palette colours (green-500, amber-600 …) in screen code — a lint/grep check fails the build if found.",
+        "StatusPill (draft · ready · queued · sent · failed · test) differs by shape/icon as well as colour; one vocabulary everywhere.",
+        "Components from §17 exist and are used: PatientChip, StatusPill, FileCard, DestinationRow, DiagnosisPicker, VisitForm, AnswerSourceMarker, PdfPreview, ConsistencyPanel, EmptyState, InlineError, ConfirmBar, ConcurrencyNotice.",
+        "Product name “DeYoe Wellness · Packet tool” in the sidebar and sign-in; browser tab title never contains patient details; the “L” tile and “lorraine.ai” are gone.",
+        "S13 Review and send is visually distinct (the one irreversible step)."
+      ],
+      "prompt": "Implement handbook §17 design conventions. Create a tokens file (CSS variables + Tailwind theme) with exactly the §17 names; light theme with a calm clinical accent and matching accent-soft, status colours success/warning/danger/info separate from accent; define dark theme too. Replace every raw colour, --blue-*/--green-*/--amber-*/--rose-*/--slate-* alias and Tailwind palette class in screens with tokens; add an ESLint/stylelint (or grep in CI) rule that rejects raw colours outside the tokens file. Build the §17 components (PatientChip, StatusPill with shape+colour per status, FileCard, DestinationRow, DiagnosisPicker, VisitForm, AnswerSourceMarker, PdfPreview, ConsistencyPanel, EmptyState, InlineError, ConfirmBar, ConcurrencyNotice) with data-component attributes, and use them on every screen. Rename the product to 'DeYoe Wellness · Packet tool' (sidebar, sign-in, <title>); remove 'lorraine.ai' and the 'L' tile. Check every screen at 1440 and 1280 wide. Do not change layouts or flows beyond this.",
+      "status": "To do"
+    },
+    {
+      "id": "F13",
+      "priority": "P1",
+      "when": "26 Sep",
+      "title": "RFS on Build packet: derived fields and a real PDF",
+      "screens": "S11 · S12 · S13",
+      "problem": "S11 embeds a full editable copy of VA Form 10-10172 (“check and complete it”, including field 6, field 17 geriatric care and page 2 DME). The RFS is not generated by the PDF engine yet, so S12 offers “Download the 2 PDFs” for a 3-file packet.",
+      "why": "Screen spec S11 (RFS office · body area only; everything else derived) and RFS field table; handbook §07 RFS sources; golden rule 2 (print on the practice's forms).",
+      "done_when": [
+        "S11 shows the RFS toggle, the RFS office (from the authorization) and the body area (from the diagnosis, editable text) — no other RFS fields.",
+        "The RFS PDF is printed on the office's RFS version (Clarkesville = 1, Blairsville = 2, Decatur = 3), both pages: fields 1, 2, 4 from patient/authorization; 10–12 fixed NO · YES · NO; 13–14 from the diagnosis (only when confirmed); 15–16 blank; 18 assembled wording with title+surname, his/her, body area; 19–20 pre-printed; 21 unsigned; 22 today.",
+        "S12 RFS tab shows the generated two pages; downloads = 3 files; page counts include the RFS.",
+        "Test: Jane Doe LBP – Left RFS field 13 = M54.50, field 18 contains “MS. DOE … HER LOWER BACK”."
+      ],
+      "prompt": "Remove the HTML RFS form from S11. Keep only: Include RFS toggle (rules from F2/F11), RFS office (read-only, from the authorization), body area (text, default from diagnosis.body_area). Generate the RFS PDF with the PDF engine (reportlab + pypdf) on the office's RFS scan, both pages, filling fields exactly as in handbook §07 'RFS — VA Form 10-10172'; field 21 left blank and flagged (F3). Show it in the S12 RFS tab, include it in downloads and page counts. Add a golden-image test for Jane Doe (Clarkesville office) and a unit test for the field-18 wording.",
+      "status": "To do"
+    },
+    {
+      "id": "F14",
+      "priority": "P2",
+      "when": "After F11–F13",
+      "title": "Screen polish against screen spec rev 7",
+      "screens": "S1 · S2 · S4 · S6 · S8 · S9 · S11–S13 · S18 · S19",
+      "problem": "Smaller gaps found in the 24 Sep review.",
+      "why": "Screen spec rev 7 (S1, S2, S19, “Patterns to design once”).",
+      "done_when": [
+        "S19: test-fax field (a number she types, no patient data), retention (packets 120 months · logs 72 months), practice email, offices and VA facilities lists, and a Save button. SRFax fields stay write-only.",
+        "S1: the four states from the spec are shown — default · wrong details · locked after repeated attempts · signed out for inactivity. Email and password are NOT pre-filled.",
+        "PatientChip on every screen that shows patient data: S9, S11, S12, S13 (not just breadcrumb text).",
+        "Validation is inline, on the field, as the user moves on (S4, S6, S8, S9) — not only on Save.",
+        "S2 summary tiles sit on one row (or an even grid) at 1280 and 1440 wide.",
+        "S18 destination rule reads as one clean sentence with its two choices (cover sheet, RFS yes/no).",
+        "Demo data is consistent: the S2 “Recently sent” packet for Jane Doe · LBP – Left appears in that authorization's packets on S7 (or is removed)."
+      ],
+      "prompt": "Apply screen spec rev 7 to the listed screens without changing flows: S19 add test_fax_number (no patient data; logged as a test), retention_months_packets=120 and retention_months_logs=72, practice email, read-only offices/facilities lists, Save. S1 remove pre-filled credentials and add the wrong-details, locked and idle-signed-out states (UI only until real auth lands). Use PatientChip on S9, S11, S12, S13. Switch S4/S6/S8/S9 validation to inline on blur using the shared validation module. Fix the S2 tile grid at 1280/1440 and the S18 rule sentence layout. Make demo fixtures consistent between S2 and S7. Jane/John data only.",
       "status": "To do"
     }
   ],
@@ -404,8 +587,59 @@
     {
       "item": "New features from open-ended feedback",
       "reason": "Log any new request on feedback.html and raise it with Poonam before building; the budget is fixed."
+    },
+    {
+      "item": "Cover-sheet wording when no RFS is sent",
+      "reason": "The Atlanta 'Request for Services' cover sheet has pre-printed text saying an RFS is attached. Don't change or cover it; Poonam/Shikha will ask the practice."
+    },
+    {
+      "item": "Real sign-in and saving (API)",
+      "reason": "Backend milestone per handbook order. F14 only fixes the sign-in screen states and removes pre-filled credentials."
     }
-  ]
+  ],
+  "checked_note": "Checked in the running build (UI only); tests and code rules not reviewed.",
+  "order": [
+    {
+      "when": "Done 24 Sep",
+      "fixes": [
+        "F1",
+        "F2",
+        "F3",
+        "F4",
+        "F7",
+        "F8",
+        "F9"
+      ]
+    },
+    {
+      "when": "25 Sep",
+      "fixes": [
+        "F6",
+        "F11",
+        "F5"
+      ]
+    },
+    {
+      "when": "26 Sep",
+      "fixes": [
+        "F13",
+        "F12"
+      ]
+    },
+    {
+      "when": "After F11–F13",
+      "fixes": [
+        "F14"
+      ]
+    },
+    {
+      "when": "Milestone 1 · by 28 Sep",
+      "fixes": [
+        "F10"
+      ]
+    }
+  ],
+  "session_prompt": "You are working on the DeYoe Wellness packet tool. Before writing code, read docs/changelog.html (top entry first), then docs/build-fixes.html; the handbook docs/index.html wins if anything disagrees, then docs/screen-spec.html (rev 7). Seed data comes only from docs/json-example/diagnoses.v2.json (codes, body areas) and docs/json-example/templates-intake.v2.json (template readiness, cover-ups, notes) — never type diagnosis names, ICD-10 codes, statuses or print coordinates into components. Work on one fix at a time, in the order on build-fixes.html (next: F6, F11, F5, then F13, F12, F14, then the rest of F10). For each fix: create branch fix/F<n>-<short-name>; do exactly what its card's prompt says and nothing outside it; add the tests the card names; run the app and check every “Done when” line yourself at 1440 and 1280 wide; then set the card's status on the page and in the #build-fixes-data JSON, and add a line to the changelog if a doc changed. Rules: Jane Doe and John Doe only — no other names and no real patient data; Dr. DeYoe does not use the tool; pain level is always entered by Lorraine; no identifiers go to Grok; don't work on anything in the Parked list. If something is unclear or conflicts, stop and ask Poonam or Shikha — never the client."
 }
 </script>
 </body>
