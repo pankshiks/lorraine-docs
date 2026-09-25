@@ -110,7 +110,7 @@
   <p class="eyebrow">DeYoe Wellness Acupuncture — build design</p>
   <h1>Packet tool data model</h1>
   <p class="standfirst">How patients, authorizations, visits and sent faxes are stored; how the forms are defined as configuration; and how every value on every page is filled — so the name, numbers and dates can't drift between documents.</p>
-  <div class="meta"><span><b>Revision</b> 10 · 23 Sep 2026</span><span><b>Pairs with</b> <a href="screen-spec.html">the screen spec</a> and <a href="current-process.html">current-process map</a></span></div>
+  <div class="meta"><span><b>Revision</b> 11 · 25 Sep 2026</span><span><b>Pairs with</b> <a href="screen-spec.html">the screen spec</a> and <a href="current-process.html">current-process map</a></span></div>
 </header>
 
 <section>
@@ -126,7 +126,10 @@
     <li><span class="cnum">9</span><div><b>Diagnosis settings kept as files</b><span>Each diagnosis is a folder with its scan and settings file, added by our team and loaded into the database on start-up.</span></div></li>
     <li><span class="cnum">10</span><div><b>Everything is recorded</b><span>The activity log now also covers sign-ins (including failed ones), file downloads, settings changes and system events such as diagnosis updates, app updates, test faxes and backups.</span></div></li>
     <li><span class="cnum">11</span><div><b>ICD-10 codes received (rev 10, 23 Sep)</b><span>Codes for all 20 diagnoses are in the diagnosis list, stored with the dot, with a description for the RFS and a “confirmed” flag. Three codes (Hip – Left, Knee – Right, Shoulder – Right) await confirmation because the code sent is for the other side; the RFS stays off for those until then.</span></div></li>
-    <li><span class="cnum">12</span><div><b>Demo change, awaiting approval (25 Sep): clinical sections per visit and the RFS form</b><span>At the user's request the demo again lets Lorraine choose the diagnosis template's clinical sections on each visit (stored on the visit as <code>clinical</code>), offers the 'Other ____' write-in on Type of pain that every scan prints, and shows the full RFS form on Build packet. This reverses build fixes F6 and F13 and the 'editing clinical ticks per visit' item below, so it stays on its own branch until Poonam/Shikha confirm.</span></div></li>
+    <li><span class="cnum">12</span><div><b>Demo change, awaiting approval (25 Sep): clinical sections per visit and the RFS form</b><span>At the user's request the demo again lets Lorraine choose the diagnosis template's clinical sections on each visit (stored on the visit as <code>clinical</code>), offers the 'Other ____' write-in on Type of pain that every scan prints, and shows the full RFS form on Build packet. This reverses build fixes F6 and F13 and the 'editing clinical ticks per visit' item below. Merged into main on 25 Sep (PR #10); still awaiting Poonam/Shikha's confirmation.</span></div></li>
+    <li><span class="cnum">13</span><div><b>The three files are generated, not printed on the scans (rev 11, 25 Sep — awaiting Poonam's confirmation)</b><span>There are no clean scans, so each output file is a new PDF made from the practice's form kept as an HTML template, filled from the saved records and printed with headless Chromium: the clinical notes from the diagnosis's <code>template.html</code> (one Letter page per visit), the RFS from <code>shared/forms/rfs.html</code> + <code>rfs.v1.json</code> (both pages), and one cover sheet per destination from <code>shared/forms/cover_sheet.html</code> with the wording in <code>clinics/deyoe/cover_sheets.json</code>. Signature boxes stay blank. This changes golden rule 2 (print on the scans, never redraw) — see “Decided, and still open”.</span></div></li>
+    <li><span class="cnum">14</span><div><b>Files kept exactly as sent</b><span>Previews on S12 are generated live from the saved records and not stored. At approval each file is generated once, written under <code>data/documents/&lt;packet&gt;/</code> and recorded with its path, SHA-256 and page count — notes and RFS on <code>packet_document</code>, each destination's cover sheet on <code>fax_transmission</code>. They are never regenerated.</span></div></li>
+    <li><span class="cnum">15</span><div><b>A diagnosis is set up when its form template exists</b><span><code>document_template.status</code> is <i>ready</i> when the diagnosis's <code>template.html</code> is in the config folder, otherwise <i>blocked</i> with “Waiting for the practice's form template”; it is re-synced on every start (logged as <code>config_loaded</code>). 16 of 20 are ready. Until go-live a new authorization can only use a ready diagnosis; one already on a blocked diagnosis can still be edited, but no packet can be built for it.</span></div></li>
     <li><span class="cnum">7</span><div><b>Built for more clinics, run for one</b><span>Every clinic's data is kept apart by design, and a clinic's branches are its offices. VA facilities and the standard diagnosis list are shared reference data; each clinic keeps its own contacts, cover sheets, templates and defaults. DeYoe runs as a single clinic on its own computer.</span></div></li>
   </ul>
 </section>
@@ -136,7 +139,7 @@
   <p class="sec-note">Records hold the truth and change over time. Output is frozen the moment it is sent. Configuration describes the forms and contains no patient data. Every clinic table sits inside one clinic (tenant), whose branches are its offices. Two small reference lists — VA facilities and the standard diagnoses — are shared by all clinics and hold no clinic or patient data.</p>
   <figure>
     <div class="scroller">
-      <svg viewBox="0 0 880 720" role="img" aria-label="Data model: a patient has many authorizations; an authorization has many visits and one or more packets; a packet holds the notes and RFS files and is sent by one fax transmission per destination, each with its own cover sheet. Configuration — form definition, scanned templates with their settings, diagnoses, VA facilities, offices, practice settings and the Blairsville-to-Atlanta rule — builds the visit form and prints the pages.">
+      <svg viewBox="0 0 880 720" role="img" aria-label="Data model: a patient has many authorizations; an authorization has many visits and one or more packets; a packet holds the notes and RFS files and is sent by one fax transmission per destination, each with its own cover sheet. Configuration — form definition, scanned templates with their settings, diagnoses, VA facilities, offices, practice settings and the Blairsville-to-Atlanta rule — builds the visit form and generates the pages.">
         <defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
         <rect x="12" y="12" width="856" height="696" rx="5" fill="none" stroke="var(--navy)" stroke-width="1.3"/>
         <text class="band" x="26" y="32">CLINIC (TENANT) — EVERY CLINIC TABLE IS SCOPED TO IT · ★ = SHARED REFERENCE LIST</text>
@@ -177,13 +180,13 @@
         <rect x="24" y="396" width="832" height="296" rx="4" fill="none" stroke="var(--moss)" stroke-dasharray="3 4"/>
         <text class="band" x="40" y="416">CONFIGURATION — NO PATIENT DATA</text>
         <text class="a-l" x="236" y="378">builds the visit form</text>
-        <text class="a-l" x="446" y="378">prints on the scans</text>
-        <text class="a-l" x="626" y="330">cover sheet scan</text>
+        <text class="a-l" x="446" y="378">fills the HTML forms</text>
+        <text class="a-l" x="626" y="330">cover sheet wording</text>
 
         <g><rect x="40" y="430" width="230" height="60" rx="3" fill="var(--moss-wash)" stroke="var(--moss)" stroke-width="1.4"/>
           <text class="n-t" x="155" y="454" text-anchor="middle">form_definition</text><text class="n-s" x="155" y="472" text-anchor="middle">master form JSON · versioned</text></g>
         <g><rect x="310" y="430" width="250" height="60" rx="3" fill="var(--moss-wash)" stroke="var(--moss)" stroke-width="1.6"/>
-          <text class="n-t" x="435" y="454" text-anchor="middle">document_template</text><text class="n-s" x="435" y="472" text-anchor="middle">scan + settings JSON</text></g>
+          <text class="n-t" x="435" y="454" text-anchor="middle">document_template</text><text class="n-s" x="435" y="472" text-anchor="middle">HTML form template + settings</text></g>
         <g><rect x="600" y="430" width="240" height="60" rx="3" fill="var(--moss-wash)" stroke="var(--moss)" stroke-width="1.4"/>
           <text class="n-t" x="720" y="454" text-anchor="middle">★ diagnosis</text><text class="n-s" x="720" y="472" text-anchor="middle">standard name · ICD-10 · body area</text></g>
         <g><rect x="40" y="520" width="230" height="56" rx="3" fill="var(--moss-wash)" stroke="var(--moss)" stroke-width="1.4"/>
@@ -231,6 +234,8 @@
                 "pain_type.throbbing": { "x": 79, "y": 170, "box": 7.4 } },
   "cover":    [ { "x": 326, "y": 136, "w": 30, "h": 17, "reason": "pre_printed_pain" } ] }</pre>
 
+  <div class="callout navy" style="margin:12px 0 0"><b>Changed 25 Sep.</b> The <code>print</code> and <code>cover</code> parts above are not used: the pages are generated from the diagnosis's HTML form template, so there are no print coordinates and nothing pre-printed to cover. Values are filled into the form's own fields by their labels. The template's own clinical marks are visit 1's starting values.</div>
+
   <p class="pre-cap">3 · A visit — real columns for what's filtered often, JSON for the answers</p>
 <pre>visit_id 101 · authorization A3 · patient P7 · 2026-04-01 · visit 1 · pain_level 8 · form progress_note@3
 answers:        { "pain_type": { "throbbing": false, "dull": true, "sharp": true, "numbness": true } }
@@ -267,12 +272,12 @@ answer_source:  { "pain_type.sharp": "doctor_note", "pain_type.numbness": "docto
         <tr><td>packet</td><td>packet_page</td><td>1 : N</td><td>Per-page overrides made in preview. Cascade.</td></tr>
         <tr><td>packet</td><td>fax_transmission</td><td>0 : N</td><td>One per destination and attempt. Restrict.</td></tr>
         <tr><td>packet</td><td>packet (supersedes)</td><td>0 : 1</td><td>A correction points at the packet it replaces; neither is deleted.</td></tr>
-        <tr><td>form_definition</td><td>document_template</td><td>1 : N</td><td>Each note, cover-sheet or RFS scan is bound to one form version.</td></tr>
+        <tr><td>form_definition</td><td>document_template</td><td>1 : N</td><td>Each note, cover-sheet or RFS template is bound to one form version.</td></tr>
         <tr><td>diagnosis</td><td>document_template</td><td>1 : N</td><td>One current note template per diagnosis, plus superseded versions.</td></tr>
         <tr><td>diagnosis</td><td>authorization</td><td>1 : N</td><td>One diagnosis per authorization.</td></tr>
-        <tr><td>va_facility</td><td>document_template</td><td>1 : N</td><td>Cover-sheet scans: Atlanta two, Augusta one, Blairsville two.</td></tr>
+        <tr><td>va_facility</td><td>document_template</td><td>1 : N</td><td>Cover sheets: Atlanta two, Augusta one, Blairsville two (wording in <code>cover_sheets.json</code>).</td></tr>
         <tr><td>va_facility</td><td>fax_transmission</td><td>1 : N</td><td>Destination of each send.</td></tr>
-        <tr><td>office</td><td>document_template</td><td>1 : 1</td><td>One RFS scan per office.</td></tr>
+        <tr><td>office</td><td>document_template</td><td>1 : 1</td><td>One RFS version per office.</td></tr>
         <tr><td>va_facility</td><td>destination_rule</td><td>1 : N</td><td>“When sending here, also send there.”</td></tr>
         <tr><td>app_user</td><td>most tables</td><td>1 : N</td><td>Attribution (created, updated, approved by). Users are deactivated, never deleted.</td></tr>
       </tbody>
@@ -303,13 +308,13 @@ answer_source:  { "pain_type.sharp": "doctor_note", "pain_type.numbness": "docto
       <ul><li><b>id, version</b> · <b>authorization_id</b></li><li><b>kind</b> <i>initial · final · correction</i></li><li><b>supersedes_packet_id</b> · <b>supersede_reason</b></li><li><b>rfs_template_id</b> <i>null when no RFS</i></li><li><b>snapshot</b> <i>JSON — every value as printed</i></li><li><b>state</b> · <b>prepared_by, approved_by, approved_at</b></li></ul>
       <div class="why"><b>State is a constrained sequence:</b> <code>draft → ready → approved → sending → sent</code>. Only a draft can be edited. Once approved, the packet and its files are frozen and reproducible for good.</div></div>
     <div class="ent"><header><h4>packet_document</h4><span class="tag t-imm">Immutable</span></header>
-      <ul><li><b>id</b> · <b>packet_id</b></li><li><b>kind</b> <i>clinical_notes · rfs</i></li><li><b>file_name</b> <i>John Doe 1234 Acupuncture Records VA0012345678.pdf</i></li><li><b>pdf_path, sha256, page_count</b></li></ul>
-      <div class="why"><b>Separate files, as the VA requires.</b> The notes file name is built from the patient's name, last four and VA number.</div></div>
+      <ul><li><b>id</b> · <b>packet_id</b></li><li><b>kind</b> <i>clinical_notes · rfs</i></li><li><b>file_name</b> <i>John Doe 1234 Acupuncture Records VA0012345678.pdf</i></li><li><b>pdf_path, sha256, page_count</b> <i>generated at approval, under data/documents/</i></li></ul>
+      <div class="why"><b>Separate files, as the VA requires.</b> The notes file name is built from the patient's name, last four and VA number. The file is generated once, at approval, and served exactly as stored afterwards.</div></div>
     <div class="ent"><header><h4>packet_page</h4><span class="tag t-imm">Immutable</span></header>
       <ul><li><b>id</b> · <b>packet_id</b> · <b>document_kind</b> · <b>page_no</b></li><li><b>visit_id</b> <i>nullable</i></li><li><b>overrides</b> <i>JSON — values changed on this page only</i></li></ul>
       <div class="why">The only way two documents can disagree is a deliberate per-page override — which is what the consistency check looks for.</div></div>
     <div class="ent"><header><h4>fax_transmission</h4><span class="tag t-imm">Immutable</span></header>
-      <ul><li><b>id</b> · <b>packet_id</b> <i>null for a test fax</i> · <b>kind</b> <i>packet · test</i></li><li><b>va_facility_id</b> · <b>to_fax_number</b></li><li><b>cover_template_id</b> · <b>cover_pdf_path</b> · <b>cover_file_name</b></li><li><b>total_pages</b> <i>cover + notes + RFS</i></li><li><b>triggered_by</b> <i>manual · rule</i></li><li><b>attempt_no</b> · <b>provider_message_id</b> · <b>status</b></li><li><b>last_polled_at, poll_attempts</b> · <b>error_text, sent_at</b></li></ul>
+      <ul><li><b>id</b> · <b>packet_id</b> <i>null for a test fax</i> · <b>kind</b> <i>packet · test</i></li><li><b>va_facility_id</b> · <b>to_fax_number</b></li><li><b>cover_template_id</b> · <b>cover_pdf_path</b> <i>generated at approval</i> · <b>cover_file_name</b></li><li><b>total_pages</b> <i>cover + notes + RFS</i></li><li><b>triggered_by</b> <i>manual · rule</i></li><li><b>attempt_no</b> · <b>provider_message_id</b> · <b>status</b></li><li><b>last_polled_at, poll_attempts</b> · <b>error_text, sent_at</b></li></ul>
       <div class="why"><b>The cover sheet lives here, not on the packet</b> — each destination gets its own. SRFax accepts a fax and confirms delivery later, so a background job polls until <i>queued</i> becomes <i>sent</i>.</div></div>
     <div class="ent"><header><h4>activity_log</h4><span class="tag t-imm">Immutable</span></header>
       <ul><li><b>actor_id</b> <i>null for system events</i> · <b>category</b> <i>record · access · export · settings · system</i></li><li><b>action</b> <i>view · create · update · approve · send · sign_in · sign_in_failed · locked · signed_out · download · settings_changed · config_loaded · update_installed · test_fax · backup</i></li><li><b>entity, entity_id</b> · <b>before, after</b> <i>secrets never recorded</i> · <b>reason</b></li><li><b>occurred_at</b> · <b>client_info</b> <i>browser and device</i></li></ul>
@@ -325,8 +330,8 @@ answer_source:  { "pain_type.sharp": "doctor_note", "pain_type.numbness": "docto
       <ul><li><b>id</b> · <b>key</b> <i>progress_note · cover_sheet · rfs</i></li><li><b>version</b> · <b>status</b></li><li><b>definition</b> <i>JSON — sections, fields, order, rules, per visit / per template</i></li></ul>
       <div class="why">One master definition per document type. A new version never changes visits already recorded.</div></div>
     <div class="ent"><header><h4>document_template</h4><span class="tag t-cfg">Config</span></header>
-      <ul><li><b>id</b> · <b>kind</b> <i>note · cover_sheet · rfs</i></li><li><b>diagnosis_id</b> / <b>va_facility_id</b> / <b>office_id</b></li><li><b>form_definition_id</b> · <b>form_version</b></li><li><b>source_pdf</b> <i>untouched original</i> · <b>clean_background</b> <i>ticks erased where boxes are live</i></li><li><b>settings</b> <i>JSON — hidden, defaults, print positions, cover-ups, <code>form_layout</code> (short · shoulder · standard · extended, one per common master in docs/diagnosis_templates), the clinical marks printed on the scan (visit 1's starting values), <code>activities_other</code> (false where the scan prints no 'Other' on painful activities — Shoulder, May 30)</i></li><li><b>version</b> · <b>status</b> <i>ready · blocked · superseded</i> · <b>block_reason</b></li></ul>
-      <div class="why">Loaded from a folder per diagnosis and version (<code>scan.pdf</code> + <code>settings.json</code>), checked against the schema on start-up. Replacing a scan creates a new version; packets already sent keep the one they used.</div></div>
+      <ul><li><b>id</b> · <b>kind</b> <i>note · cover_sheet · rfs</i></li><li><b>diagnosis_id</b> / <b>va_facility_id</b> / <b>office_id</b></li><li><b>form_definition_id</b> · <b>form_version</b></li><li><b>source_pdf</b> <i>the practice's scan, kept for reference</i> · <b>clean_background</b> <i>not used since 25 Sep</i></li><li><b>settings</b> <i>JSON — hidden, defaults, print positions, cover-ups, <code>form_layout</code> (short · shoulder · standard · extended, one per common master in docs/diagnosis_templates), the clinical marks printed on the scan (visit 1's starting values), <code>activities_other</code> (false where the scan prints no 'Other' on painful activities — Shoulder, May 30)</i></li><li><b>template_version</b> · <b>received_on</b> · <b>status</b> <i>ready (template.html present) · blocked · superseded</i> · <b>block_reason</b></li></ul>
+      <div class="why">Loaded from a folder per diagnosis and version: <code>template.html</code> (the form as HTML) and any settings, re-synced on every start. A changed form is a new version; packets already sent keep the files they were sent with.</div></div>
     <div class="ent"><header><h4>★ diagnosis</h4><span class="tag t-cfg">Shared</span></header>
       <ul><li><b>id, slug</b></li><li><b>display_name</b> <i>with side, for staff — Low Back Pain – Left</i></li><li><b>printed_wording</b> <i>on the page — LOW BACK PAIN</i></li><li><b>icd10_code</b> <i>with the dot — M54.50; blocks RFS only</i> · <b>icd10_description</b> <i>RFS field 14</i> · <b>icd10_confirmed</b> <i>RFS stays off while false</i></li><li><b>body_area</b> <i>for RFS field 18</i></li><li><b>body_group</b> <i>Back · Neck · Knee · Hip… for the picker</i></li><li><b>post_treatment_severity</b> <i>always 1</i></li></ul>
       <div class="why">Staff pick by the name <i>with</i> the side; the page prints the wording <i>without</i> it, as the practice asked. A clinic's own scan, defaults, closing note and any wording change live in its template settings.</div></div>
@@ -335,7 +340,7 @@ answer_source:  { "pain_type.sharp": "doctor_note", "pain_type.numbness": "docto
       <div class="why">One list for every clinic. The named contact on a cover sheet (“ATTN: …”) and its fax number are the clinic's own — they sit on the clinic's cover-sheet template.</div></div>
     <div class="ent"><header><h4>tenant · office · practice_setting</h4><span class="tag t-cfg">Config</span></header>
       <ul><li><b>tenant</b>: clinic name, status</li><li><b>office</b>: the clinic's branches — name, address, active</li><li><b>practice_setting</b>: provider name, NPI, phone, <b>fax 404-738-1714</b>, email, footer, retention periods, fax account</li></ul>
-      <div class="why">Practice details are printed on top of the scans, never baked in — the fax number changes in one place.</div></div>
+      <div class="why">Practice details are filled into the generated pages, never baked into a template — the fax number changes in one place.</div></div>
     <div class="ent"><header><h4>destination_rule</h4><span class="tag t-new">New</span></header>
       <ul><li><b>when_facility_id</b> <i>Blairsville VA</i></li><li><b>also_send_to_id</b> <i>Atlanta VA</i></li><li><b>cover_template_id</b> <i>which Atlanta cover — to confirm</i></li><li><b>include_rfs</b> <i>to confirm</i></li></ul>
       <div class="why">One approval, two faxes — confirmed as routine by the practice.</div></div>
@@ -349,7 +354,7 @@ answer_source:  { "pain_type.sharp": "doctor_note", "pain_type.numbness": "docto
   <h2>How every value gets filled</h2>
   <div class="tiers">
     <div class="tier"><div class="tno">A</div><div><h4>From the records — no logic</h4><p>Name, date of birth, last four, title, his/her · VA number · diagnosis wording and ICD-10 · office address · VA facility and its fax · practice phone, fax, NPI · dates · page counts · the notes file name.</p></div></div>
-    <div class="tier"><div class="tno">B</div><div><h4>By rule</h4><p>First page from visit 1, last page from the visit marked final, middle otherwise · INITIAL VISIT and Last Visit labels and notes · Excellent on the last page, Good otherwise · post-treatment 1/10 · cover-ups from the template settings · each visit's answers start from the previous visit (first visit: same patient + same diagnosis → their last recorded visit, else diagnosis defaults) and stay editable (pain level excepted — always entered) · Blairsville sends copied to Atlanta · RFS reason assembled from the standard wording plus title and surname, body area and his/her.</p></div></div>
+    <div class="tier"><div class="tno">B</div><div><h4>By rule</h4><p>First page from visit 1, last page from the visit marked final, middle otherwise · INITIAL VISIT and Last Visit labels and notes · Excellent on the last page, Good otherwise · post-treatment 1/10 · page total on each cover sheet = cover + notes + RFS · each visit's answers start from the previous visit (first visit: same patient + same diagnosis → their last recorded visit, else diagnosis defaults) and stay editable (pain level excepted — always entered) · Blairsville sends copied to Atlanta · RFS reason assembled from the standard wording plus title and surname, body area and his/her.</p></div></div>
     <div class="tier"><div class="tno">C</div><div><h4>Grok — reviewed before use</h4><p>Reads Dr. DeYoe's note with names and IDs removed and proposes the template and the first visit's answers (“dull and sharp … numbness” → Dull, Sharp, Numbness) · drafts the closing note. Nothing is saved until Lorraine accepts it.</p></div></div>
   </div>
 </section>
@@ -374,8 +379,8 @@ SELECT d.display_name, AVG(first.pain_level - last.pain_level) …</pre>
     <table>
       <thead><tr><th>Commitment</th><th>Verdict</th><th>How the model handles it</th></tr></thead>
       <tbody>
-        <tr><td>Field positions editable without code</td><td class="ok">Stronger</td><td>Template settings JSON — one file per diagnosis, maintained by our team.</td></tr>
-        <tr><td>Hide pre-printed content that must change</td><td class="ok">Holds</td><td>Cover-ups in template settings; ticks erased only where boxes are live.</td></tr>
+        <tr><td>Field positions editable without code</td><td class="warn">Changed</td><td>The layout lives in each diagnosis's HTML form template (config, maintained by our team) — no coordinates to maintain.</td></tr>
+        <tr><td>Hide pre-printed content that must change</td><td class="warn">Changed</td><td>Not needed: the pages are generated, so nothing pre-printed has to be covered.</td></tr>
         <tr><td>Top and bottom dates cannot differ</td><td class="ok">Stronger</td><td>One date column printed twice.</td></tr>
         <tr><td>Pain level never generated by the tool</td><td class="ok">Holds</td><td>Entered per visit; Grok may propose, a person accepts.</td></tr>
         <tr><td>Output as one merged PDF</td><td class="warn">Replaced</td><td>The VA requires three separate files — cover sheet, notes, RFS. The model stores them separately.</td></tr>
@@ -403,6 +408,7 @@ SELECT d.display_name, AVG(first.pain_level - last.pain_level) …</pre>
         <tr><td>Left/right not printed on the page</td><td><code>display_name</code> for staff, <code>printed_wording</code> for the page</td></tr>
         <tr><td>Post-treatment always 1/10 · Excellent on the last page</td><td>Rules, not per-diagnosis settings</td></tr>
         <tr><td>Office Mac desktop (iMac 24-inch, M4, FileVault on)</td><td>SQLite with FileVault encryption and encrypted backups</td></tr>
+        <tr><td>Output files generated from the practice's forms as HTML (user decision 25 Sep, awaiting Poonam)</td><td>Notes, RFS and cover sheets as new PDFs (headless Chromium); files kept with SHA-256 at approval</td></tr>
         <tr><td>ICD-10 codes for 20 diagnoses (22 Sep)</td><td><code>diagnosis.icd10_code</code> with the dot; <code>icd10_confirmed</code> false for the 3 codes awaiting confirmation</td></tr>
       </tbody>
     </table>
@@ -420,6 +426,8 @@ SELECT d.display_name, AVG(first.pain_level - last.pain_level) …</pre>
     <dl class="rows"><dt>Assumed</dt><dd><b>Keep what each scan prints.</b> Hip and right-knee templates print the side (“PAIN IN LEFT HIP”), while Low Back Pain – Left is shown without it on the Jane Doe sample. <code>printed_wording</code> can be set either way per diagnosis.</dd></dl></div>
   <div class="asm"><header><h4>Clinical sections per visit and the RFS form on Build packet</h4><span class="pill">Open</span></header>
     <dl class="rows"><dt>Demo now</dt><dd><b>Both shown again at the user's request (25 Sep)</b>, on branch feature/clinical-and-rfs-forms: S9 shows the selected template's clinical sections, pre-filled from the scan or the previous visit and saved as <code>visit.clinical</code>; S11 shows the full RFS form when Include RFS is ticked. Handbook §05, F6 and F13 say these print from the template and the RFS is derived — Poonam/Shikha to decide which stands.</dd></dl></div>
+  <div class="asm"><header><h4>Golden rule 2 — printing on the scans</h4><span class="pill">Open</span></header>
+    <dl class="rows"><dt>Built</dt><dd><b>New PDFs generated from the practice's forms as HTML templates</b> (user decision 25 Sep; no clean scans). The handbook still says to print on the scans and never redraw the forms — Poonam to confirm the change and update the handbook, or reverse it. Four diagnoses (Cervicalgia – Left, Fibromyalgia, Headache, Vertebrogenic LBP – Right) wait for the practice's form templates.</dd></dl></div>
   <div class="asm"><header><h4>Retention</h4><span class="pill">Open</span></header>
     <dl class="rows"><dt>Assumed</dt><dd><b>10 years for packets, 6 years for logs</b>, as settings. Not legal advice — to be confirmed with the practice's own advisor.</dd></dl></div>
 

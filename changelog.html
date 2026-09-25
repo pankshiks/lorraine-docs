@@ -73,7 +73,7 @@
   <p class="eyebrow">DeYoe Wellness Acupuncture — for the development team</p>
   <h1>Changelog</h1>
   <p class="standfirst">Every change to these documents, newest first: what changed, why, and where. Read this before starting work, so you build against the current rules and not an older version.</p>
-  <div class="meta"><span><b>Latest</b> v2.3 · 2026-09-24</span><span><b>Internal</b> not for the client</span></div>
+  <div class="meta"><span><b>Latest</b> v2.4 · 2026-09-25</span><span><b>Internal</b> not for the client</span></div>
 </header>
 
 <div class="callout"><b>For Claude Code and anyone building from these docs</b>
@@ -84,6 +84,23 @@
   <li>Never put real patient data in these docs or in a changelog entry.</li>
 </ol></div>
 
+<section class="rel" id="v2-4">
+  <header><h2>v2.4</h2><span class="date">2026-09-25</span></header>
+  <p class="src"><b>Source:</b> User decisions of 25 Sep 2026 while building M2 and M4 (development started before design sign-off at the user&#x27;s request). Changes golden rule 2 — awaiting Poonam&#x27;s confirmation.</p>
+  <p class="pages"><code>changelog.html</code> v2.4 · <code>build-fixes.html</code> statuses + 25 Sep notes · <code>data-model.html</code> rev 10 → rev 11 · <code>current-process.html</code> how the tool produces the files · handbook and screen spec unchanged (rule 2 to confirm)</p>
+  <div class="tblwrap"><table><thead><tr><th>Area</th><th>Change</th><th>Where</th></tr></thead><tbody>
+<tr><td class="area">Build plan (M2 scope)</td><td>Decision 25 Sep (user): M2 connects the screens to the real database now instead of waiting for M5–M7 — patients, authorizations, visits and packet data (S1–S9, S11–S13, S16, S19, S20) are saved and read through the API; PDF output stays M4 and SRFax sending M8 (S13 saves the fax details as &#x27;awaiting SRFax&#x27;). Delivered as M2.1–M2.4. Needs Poonam/Shikha to note the changed module order.</td><td class="where"><code>index.html#modules</code></td></tr>
+<tr><td class="area">M2.1 Data layer and sign-in</td><td>Every data-model table (SQLAlchemy + Alembic, SQLite WAL, foreign keys, database triggers for visit limits/period/final visit and an append-only activity log), TenantSession clinic separation with a two-clinic isolation test, optimistic locking, activity log (secrets masked, IDs only in app logs), Argon2 session sign-in with CSRF, 3-attempt lock-out and 15-minute idle sign-out, first-start seed from fixtures/. S1 signs in for real; every other screen needs a session.</td><td class="where"><code>backend/app/models · backend/app/core · backend/app/seed.py</code></td></tr>
+<tr><td class="area">M2.2 Patients and authorizations</td><td>Patients and authorizations are saved in the database and read back: S3–S8, S2 and S16 now show saved records (GET /api/workspace after sign-in; POST/PUT /api/patients and /api/authorizations with the screens&#x27; rules and messages enforced on the server, duplicate suggestion, diagnosis lock, extensions with a logged reason, optimistic locking). Opening S5/S7 is logged as a view. Visits (S9) and packets (S11–S13) follow in M2.3/M2.4.</td><td class="where"><code>backend/app/api · frontend/src/lib/fixtures.ts</code></td></tr>
+<tr><td class="area">M2.3 Visits</td><td>Visits recorded on S9 are saved in the database (POST /api/authorizations/{id}/visits): the API numbers the visit, re-checks the S9 rules with the same messages (date required, unique, after the previous visit, inside the period; pain 0–10 always entered; nothing beyond the approved count or after the final visit), makes the last approved visit final, stores answers under stable keys with a per-answer source, the clinical sections and the physician&#x27;s note (first and final visit). S7 and S2 update from the saved visit.</td><td class="where"><code>backend/app/api/visits.py · frontend/src/features/visits/VisitEntry.tsx</code></td></tr>
+<tr><td class="area">M2.4 Packets, settings, activity</td><td>Packet data is saved: S11 Build and preview saves the draft (cover sheet, Include RFS, the RFS form), S12 page edits are saved on it, S13 Confirm and send approves it — the packet is frozen (snapshot of every printed value), its files named and counted, and one fax per destination (incl. the automatic Atlanta copy) recorded as waiting for SRFax; the status shows &#x27;Queued&#x27;, never &#x27;Sent&#x27;. S19 saves practice settings (logged, secrets masked) and records test-fax requests; S20 reads the real activity log and users; downloads are logged. Faxing itself stays M8; PDFs M4.</td><td class="where"><code>backend/app/api/packets.py · backend/app/api/admin.py</code></td></tr>
+<tr><td class="area">PDF engine (decision 25 Sep)</td><td>User decision (awaiting Poonam&#x27;s confirmation — it changes golden rule 2): no clean scans, so the clinical notes and the RFS are new PDFs generated from the practice&#x27;s forms as HTML templates, filled from the saved records and printed with headless Chromium. Notes: one Letter page per visit — identifiers, date top and bottom, pain, the patient&#x27;s answers, the clinical sections chosen on S9, first/last page wording, Excellent on the last page, post-treatment 1/10; signature blank. RFS: both pages from the S11 values; box 21 blank. 16 of 20 diagnoses have a template and are now set up; Cervicalgia – Left, Fibromyalgia, Headache and Vertebrogenic LBP – Right wait for the practice&#x27;s templates. S12 previews the real PDFs; approval keeps the files exactly as sent (sha256). Cover sheets: see the next entry.</td><td class="where"><code>backend/app/pdf · backend/config/clinics/deyoe/diagnoses</code></td></tr>
+<tr><td class="area">Cover sheets (decision 25 Sep)</td><td>Fax cover sheets are generated the same way as the notes and the RFS: one per destination, wording from the practice&#x27;s five cover sheets (config/clinics/deyoe/cover_sheets.json), recipient fax and phone from the VA facility, sender from the practice settings, page total = cover + notes + RFS. S12 previews every destination&#x27;s cover (Atlanta VAMC included); approval keeps each cover with its fax. Signature not printed.</td><td class="where"><code>backend/app/pdf/cover.py · backend/config/clinics/deyoe/cover_sheets.json</code></td></tr>
+<tr><td class="area">Diagnosis picker (decision 25 Sep)</td><td>Development phase: a diagnosis whose template isn&#x27;t set up yet can&#x27;t be chosen on S6/S8 — it shows disabled with &#x27;Template not set up yet&#x27;, and the API refuses it. An authorization already on one can still be edited. Every template is added before go-live (Cervicalgia – Left, Fibromyalgia, Headache, Vertebrogenic LBP – Right requested from the practice).</td><td class="where"><code>frontend/src/components/DiagnosisPicker.tsx · backend/app/api/authorizations.py</code></td></tr>
+<tr><td class="area">Docs brought up to date</td><td>build-fixes.html: fix statuses restored from the fix commits (F5, F11, F12, F14 Done; F6 and F13&#x27;s screen part reversed and awaiting approval, now merged in PR #10), F10/F11/F13 carry a 25 Sep note on the new PDF approach and the diagnosis picker, a 25 Sep update above the design tables, the development table shows M0/M2 done and M4 brought forward, and &#x27;Real sign-in and saving&#x27; leaves the parked list. data-model.html rev 11: generated PDFs, where the files are kept, template readiness. current-process.html: how the tool now produces the three files.</td><td class="where"><code>build-fixes.html · data-model.html · current-process.html</code></td></tr>
+<tr><td class="area">Golden rule 2 (to confirm)</td><td>The handbook (§09 rule 2) still says &#x27;print on the practice&#x27;s scans; never redraw their forms&#x27;. The build now generates new PDFs from the practice&#x27;s forms as HTML templates for all three files. Poonam to confirm and update the handbook, or reverse the decision (rule 8).</td><td class="where"><code>index.html §09 · CLAUDE.md</code></td></tr>
+  </tbody></table></div>
+</section>
 <section class="rel" id="v2-3">
   <header><h2>v2.3</h2><span class="date">2026-09-24</span></header>
   <p class="src"><b>Source:</b> Design and spec review of the build on 24 Sep 2026 (148.113.35.97:7678) against handbook v2.2, screen spec rev 7, build-fixes F1–F10 and json-example v2. No business rules changed.</p>
@@ -134,9 +151,10 @@
 </section>
 
 <section class="pend" id="pending">
-  <h3>Waiting on the practice (as of v2.3)</h3>
+  <h3>Waiting on the practice (as of v2.4)</h3>
   <ul>
     <li>Confirm ICD-10 for Hip – Left, Knee – Right, Shoulder – Right</li>
+    <li>Form templates for Cervicalgia – Left, Fibromyalgia, Headache and Vertebrogenic LBP – Right (these 4 can&#x27;t be picked until then)</li>
     <li>A test fax destination (not 404-738-1714)</li>
     <li>SRFax API details (entered by the practice in the tool)</li>
     <li>Left Shoulder: OK to cover the title and print 'Pain in shoulder'?</li>
@@ -150,8 +168,71 @@
 </div>
 <script type="application/json" id="changelog-data">
 {
-  "latest": "2.3",
+  "latest": "2.4",
   "entries": [
+    {
+      "version": "2.4",
+      "date": "2026-09-25",
+      "source": "User decisions of 25 Sep 2026 while building M2 and M4 (development started before design sign-off at the user's request). Changes golden rule 2 — awaiting Poonam's confirmation.",
+      "pages": {
+        "changelog.html": "v2.4",
+        "build-fixes.html": "statuses, 25 Sep notes on F10/F11/F13, development table",
+        "data-model.html": "rev 10 → rev 11",
+        "current-process.html": "how the tool produces the files"
+      },
+      "changes": [
+        {
+          "area": "Build plan (M2 scope)",
+          "change": "Decision 25 Sep (user): M2 connects the screens to the real database now instead of waiting for M5–M7 — patients, authorizations, visits and packet data (S1–S9, S11–S13, S16, S19, S20) are saved and read through the API; PDF output stays M4 and SRFax sending M8 (S13 saves the fax details as 'awaiting SRFax'). Delivered as M2.1–M2.4. Needs Poonam/Shikha to note the changed module order.",
+          "where": "index.html#modules"
+        },
+        {
+          "area": "M2.1 Data layer and sign-in",
+          "change": "Every data-model table (SQLAlchemy + Alembic, SQLite WAL, foreign keys, database triggers for visit limits/period/final visit and an append-only activity log), TenantSession clinic separation with a two-clinic isolation test, optimistic locking, activity log (secrets masked, IDs only in app logs), Argon2 session sign-in with CSRF, 3-attempt lock-out and 15-minute idle sign-out, first-start seed from fixtures/. S1 signs in for real; every other screen needs a session.",
+          "where": "backend/app/models · backend/app/core · backend/app/seed.py"
+        },
+        {
+          "area": "M2.2 Patients and authorizations",
+          "change": "Patients and authorizations are saved in the database and read back: S3–S8, S2 and S16 now show saved records (GET /api/workspace after sign-in; POST/PUT /api/patients and /api/authorizations with the screens' rules and messages enforced on the server, duplicate suggestion, diagnosis lock, extensions with a logged reason, optimistic locking). Opening S5/S7 is logged as a view. Visits (S9) and packets (S11–S13) follow in M2.3/M2.4.",
+          "where": "backend/app/api · frontend/src/lib/fixtures.ts"
+        },
+        {
+          "area": "M2.3 Visits",
+          "change": "Visits recorded on S9 are saved in the database (POST /api/authorizations/{id}/visits): the API numbers the visit, re-checks the S9 rules with the same messages (date required, unique, after the previous visit, inside the period; pain 0–10 always entered; nothing beyond the approved count or after the final visit), makes the last approved visit final, stores answers under stable keys with a per-answer source, the clinical sections and the physician's note (first and final visit). S7 and S2 update from the saved visit.",
+          "where": "backend/app/api/visits.py · frontend/src/features/visits/VisitEntry.tsx"
+        },
+        {
+          "area": "M2.4 Packets, settings, activity",
+          "change": "Packet data is saved: S11 Build and preview saves the draft (cover sheet, Include RFS, the RFS form), S12 page edits are saved on it, S13 Confirm and send approves it — the packet is frozen (snapshot of every printed value), its files named and counted, and one fax per destination (incl. the automatic Atlanta copy) recorded as waiting for SRFax; the status shows 'Queued', never 'Sent'. S19 saves practice settings (logged, secrets masked) and records test-fax requests; S20 reads the real activity log and users; downloads are logged. Faxing itself stays M8; PDFs M4.",
+          "where": "backend/app/api/packets.py · backend/app/api/admin.py"
+        },
+        {
+          "area": "PDF engine (decision 25 Sep)",
+          "change": "User decision (awaiting Poonam's confirmation — it changes golden rule 2): no clean scans, so the clinical notes and the RFS are new PDFs generated from the practice's forms as HTML templates, filled from the saved records and printed with headless Chromium. Notes: one Letter page per visit — identifiers, date top and bottom, pain, the patient's answers, the clinical sections chosen on S9, first/last page wording, Excellent on the last page, post-treatment 1/10; signature blank. RFS: both pages from the S11 values; box 21 blank. 16 of 20 diagnoses have a template and are now set up; Cervicalgia – Left, Fibromyalgia, Headache and Vertebrogenic LBP – Right wait for the practice's templates. S12 previews the real PDFs; approval keeps the files exactly as sent (sha256). Cover sheets: see the next entry.",
+          "where": "backend/app/pdf · backend/config/clinics/deyoe/diagnoses"
+        },
+        {
+          "area": "Cover sheets (decision 25 Sep)",
+          "change": "Fax cover sheets are generated the same way as the notes and the RFS: one per destination, wording from the practice's five cover sheets (config/clinics/deyoe/cover_sheets.json), recipient fax and phone from the VA facility, sender from the practice settings, page total = cover + notes + RFS. S12 previews every destination's cover (Atlanta VAMC included); approval keeps each cover with its fax. Signature not printed.",
+          "where": "backend/app/pdf/cover.py · backend/config/clinics/deyoe/cover_sheets.json"
+        },
+        {
+          "area": "Diagnosis picker (decision 25 Sep)",
+          "change": "Development phase: a diagnosis whose template isn't set up yet can't be chosen on S6/S8 — it shows disabled with 'Template not set up yet', and the API refuses it. An authorization already on one can still be edited. Every template is added before go-live (Cervicalgia – Left, Fibromyalgia, Headache, Vertebrogenic LBP – Right requested from the practice).",
+          "where": "frontend/src/components/DiagnosisPicker.tsx · backend/app/api/authorizations.py"
+        },
+        {
+          "area": "Docs brought up to date",
+          "change": "build-fixes.html: fix statuses restored from the fix commits (F5, F11, F12, F14 Done; F6 and F13's screen part reversed and awaiting approval, now merged in PR #10), F10/F11/F13 carry a 25 Sep note on the new PDF approach and the diagnosis picker, a 25 Sep update above the design tables, the development table shows M0/M2 done and M4 brought forward, and 'Real sign-in and saving' leaves the parked list. data-model.html rev 11: generated PDFs, where the files are kept, template readiness. current-process.html: how the tool now produces the three files.",
+          "where": "build-fixes.html · data-model.html · current-process.html"
+        },
+        {
+          "area": "Golden rule 2 (to confirm)",
+          "change": "The handbook (§09 rule 2) still says 'print on the practice's scans; never redraw their forms'. The build now generates new PDFs from the practice's forms as HTML templates for all three files. Poonam to confirm and update the handbook, or reverse the decision (rule 8).",
+          "where": "index.html §09 · CLAUDE.md"
+        }
+      ]
+    },
     {
       "version": "2.3",
       "date": "2026-09-24",
@@ -331,6 +412,7 @@
   ],
   "pending_from_practice": [
     "Confirm ICD-10 for Hip – Left, Knee – Right, Shoulder – Right",
+    "Form templates for Cervicalgia – Left, Fibromyalgia, Headache and Vertebrogenic LBP – Right (these 4 can't be picked until then)",
     "A test fax destination (not 404-738-1714)",
     "SRFax API details (entered by the practice in the tool)",
     "Left Shoulder: OK to cover the title and print 'Pain in shoulder'?",

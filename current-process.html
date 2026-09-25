@@ -101,7 +101,7 @@
     <h1>How a VA packet is built today</h1>
     <p class="standfirst">The manual process the new tool replaces, mapped from the practice's templates, cover sheets, RFS forms, sample packets and Lorraine's answers of 19 September. Every step below is done by hand.</p>
     <div class="meta">
-      <span><b>Updated</b> 23 Sep 2026</span>
+      <span><b>Updated</b> 25 Sep 2026</span>
       <span><b>Sources</b> reference files · 19 Sep answers · visit-note example</span>
     </div>
   </header>
@@ -351,6 +351,8 @@ THANK YOU.</p>
     <div class="callout"><b>Still to confirm.</b> Whether the first visit's note is faxed to Atlanta straight after the initial visit (there is a dedicated “Initial Visit Acupuncture Records” cover sheet) · who asks the patient the pain and activity questions at each visit, and where the answers are written down · which Atlanta cover sheet goes with the automatic copy of a Blairsville send, and whether the RFS goes to both.</div>
 
     <div class="callout"><b>How the packet tool handles this (demo, updated 25 Sep).</b> The four markers above are handled by rule: the visit date is entered once and printed top and bottom · name, VA number and last four come from one record and are checked across all three files · the page count is calculated · the patient's answers are recorded per visit, starting from the previous visit. <b>Awaiting Poonam/Shikha approval:</b> at the user's request the demo also lets Lorraine adjust the clinical sections that are pre-printed today (objective, pulse, tongue, assessment, prognosis, plan, treatments, point prescription, therapies, post-treatment), pre-filled from the diagnosis's scan or the previous visit, and offers the “Other ____” write-in on Type of pain that every scan prints. The RFS is filled in as the full VA Form 10-10172 on Build packet, pre-filled from the patient, authorization and practice settings; box 21 stays unsigned and flagged. See build-fixes.html F6 and F13 and data-model.html.</div>
+
+    <div class="callout"><b>How the three files are produced (25 Sep — user decision, awaiting Poonam's confirmation).</b> There are no clean scans, so the tool no longer types values onto the scanned pages: it generates each file as a new PDF from the practice's form kept as an HTML template, filled from the saved records. <b>Clinical notes</b> — one page per visit from the diagnosis's form: name, VA number, last four and the visit date (top and bottom) from one record, the pain level, the patient's answers, the clinical sections, INITIAL VISIT / Last Visit wording and notes, Excellent on the last page, post-treatment 1/10. <b>RFS</b> — both pages of VA Form 10-10172 from the values checked on Build packet; box 21 left blank. <b>Cover sheet</b> — one per destination (the automatic Atlanta copy included), with the practice's own wording for that sheet, the facility's fax and phone, the practice's current fax 404-738-1714, today's date and the page total worked out as cover + notes + RFS. Signature areas stay blank. The files are shown on Preview before sending and kept exactly as sent. 16 of the 20 diagnoses are ready; Cervicalgia – Left, Fibromyalgia, Headache and Vertebrogenic LBP – Right wait for the practice's form templates and can't be chosen until then.</div>
   </section>
 </div>
 
