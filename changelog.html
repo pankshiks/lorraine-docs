@@ -73,7 +73,7 @@
   <p class="eyebrow">DeYoe Wellness Acupuncture — for the development team</p>
   <h1>Changelog</h1>
   <p class="standfirst">Every change to these documents, newest first: what changed, why, and where. Read this before starting work, so you build against the current rules and not an older version.</p>
-  <div class="meta"><span><b>Latest</b> v2.4 · 2026-09-25</span><span><b>Internal</b> not for the client</span></div>
+  <div class="meta"><span><b>Latest</b> v2.5 · 2026-09-28</span><span><b>Internal</b> not for the client</span></div>
 </header>
 
 <div class="callout"><b>For Claude Code and anyone building from these docs</b>
@@ -84,6 +84,21 @@
   <li>Never put real patient data in these docs or in a changelog entry.</li>
 </ol></div>
 
+<section class="rel" id="v2-5">
+  <header><h2>v2.5</h2><span class="date">2026-09-28</span></header>
+  <p class="src"><b>Source:</b> The practice&#x27;s scans of 28 Sep 2026 for the four missing diagnoses.</p>
+  <p class="pages"><code>changelog.html</code> v2.5 · <code>build-fixes.html</code> F10 done, F2 ICD-10 note · <code>data-model.html</code> rev 11 → rev 12 · <code>current-process.html</code> all 20 ready · <code>developer-handbook.md</code> build changes marked · <code>feedback.html</code> 28 Sep (client-facing)</p>
+  <div class="tblwrap"><table><thead><tr><th>Area</th><th>Change</th><th>Where</th></tr></thead><tbody>
+<tr><td class="area">All 20 diagnoses set up</td><td>The practice sent clean scans for the four missing diagnoses on 28 Sep (DeYoe_Client_Reference_Files/02_Diagnosis_Base_Templates_18, not in git). Cervicalgia – Left, Fibromyalgia and Headache are built by build.py from the same 4-column master (C4) as the others; Headache&#x27;s scan is shorter (five objective rows per column, no Acupressure line, one discussion line), so C4&#x27;s extra rows stay unticked. Each scan&#x27;s ticks, circled regions, pulse, tongue, assessment, point prescription, therapies and post-treatment location are recorded in fixtures/diagnoses.json as visit 1&#x27;s starting values, as for the other 16; Vertebrogenic LBP – Right now has its own right-side marks instead of starting blank. Every diagnosis can now be picked and printed. Tests of the &#x27;not set up yet&#x27; paths now mark a template as missing on purpose (tests/conftest.py block_template).</td><td class="where"><code>backend/config/clinics/deyoe/diagnoses · fixtures/diagnoses.json · docs/diagnosis_templates</code></td></tr>
+<tr><td class="area">ICD-10 for Pain in Left Hip (decision 28 Sep)</td><td>User decision: Pain in Left Hip uses M25.551, the code the practice&#x27;s 22 Sep list gives for both hips, so its RFS can be included. Box 14 prints &#x27;PAIN IN HIP&#x27;, because M25.551&#x27;s own description names the right hip. ICD-10 has a separate left-hip code (M25.552); the practice to confirm. Right Knee and Right Shoulder still await confirmation (RFS off). Each start now also refreshes the shared diagnosis list and each template&#x27;s starting values from fixtures, so code and tick changes reach an existing database (no patient data touched).</td><td class="where"><code>fixtures/diagnoses.v2.json · backend/app/seed.py (sync_templates)</code></td></tr>
+<tr><td class="area">ICD-10 for Right Knee and Right Shoulder (decision 28 Sep)</td><td>Same approach as Left Hip: the practice&#x27;s list gives one code for both sides, so Right Knee uses M25.562 (&#x27;PAIN IN KNEE&#x27; in box 14) and Right Shoulder uses M25.512 (&#x27;PAIN IN SHOULDER&#x27;). Every diagnosis now has a confirmed code and can include the RFS. ICD-10 has side-specific codes for these (M25.552 left hip, M25.561 right knee, M25.511 right shoulder); the practice to confirm.</td><td class="where"><code>fixtures/diagnoses.v2.json</code></td></tr>
+<tr><td class="area">Docs brought up to date (28 Sep)</td><td>build-fixes.html: 28 Sep update above the design tables and an F2 note on the ICD-10 decision. data-model.html rev 12: ICD-10 decision, reference data refreshed on every start, new open item for the side-specific codes. current-process.html: RFS for all 20. developer-handbook.md: build changes awaiting Poonam&#x27;s confirmation marked inline (rule 2, clinical sections, ICD-10 glossary, diagnoses, repository). feedback.html (client-facing) updated for 28 Sep: what&#x27;s ready (all 20 forms, RFS, cover sheets, saving and sign-in, real previews, checks, look), next steps (SRFax, notes assist) and the open questions.</td><td class="where"><code>build-fixes.html · data-model.html · current-process.html · developer-handbook.md · feedback.html</code></td></tr>
+<tr><td class="area">CI backend job</td><td>CI runs mypy over app/ and tests/ in strict mode; two test typing errors had failed the backend job (an unannotated dict in the cover-sheet test, and a comparison mypy judged impossible in the reference-refresh test). Fixed; ruff, mypy and all 89 backend tests pass as CI runs them. Run plain `mypy` locally, not `mypy app`.</td><td class="where"><code>backend/tests</code></td></tr>
+<tr><td class="area">Archive (soft delete) patients (user request 28 Sep)</td><td>S5 has &#x27;Archive patient&#x27; for an administrator, with an optional reason: the patient and their authorizations, visits and packets leave every list, the dashboard and the fax log, but nothing is deleted (patient.is_active false + archived_at/by/reason, migration 0002; logged as an update with the reason). New admin screen &#x27;Archived patients&#x27; (/archived-patients, not in screen spec rev 7 — to note for Poonam/Shikha) lists them with when, by whom and why, and restores them with everything they had. Blocked while a fax is waiting to send; an archived patient can&#x27;t be edited or given an authorization; adding the same person again points to Restore. Matches the data model (&#x27;patients are deactivated, never deleted&#x27;).</td><td class="where"><code>backend/app/api/patients.py · frontend/src/features/admin/ArchivedPatients.tsx · frontend/src/features/patients/ArchivePatientDialog.tsx</code></td></tr>
+<tr><td class="area">Idle sign-out switched off (user request 28 Sep)</td><td>S1 no longer signs Lorraine out after 15 minutes without activity. The code stays: IDLE_TIMEOUT_MINUTES now defaults to 0 (off), and setting it to 15 turns it back on with no code change. The sign-in page mentions idle sign-out only when it is on (GET /api/auth/options returns idle_timeout_minutes). Screen spec S1 and the handbook ask for 15 minutes as a protection for patient data — Poonam to confirm before go-live (rule 8).</td><td class="where"><code>backend/app/core/config.py · backend/app/core/auth.py · frontend/src/features/auth/SignIn.tsx</code></td></tr>
+<tr><td class="area">Change and reset password (user request 28 Sep)</td><td>Top bar &#x27;Change password&#x27; (/account/password: current + new + confirm; other sessions end). S1 &#x27;Forgot password?&#x27; (/forgot-password) emails a one-time link to /reset-password: token SHA-256 stored in the new password_reset_token table (migration 0003), 30 minutes, one use, a new request cancels older links, the same answer whether or not the email has an account; a reset ends every session and clears a lock-out. Passwords: at least 12 characters, not the email. Logged as password_changed / password_reset_requested / password_reset. Email over SMTP (SMTP_HOST, SMTP_PORT, SMTP_USERNAME, SMTP_PASSWORD, MAIL_FROM, APP_BASE_URL in backend/.env); not configured = nothing sent (development logs the link). In development every email goes to MAIL_REDIRECT_TO (test.ckln@gmail.com). Emails carry only the link — no patient data. The three pages are not in screen spec rev 7 — to note for Poonam/Shikha.</td><td class="where"><code>backend/app/core/passwords.py · backend/app/core/mail.py · frontend/src/features/auth/PasswordPages.tsx</code></td></tr>
+  </tbody></table></div>
+</section>
 <section class="rel" id="v2-4">
   <header><h2>v2.4</h2><span class="date">2026-09-25</span></header>
   <p class="src"><b>Source:</b> User decisions of 25 Sep 2026 while building M2 and M4 (development started before design sign-off at the user&#x27;s request). Changes golden rule 2 — awaiting Poonam&#x27;s confirmation.</p>
@@ -97,6 +112,8 @@
 <tr><td class="area">PDF engine (decision 25 Sep)</td><td>User decision (awaiting Poonam&#x27;s confirmation — it changes golden rule 2): no clean scans, so the clinical notes and the RFS are new PDFs generated from the practice&#x27;s forms as HTML templates, filled from the saved records and printed with headless Chromium. Notes: one Letter page per visit — identifiers, date top and bottom, pain, the patient&#x27;s answers, the clinical sections chosen on S9, first/last page wording, Excellent on the last page, post-treatment 1/10; signature blank. RFS: both pages from the S11 values; box 21 blank. 16 of 20 diagnoses have a template and are now set up; Cervicalgia – Left, Fibromyalgia, Headache and Vertebrogenic LBP – Right wait for the practice&#x27;s templates. S12 previews the real PDFs; approval keeps the files exactly as sent (sha256). Cover sheets: see the next entry.</td><td class="where"><code>backend/app/pdf · backend/config/clinics/deyoe/diagnoses</code></td></tr>
 <tr><td class="area">Cover sheets (decision 25 Sep)</td><td>Fax cover sheets are generated the same way as the notes and the RFS: one per destination, wording from the practice&#x27;s five cover sheets (config/clinics/deyoe/cover_sheets.json), recipient fax and phone from the VA facility, sender from the practice settings, page total = cover + notes + RFS. S12 previews every destination&#x27;s cover (Atlanta VAMC included); approval keeps each cover with its fax. Signature not printed.</td><td class="where"><code>backend/app/pdf/cover.py · backend/config/clinics/deyoe/cover_sheets.json</code></td></tr>
 <tr><td class="area">Diagnosis picker (decision 25 Sep)</td><td>Development phase: a diagnosis whose template isn&#x27;t set up yet can&#x27;t be chosen on S6/S8 — it shows disabled with &#x27;Template not set up yet&#x27;, and the API refuses it. An authorization already on one can still be edited. Every template is added before go-live (Cervicalgia – Left, Fibromyalgia, Headache, Vertebrogenic LBP – Right requested from the practice).</td><td class="where"><code>frontend/src/components/DiagnosisPicker.tsx · backend/app/api/authorizations.py</code></td></tr>
+<tr><td class="area">Quick sign-in (development only)</td><td>At the user&#x27;s request, S1 shows &#x27;Open the demo as Lorraine&#x27; while the tool is in development: it signs in as the seeded administrator without a password (POST /api/auth/quick-login, logged as a sign-in with the reason &#x27;quick sign-in (development)&#x27;). Controlled by QUICK_SIGN_IN; the API offers it only when ENVIRONMENT=development and returns 404 otherwise, so it can&#x27;t be on in production. Remove before go-live.</td><td class="where"><code>backend/app/core/auth.py · frontend/src/features/auth/SignIn.tsx</code></td></tr>
+<tr><td class="area">Vertebrogenic LBP – Right set up</td><td>The practice&#x27;s Right-side form isn&#x27;t in hand (docs/02_Diagnosis_Base_Templates_18 has only the LEFT SIDE scan), but both sides use the same 4-column form, so the Right template is built from the same master as the Left (build.py), with the catalogue&#x27;s printed title. The Right scan&#x27;s pre-printed clinical marks aren&#x27;t in hand, so visit 1&#x27;s clinical sections start blank and Lorraine chooses them on S9; the Left&#x27;s marks are not copied across. 17 of 20 set up; Cervicalgia – Left, Fibromyalgia and Headache still wait for the practice. Replace with the practice&#x27;s own Right form if it differs.</td><td class="where"><code>backend/config/clinics/deyoe/diagnoses/vertebrogenic-low-back-pain-right · docs/diagnosis_templates/build.py</code></td></tr>
 <tr><td class="area">Docs brought up to date</td><td>build-fixes.html: fix statuses restored from the fix commits (F5, F11, F12, F14 Done; F6 and F13&#x27;s screen part reversed and awaiting approval, now merged in PR #10), F10/F11/F13 carry a 25 Sep note on the new PDF approach and the diagnosis picker, a 25 Sep update above the design tables, the development table shows M0/M2 done and M4 brought forward, and &#x27;Real sign-in and saving&#x27; leaves the parked list. data-model.html rev 11: generated PDFs, where the files are kept, template readiness. current-process.html: how the tool now produces the three files.</td><td class="where"><code>build-fixes.html · data-model.html · current-process.html</code></td></tr>
 <tr><td class="area">Golden rule 2 (to confirm)</td><td>The handbook (§09 rule 2) still says &#x27;print on the practice&#x27;s scans; never redraw their forms&#x27;. The build now generates new PDFs from the practice&#x27;s forms as HTML templates for all three files. Poonam to confirm and update the handbook, or reverse the decision (rule 8).</td><td class="where"><code>index.html §09 · CLAUDE.md</code></td></tr>
   </tbody></table></div>
@@ -151,10 +168,9 @@
 </section>
 
 <section class="pend" id="pending">
-  <h3>Waiting on the practice (as of v2.4)</h3>
+  <h3>Waiting on the practice (as of v2.5)</h3>
   <ul>
-    <li>Confirm ICD-10 for Hip – Left, Knee – Right, Shoulder – Right</li>
-    <li>Form templates for Cervicalgia – Left, Fibromyalgia, Headache and Vertebrogenic LBP – Right (these 4 can&#x27;t be picked until then)</li>
+    <li>Hip, knee and shoulder: the list gives one ICD-10 code for both sides (M25.551, M25.562, M25.512), and that is what the RFS uses. ICD-10 also has side-specific codes (M25.552 left hip, M25.561 right knee, M25.511 right shoulder): keep the list as is, or switch?</li>
     <li>A test fax destination (not 404-738-1714)</li>
     <li>SRFax API details (entered by the practice in the tool)</li>
     <li>Left Shoulder: OK to cover the title and print 'Pain in shoulder'?</li>
@@ -168,8 +184,63 @@
 </div>
 <script type="application/json" id="changelog-data">
 {
-  "latest": "2.4",
+  "latest": "2.5",
   "entries": [
+    {
+      "version": "2.5",
+      "date": "2026-09-28",
+      "source": "The practice's scans of 28 Sep 2026 for the four missing diagnoses.",
+      "pages": {
+        "changelog.html": "v2.5",
+        "build-fixes.html": "F10 done, F2 ICD-10 note, 28 Sep update",
+        "data-model.html": "rev 11 → rev 12",
+        "current-process.html": "all 20 ready, RFS for all",
+        "developer-handbook.md": "build changes marked inline",
+        "feedback.html": "28 Sep update (client-facing)"
+      },
+      "changes": [
+        {
+          "area": "All 20 diagnoses set up",
+          "change": "The practice sent clean scans for the four missing diagnoses on 28 Sep (DeYoe_Client_Reference_Files/02_Diagnosis_Base_Templates_18, not in git). Cervicalgia – Left, Fibromyalgia and Headache are built by build.py from the same 4-column master (C4) as the others; Headache's scan is shorter (five objective rows per column, no Acupressure line, one discussion line), so C4's extra rows stay unticked. Each scan's ticks, circled regions, pulse, tongue, assessment, point prescription, therapies and post-treatment location are recorded in fixtures/diagnoses.json as visit 1's starting values, as for the other 16; Vertebrogenic LBP – Right now has its own right-side marks instead of starting blank. Every diagnosis can now be picked and printed. Tests of the 'not set up yet' paths now mark a template as missing on purpose (tests/conftest.py block_template).",
+          "where": "backend/config/clinics/deyoe/diagnoses · fixtures/diagnoses.json · docs/diagnosis_templates"
+        },
+        {
+          "area": "ICD-10 for Pain in Left Hip (decision 28 Sep)",
+          "change": "User decision: Pain in Left Hip uses M25.551, the code the practice's 22 Sep list gives for both hips, so its RFS can be included. Box 14 prints 'PAIN IN HIP', because M25.551's own description names the right hip. ICD-10 has a separate left-hip code (M25.552); the practice to confirm. Right Knee and Right Shoulder still await confirmation (RFS off). Each start now also refreshes the shared diagnosis list and each template's starting values from fixtures, so code and tick changes reach an existing database (no patient data touched).",
+          "where": "fixtures/diagnoses.v2.json · backend/app/seed.py (sync_templates)"
+        },
+        {
+          "area": "ICD-10 for Right Knee and Right Shoulder (decision 28 Sep)",
+          "change": "Same approach as Left Hip: the practice's list gives one code for both sides, so Right Knee uses M25.562 ('PAIN IN KNEE' in box 14) and Right Shoulder uses M25.512 ('PAIN IN SHOULDER'). Every diagnosis now has a confirmed code and can include the RFS. ICD-10 has side-specific codes for these (M25.552 left hip, M25.561 right knee, M25.511 right shoulder); the practice to confirm.",
+          "where": "fixtures/diagnoses.v2.json"
+        },
+        {
+          "area": "Docs brought up to date (28 Sep)",
+          "change": "build-fixes.html: 28 Sep update above the design tables and an F2 note on the ICD-10 decision. data-model.html rev 12: ICD-10 decision, reference data refreshed on every start, new open item for the side-specific codes. current-process.html: RFS for all 20. developer-handbook.md: build changes awaiting Poonam's confirmation marked inline (rule 2, clinical sections, ICD-10 glossary, diagnoses, repository). feedback.html (client-facing) updated for 28 Sep: what's ready (all 20 forms, RFS, cover sheets, saving and sign-in, real previews, checks, look), next steps (SRFax, notes assist) and the open questions.",
+          "where": "build-fixes.html · data-model.html · current-process.html · developer-handbook.md · feedback.html"
+        },
+        {
+          "area": "CI backend job",
+          "change": "CI runs mypy over app/ and tests/ in strict mode; two test typing errors had failed the backend job (an unannotated dict in the cover-sheet test, and a comparison mypy judged impossible in the reference-refresh test). Fixed; ruff, mypy and all 89 backend tests pass as CI runs them. Run plain `mypy` locally, not `mypy app`.",
+          "where": "backend/tests"
+        },
+        {
+          "area": "Archive (soft delete) patients (user request 28 Sep)",
+          "change": "S5 has 'Archive patient' for an administrator, with an optional reason: the patient and their authorizations, visits and packets leave every list, the dashboard and the fax log, but nothing is deleted (patient.is_active false + archived_at/by/reason, migration 0002; logged as an update with the reason). New admin screen 'Archived patients' (/archived-patients, not in screen spec rev 7 — to note for Poonam/Shikha) lists them with when, by whom and why, and restores them with everything they had. Blocked while a fax is waiting to send; an archived patient can't be edited or given an authorization; adding the same person again points to Restore. Matches the data model ('patients are deactivated, never deleted').",
+          "where": "backend/app/api/patients.py · frontend/src/features/admin/ArchivedPatients.tsx · frontend/src/features/patients/ArchivePatientDialog.tsx"
+        },
+        {
+          "area": "Idle sign-out switched off (user request 28 Sep)",
+          "change": "S1 no longer signs Lorraine out after 15 minutes without activity. The code stays: IDLE_TIMEOUT_MINUTES now defaults to 0 (off), and setting it to 15 turns it back on with no code change. The sign-in page mentions idle sign-out only when it is on (GET /api/auth/options returns idle_timeout_minutes). Screen spec S1 and the handbook ask for 15 minutes as a protection for patient data — Poonam to confirm before go-live (rule 8).",
+          "where": "backend/app/core/config.py · backend/app/core/auth.py · frontend/src/features/auth/SignIn.tsx"
+        },
+        {
+          "area": "Change and reset password (user request 28 Sep)",
+          "change": "Top bar 'Change password' (/account/password: current + new + confirm; other sessions end). S1 'Forgot password?' (/forgot-password) emails a one-time link to /reset-password: token SHA-256 stored in the new password_reset_token table (migration 0003), 30 minutes, one use, a new request cancels older links, the same answer whether or not the email has an account; a reset ends every session and clears a lock-out. Passwords: at least 12 characters, not the email. Logged as password_changed / password_reset_requested / password_reset. Email over SMTP (SMTP_HOST, SMTP_PORT, SMTP_USERNAME, SMTP_PASSWORD, MAIL_FROM, APP_BASE_URL in backend/.env); not configured = nothing sent (development logs the link). In development every email goes to MAIL_REDIRECT_TO (test.ckln@gmail.com). Emails carry only the link — no patient data. The three pages are not in screen spec rev 7 — to note for Poonam/Shikha.",
+          "where": "backend/app/core/passwords.py · backend/app/core/mail.py · frontend/src/features/auth/PasswordPages.tsx"
+        }
+      ]
+    },
     {
       "version": "2.4",
       "date": "2026-09-25",
@@ -220,6 +291,16 @@
           "area": "Diagnosis picker (decision 25 Sep)",
           "change": "Development phase: a diagnosis whose template isn't set up yet can't be chosen on S6/S8 — it shows disabled with 'Template not set up yet', and the API refuses it. An authorization already on one can still be edited. Every template is added before go-live (Cervicalgia – Left, Fibromyalgia, Headache, Vertebrogenic LBP – Right requested from the practice).",
           "where": "frontend/src/components/DiagnosisPicker.tsx · backend/app/api/authorizations.py"
+        },
+        {
+          "area": "Quick sign-in (development only)",
+          "change": "At the user's request, S1 shows 'Open the demo as Lorraine' while the tool is in development: it signs in as the seeded administrator without a password (POST /api/auth/quick-login, logged as a sign-in with the reason 'quick sign-in (development)'). Controlled by QUICK_SIGN_IN; the API offers it only when ENVIRONMENT=development and returns 404 otherwise, so it can't be on in production. Remove before go-live.",
+          "where": "backend/app/core/auth.py · frontend/src/features/auth/SignIn.tsx"
+        },
+        {
+          "area": "Vertebrogenic LBP – Right set up",
+          "change": "The practice's Right-side form isn't in hand (docs/02_Diagnosis_Base_Templates_18 has only the LEFT SIDE scan), but both sides use the same 4-column form, so the Right template is built from the same master as the Left (build.py), with the catalogue's printed title. The Right scan's pre-printed clinical marks aren't in hand, so visit 1's clinical sections start blank and Lorraine chooses them on S9; the Left's marks are not copied across. 17 of 20 set up; Cervicalgia – Left, Fibromyalgia and Headache still wait for the practice. Replace with the practice's own Right form if it differs.",
+          "where": "backend/config/clinics/deyoe/diagnoses/vertebrogenic-low-back-pain-right · docs/diagnosis_templates/build.py"
         },
         {
           "area": "Docs brought up to date",
@@ -411,8 +492,7 @@
     }
   ],
   "pending_from_practice": [
-    "Confirm ICD-10 for Hip – Left, Knee – Right, Shoulder – Right",
-    "Form templates for Cervicalgia – Left, Fibromyalgia, Headache and Vertebrogenic LBP – Right (these 4 can't be picked until then)",
+    "Hip, knee and shoulder: the list gives one ICD-10 code for both sides (M25.551, M25.562, M25.512), and that is what the RFS uses. ICD-10 also has side-specific codes (M25.552 left hip, M25.561 right knee, M25.511 right shoulder): keep the list as is, or switch?",
     "A test fax destination (not 404-738-1714)",
     "SRFax API details (entered by the practice in the tool)",
     "Left Shoulder: OK to cover the title and print 'Pain in shoulder'?",
