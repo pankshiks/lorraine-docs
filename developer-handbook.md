@@ -102,7 +102,7 @@ Confirmed in writing by Lorraine (2026-09-19). **These override anything older, 
 | Last page | "Excellent" ticked under today's response on the final visit, for every diagnosis (covers the pre-printed "Good"). |
 | Who uses it | Lorraine only prepares and approves. Dr. DeYoe takes no part. Roles exist for future staff. |
 | Blairsville | Every send to Blairsville VA also goes to Atlanta VAMC — automatically. |
-| Hosting | Office Mac desktop. **SQLite**, FileVault, nightly encrypted backups. |
+| Hosting | Office Mac desktop. **SQLite**, FileVault, nightly encrypted backups. *(Build 29 Sep, QA H5: `ops/backup.sh` backs up the database, the PDFs as sent (`backend/data/documents`) and `backend/config` to the external encrypted drive (`BACKUP_DIR`, refused on the Mac's own disk), checks each copy, keeps 30 days.)* |
 | Fax files | Three separate PDFs per fax: cover sheet, clinical notes, RFS. **Never merged** — the VA rejects bundled files. (This replaces "one merged PDF" in the original Scope of Work.) |
 | Notes file name | `{First} {Last} {last4} Acupuncture Records {VA number}.pdf` — e.g. `John Doe 1234 Acupuncture Records VA0012345678.pdf` |
 | Fax provider | SRFax. Sending number **404-738-1714** (the supplied forms still show the old 706-664-0412 — always print the setting, not the form's printed number). |
@@ -146,7 +146,7 @@ Every rule the code must enforce. Tests should cover each row.
 2. Same patient and same diagnosis as an earlier authorization: copy that patient's last recorded visit under the earlier authorization. Drops answers for options hidden in the current template version. *(exact wording partly obscured by the screenshot's page break — confirm before relying on it precisely)*
 3. Visit 1 otherwise: the diagnosis's default ticks from its settings file.
 4. Dr. DeYoe's note (Grok) can replace any of the above after Lorraine accepts it.
-5. Every answer is editable. An edit carries forward to later visits that haven't been sent. `answer_source` records `default` · `previous_visit` · `previous_authorization` · `doctor_note` · `changed`.
+5. Every answer is editable. An edit carries forward to later visits that haven't been sent. `answer_source` records `default` · `previous_visit` · `previous_authorization` · `doctor_note` · `changed`. *(Build 29 Sep, QA H3: a saved visit is corrected on S9 in edit mode — Edit → on every S7 visit row, `PUT /api/authorizations/{id}/visits/{visitId}` — with the same rules re-checked and a new signature; answers later visits carried forward unchanged follow the edit. Locked once a packet for the authorization is approved.)*
 6. "Same as last visit" copies everything in one click.
 
 ### Authorization and visit limits
@@ -159,7 +159,7 @@ Every rule the code must enforce. Tests should cover each row.
 | Nearing the limit | Warning at 2 visits left, on S7 and the dashboard. |
 | Reducing approved visits or the period | Refused if it would exclude a recorded visit (name the visit). |
 | Extension | Edit approved visits or end date on S8 with a short reason, logged. Default assumption: same VA number. |
-| Final visit | `is_final` set automatically at the last approved visit; can be set earlier if treatment ends; at most one; no visits after it. Drives the last-page rules. |
+| Final visit | `is_final` set automatically at the last approved visit; can be set earlier if treatment ends; at most one; no visits after it. Drives the last-page rules. *(Build 29 Sep, QA H2: a packet can't be built or approved until a visit is final.)* |
 | Diagnosis | Locked once visits exist. A different diagnosis = a new authorization. |
 | Patients | Possible duplicate = same last name + DOB + last four. Suggest, never merge automatically. |
 
