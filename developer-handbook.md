@@ -6,7 +6,7 @@
 
 ### The client
 - DeYoe Wellness Acupuncture, Georgia, USA. Three offices: Clarkesville, Blairsville, Decatur.
-- Dr. James DeYoe, LAc — the acupuncturist. Signs the templates. Does **not** use the tool.
+- Dr. James DeYoe, LAc — the acupuncturist. Signs the templates. Does **not** use the tool. *(Changed 29 Sep, user decision awaiting Poonam: he signs each visit on S9, and the RFS (boxes 21 and 29) on S11, in signature boxes — the only things he does in the tool.)*
 - Lorraine Fordham, Practice Manager — the **only user** at go-live. Prepares, approves and sends everything. Non-technical, busy, careful.
 - Office is 7 hours behind India (US Eastern).
 
@@ -135,7 +135,7 @@ Every rule the code must enforce. Tests should cover each row.
 | Pain level | 0–10, entered every visit. The tool shows last visit's value as a hint but never pre-selects or generates it. |
 | Post-treatment | Always 1/10. |
 | Printed on every page | Patient name, VA number, last four, date (×2), pain level, the patient's answers (ticks), any cover-ups from the template settings. |
-| Never changed | Clinical sections (objective, pulse/tongue, assessment, prognosis, plan, treatments, point prescription, therapies) and Dr. DeYoe's signature stay exactly as scanned. *(Build now, awaiting Poonam/Shikha: S9 shows these sections pre-filled from the form and editable per visit; signature areas print blank.)* |
+| Never changed | Clinical sections (objective, pulse/tongue, assessment, prognosis, plan, treatments, point prescription, therapies) and Dr. DeYoe's signature stay exactly as scanned. *(Build now, awaiting Poonam/Shikha: S9 shows these sections pre-filled from the form and editable per visit. Since 29 Sep Dr. DeYoe signs every visit on S9 — required to save — and the signature prints beside the visit date on that page.)* |
 | Pre-printed first-visit wording | On Anosmia and Vertebrogenic, cover it on every page except the first (default; awaiting confirmation). |
 | Missing top pain value | Shoulder (both), Dorsalgia – Right, Cervicalgia – Right, Low Back Pain – Right: print it in the standard position used by the other templates (default). |
 | Title wording | Print the diagnosis title as on its template, without the side. Where typed text overlaps form lines (Dorsalgia – Left, Vertebrogenic), cover and re-type it cleanly. |

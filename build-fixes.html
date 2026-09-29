@@ -98,7 +98,7 @@
   <p class="eyebrow">DeYoe Wellness Acupuncture — for the development team</p>
   <h1>Build fixes</h1>
   <p class="standfirst">What to fix in the current build, in order, with the reason, what “done” looks like, and a prompt to paste into Claude Code. Work top to bottom; P0 first.</p>
-  <div class="meta"><span><b>Updated</b> 28 Sep 2026</span><span><b>Build</b> 148.113.35.97:7678</span><span><b>Rules from</b> handbook v2.2</span><span><b>Internal</b> not for the client</span></div>
+  <div class="meta"><span><b>Updated</b> 29 Sep 2026</span><span><b>Build</b> 148.113.35.97:7678</span><span><b>Rules from</b> handbook v2.2</span><span><b>Internal</b> not for the client</span></div>
 </header>
 
 <div class="callout"><b>How to use this page</b>
@@ -227,6 +227,7 @@ Do not start M1, M5–M7 production screens or any backend module (M0, M2, M3, M
     <dt>Why</dt><dd>Client decision 4 (Lorraine only). Handbook §06 default: unsigned, flagged in preview and review.</dd>
     <dt>Done when</dt><dd><ul><li>No on-screen signature pad.</li><li>Preview and Review show an amber “RFS not signed (box 21)” notice.</li><li>Sending is NOT blocked by the missing signature (it is a warning Lorraine acknowledges).</li><li>“Print / save as PDF” of the HTML preview is removed (real PDFs come from the PDF engine).</li></ul></dd>
     <dt>Checked 24 Sep</dt><dd class="chk"><ul><li>No signature pad.</li><li>S12 consistency panel: “RFS signature (box 21) · Not signed”.</li><li>S13: amber notice + “I understand…” checkbox; sending not blocked.</li></ul></dd>
+    <dt>Changed 29 Sep</dt><dd>User decision 29 Sep (awaiting Poonam&#x27;s confirmation): the RFS is signed by Dr. DeYoe on Build packet (S11) in two signature boxes — box 21 on page 1 and box 29 on page 2 (with &#x27;Same as box 21&#x27;) — and it can&#x27;t be built or sent unsigned; the API refuses an unsigned RFS at approval. This replaces &#x27;unsigned, flagged, acknowledged&#x27;.</dd>
   </dl>
   <details><summary>Claude Code prompt</summary><pre class="prompt">Remove the Box 21 signature pad from the RFS preview. Show a warning &quot;RFS not signed (box 21)&quot; on S12 and S13; on S13 it is an acknowledge-to-continue warning, not a blocker. Remove the browser print / save-as-PDF option for the HTML preview; downloads will only be the generated PDFs later (and are logged). Keep this behind a setting rfs_signature_mode = &#x27;unsigned_flagged&#x27; so a future decision is a config change.</pre></details>
 </article>
@@ -355,7 +356,7 @@ Do not start M1, M5–M7 production screens or any backend module (M0, M2, M3, M
 
 <section class="pend">
   <h3>Parked: don't work on these now</h3>
-  <ul><li><b>Responsive tablet/mobile layouts</b>: The tool runs in a browser on the office Mac; mobile apps are out of scope. Keep desktop layouts clean at 1280px+ and don&#x27;t break at 1024px. Nothing more for now.</li><li><b>On-screen RFS signature</b>: Waiting on the client&#x27;s answer about box 21 (F3 keeps it as a setting).</li><li><b>Grok integration</b>: Milestone 3. Until then S10 shows the &#x27;not connected&#x27; state (F9).</li><li><b>SRFax sending</b>: Milestone 3. Needs the SRFax API details and a test fax destination (not 404-738-1714).</li><li><b>New features from open-ended feedback</b>: Log any new request on feedback.html and raise it with Poonam before building; the budget is fixed.</li><li><b>Cover-sheet wording when no RFS is sent</b>: The Atlanta &#x27;Request for Services&#x27; cover sheet has pre-printed text saying an RFS is attached. Don&#x27;t change or cover it; Poonam/Shikha will ask the practice.</li></ul>
+  <ul><li><b>Responsive tablet/mobile layouts</b>: The tool runs in a browser on the office Mac; mobile apps are out of scope. Keep desktop layouts clean at 1280px+ and don&#x27;t break at 1024px. Nothing more for now.</li><li><b>Grok integration</b>: Milestone 3. Until then S10 shows the &#x27;not connected&#x27; state (F9).</li><li><b>SRFax sending</b>: Milestone 3. Needs the SRFax API details and a test fax destination (not 404-738-1714).</li><li><b>New features from open-ended feedback</b>: Log any new request on feedback.html and raise it with Poonam before building; the budget is fixed.</li><li><b>Cover-sheet wording when no RFS is sent</b>: The Atlanta &#x27;Request for Services&#x27; cover sheet has pre-printed text saying an RFS is attached. Don&#x27;t change or cover it; Poonam/Shikha will ask the practice.</li></ul>
 </section>
 </div>
 <script>
@@ -365,7 +366,7 @@ try{navigator.clipboard.writeText(t).then(function(){done(true)},function(){done
 </script>
 <script type="application/json" id="build-fixes-data">
 {
-  "updated": "2026-09-28",
+  "updated": "2026-09-29",
   "source": "Build review 23 Sep + design/spec review 24 Sep (build http://148.113.35.97:7678; screen spec rev 7, handbook v2.2, json-example v2)",
   "status_values": [
     "To do",
@@ -438,7 +439,8 @@ try{navigator.clipboard.writeText(t).then(function(){done(true)},function(){done
         "No signature pad.",
         "S12 consistency panel: “RFS signature (box 21) · Not signed”.",
         "S13: amber notice + “I understand…” checkbox; sending not blocked."
-      ]
+      ],
+      "changed_29_sep": "User decision 29 Sep (awaiting Poonam's confirmation): the RFS is signed by Dr. DeYoe on Build packet (S11) in two signature boxes — box 21 on page 1 and box 29 on page 2 (with 'Same as box 21') — and it can't be built or sent unsigned; the API refuses an unsigned RFS at approval. This replaces 'unsigned, flagged, acknowledged'."
     },
     {
       "id": "F4",
@@ -674,10 +676,6 @@ try{navigator.clipboard.writeText(t).then(function(){done(true)},function(){done
     {
       "item": "Responsive tablet/mobile layouts",
       "reason": "The tool runs in a browser on the office Mac; mobile apps are out of scope. Keep desktop layouts clean at 1280px+ and don't break at 1024px. Nothing more for now."
-    },
-    {
-      "item": "On-screen RFS signature",
-      "reason": "Waiting on the client's answer about box 21 (F3 keeps it as a setting)."
     },
     {
       "item": "Grok integration",
