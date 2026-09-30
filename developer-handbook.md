@@ -57,7 +57,7 @@ A small web app on the office Mac. Lorraine picks a patient and diagnosis, recor
 - 5 cover sheets, 3 RFS versions (always both pages), 3 separate files per fax
 - Consistency checks across files
 - Grok assist with identifier redaction
-- SRFax sending: review, confirm, status polling, log, test fax
+- SRFax sending: review, confirm, status polling, log, test fax *(Built 30 Sep: background sender `backend/app/fax/sender.py` — hands approved faxes to SRFax, polls, logs; Retry = new attempt; S14/S15 from the fax records; SRFax details entered on S19, password encrypted. `FAX_MODE=fake` until the practice's SRFax details arrive; outside production only `FAX_ALLOWED_NUMBERS` are dialled. Needs a real test fax to confirm SRFax's field names and status words.)*
 - Full activity log
 - Install on the office Mac, backups, handoff document, one walkthrough call, 14-day bug-fix window
 
@@ -105,7 +105,7 @@ Confirmed in writing by Lorraine (2026-09-19). **These override anything older, 
 | Hosting | Office Mac desktop. **SQLite**, FileVault, nightly encrypted backups. *(Build 29 Sep, QA H5: `ops/backup.sh` backs up the database, the PDFs as sent (`backend/data/documents`) and `backend/config` to the external encrypted drive (`BACKUP_DIR`, refused on the Mac's own disk), checks each copy, keeps 30 days.)* |
 | Fax files | Three separate PDFs per fax: cover sheet, clinical notes, RFS. **Never merged** — the VA rejects bundled files. (This replaces "one merged PDF" in the original Scope of Work.) |
 | Notes file name | `{First} {Last} {last4} Acupuncture Records {VA number}.pdf` — e.g. `John Doe 1234 Acupuncture Records VA0012345678.pdf` |
-| Fax provider | SRFax. Sending number **404-738-1714** (the supplied forms still show the old 706-664-0412 — always print the setting, not the form's printed number). |
+| Fax provider | SRFax. Sending number **404-738-1714** (the supplied forms still show the old 706-664-0412 — always print the setting, not the form's printed number). *(Build 30 Sep: one SRFax fax per destination with the three files attached separately, in order — cover, notes, RFS. Whether the VA needs three separate transmissions instead is for Poonam to confirm.)* |
 | Diagnoses | 20 total. PTSD and Brain Stem Stroke removed; Headache and Cervicalgia – Left added; two replacements still to come. *(Update: the replacements are Vertebrogenic Low Back Pain – Right and Fibromyalgia (22 Sep); all 20 forms in hand and set up, 28 Sep.)* |
 | Repository | Private GitHub repo under Lorraine Fordham's account; team as collaborators. *(Update 22 Sep: the practice account DeYoeWellness714, with 2FA.)* |
 
