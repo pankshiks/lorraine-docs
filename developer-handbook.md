@@ -6,7 +6,7 @@
 
 ### The client
 - DeYoe Wellness Acupuncture, Georgia, USA. Three offices: Clarkesville, Blairsville, Decatur.
-- Dr. James DeYoe, LAc — the acupuncturist. Signs the templates. Does **not** use the tool. *(Changed 29 Sep, user decision awaiting Poonam: he signs each visit on S9, and the RFS (boxes 21 and 29) on S11, in signature boxes — the only things he does in the tool.)*
+- Dr. James DeYoe, LAc — the acupuncturist. Signs the templates. Does **not** use the tool. *(Changed 29 Sep, user decision awaiting Poonam: he signs each visit on S9, and the RFS (boxes 21 and 29) on S11, in signature boxes — the only things he does in the tool. *Client instruction 1 Oct: box 21 only — RFS page 2 is faxed completely blank.*)*
 - Lorraine Fordham, Practice Manager — the **only user** at go-live. Prepares, approves and sends everything. Non-technical, busy, careful.
 - Office is 7 hours behind India (US Eastern).
 
@@ -187,13 +187,15 @@ Full fields and states are in the screen spec (not yet captured in this repo —
 | S16 | Diagnoses | Read-only list, versions, sample-page previews | M10 |
 | S17 | — | Not built. Diagnoses are added by developers via config. | — |
 | S18 | Cover sheets, RFS, destinations | Cover sheets, RFS versions, Blairsville → Atlanta rule | M10 |
-| S19 | Practice and sending | Provider, NPI, phone, fax, SRFax (write-only), retention, backup status, test fax | M10 |
+| S19 | Practice and sending | Provider, NPI, phone, fax, SRFax (write-only), retention, backup status, test fax *(Build 1 Oct: VA facility fax numbers are editable here too — used from the next packet built)* | M10 |
 | S20 | Users and activity log | Users/roles; log filtered by type | M10 |
 | S21 | Correct and re-send | New packet linked to the sent one (keep simple) | M8 |
 
 `FormRenderer` (S9) is the shared component that renders a diagnosis's master form definition + settings — this is `frontend/src/forms/`. SRFax credentials on S19 are write-only (entered, never displayed back).
 
 ## Part 4 · Build
+
+*(Build 1 Oct: for manual testing, `backend/scripts/seed_test_data.py` loads 12 fake test scenarios through the API and `reset_test_data.py` removes exactly those — see README, "Test scenarios".)*
 
 ## 09 · Golden rules
 
