@@ -130,15 +130,15 @@
 <header class="masthead">
   <p class="eyebrow">DeYoe Wellness Acupuncture — for the development team</p>
   <h1>Testing guide</h1>
-  <p class="standfirst">End-to-end test scenarios covering the full patient journey: authorization, visit tracking, packet generation and fax. Includes the seed script prompt and a reset procedure. Use fake data only.</p>
+  <p class="standfirst">End-to-end test scenarios covering the full patient journey: authorization, visit tracking, packet generation and fax. Includes the seed and reset scripts and how to run them. Use fake data only.</p>
   <div class="meta">
-    <span><b>Version</b> 1.0 · 1 Oct 2026</span>
+    <span><b>Version</b> 1.1 · 1 Oct 2026 — matched to the build</span>
     <span><b>Internal</b> not for the client</span>
     <span><b>HIPAA</b> fake data only — never real names, VA numbers or DOBs</span>
   </div>
   <nav class="toc" aria-label="Contents">
     <a href="#prereq"><span>01</span>Prerequisites</a>
-    <a href="#seed"><span>02</span>Seed script prompt</a>
+    <a href="#seed"><span>02</span>Seed &amp; reset scripts</a>
     <a href="#patients"><span>03</span>Patient &amp; authorization</a>
     <a href="#visits"><span>04</span>Visit tracking</a>
     <a href="#packets"><span>05</span>Packet generation</a>
@@ -150,11 +150,11 @@
 </header>
 
 <div class="callout navy" style="margin-top:28px">
-  <b>How to read the scenarios.</b> Each scenario has a <span class="badge positive">Positive</span> (should succeed), <span class="badge negative">Negative</span> (should be blocked), or <span class="badge boundary">Boundary</span> (edge / limit) badge. Expected outcomes are shown at the bottom of each card. Run positive cases first to confirm the happy path, then negative cases to confirm guards hold.
+  <b>How to read the scenarios.</b> Each scenario has a <span class="badge positive">Positive</span> (should succeed), <span class="badge negative">Negative</span> (should be blocked), or <span class="badge boundary">Boundary</span> (edge / limit) badge. Expected outcomes are shown at the bottom of each card. Run positive cases first to confirm the happy path, then negative cases to confirm guards hold. <b>Seed&nbsp;N</b> refers to the scenarios loaded by <code>seed_test_data.py</code> (section 02); dates are counted from the day you seed.
 </div>
 
 <div class="callout red" style="margin-top:12px">
-  <b>HIPAA reminder.</b> Use <b>only fictional patients</b> (Jane Doe, John Doe). No real names, dates of birth, VA authorization numbers, or SSN digits anywhere — in the database, logs, screenshots, or commit messages. Real patient data is only ever permitted in production on Lorraine's Mac.
+  <b>HIPAA reminder.</b> Use <b>only fictional patients</b> (Jane Doe, John Doe, and the seed's Joan B Doe). No real names, dates of birth, VA authorization numbers, or SSN digits anywhere — in the database, logs, screenshots, or commit messages. Real patient data is only ever permitted in production on Lorraine's Mac.
 </div>
 
 <p class="partlabel">Part 1 · Setup</p>
@@ -166,97 +166,58 @@
     <div class="card">
       <h4>Environment</h4>
       <ul>
-        <li>Backend running at your local URL (e.g. <code>http://localhost:8000</code> — adjust <code>BASE_URL</code> in the seed script)</li>
-        <li>Frontend served and reachable in a browser</li>
-        <li>SQLite database initialised (<code>alembic upgrade head</code> or equivalent)</li>
-        <li>At least one staff login created (used by the seed script for session auth)</li>
-        <li>Diagnosis settings files present for: <b>Low Back Pain – Left</b>, <b>Dorsalgia – Right</b>, <b>Pain in Hip – Left</b> (minimum for seed scenarios)</li>
+        <li>The app running locally: <code>docker compose up --build</code> (API <code>http://localhost:8000</code>, app <code>http://localhost:8080</code>) or <code>make dev</code></li>
+        <li>Database migrated (the container does it on start; locally <code>make migrate</code>) and the demo clinic loaded — Jane Doe and John Doe from <code>fixtures/</code></li>
+        <li><code>ENVIRONMENT=development</code> — the seed signs in with the demo sign-in (or pass <code>--email</code> / <code>--password</code>)</li>
+        <li>All 20 diagnosis templates are set up; every ICD-10 code is confirmed (decision 28 Sep), so the RFS can be included for any diagnosis</li>
+        <li><b>Fax:</b> leave <code>FAX_MODE=fake</code> (the default) — every step runs, nothing is dialled, faxes show “Demo — not faxed”. For the failure case (F-04) add <code>FAX_FAKE_FAIL_NUMBERS=["706-555-0199"]</code>.</li>
       </ul>
     </div>
     <div class="card">
       <h4>Tools needed</h4>
       <ul>
-        <li>Python 3.10+ with <code>httpx</code> installed (<code>pip install httpx</code>)</li>
-        <li>Access to the repo to run <code>scripts/seed_test_data.py</code></li>
-        <li>A browser for manual UI verification of generated PDFs</li>
-        <li>Optional: <code>sqlite3</code> CLI to inspect the database directly</li>
+        <li>The backend's Python environment (it already has <code>httpx</code>)</li>
+        <li><code>backend/scripts/seed_test_data.py</code> and <code>reset_test_data.py</code>; scenarios in <code>fixtures/test_seed.json</code></li>
+        <li>A browser for the screens and the generated PDFs</li>
+        <li>Optional: <code>sqlite3</code> to look at the database (never needed to run the tests)</li>
       </ul>
     </div>
   </div>
   <div class="callout" style="margin-top:14px">
-    <b>Do not point the seed script at the production Mac.</b> The seed script is for the local dev environment only. All records it creates carry a <code>test_seed=true</code> flag so they can be wiped cleanly.
+    <b>Development only.</b> Never seed or reset the production Mac — the reset refuses to run with <code>ENVIRONMENT=production</code>. There is no <code>test_seed</code> flag on records: the seed uses its own VA numbers (<b>VA0090000001–VA0090000099</b>, reserved for testing) and creates one patient, <b>Joan B Doe</b>; that is how the reset finds exactly what it added.
   </div>
 </section>
 
 <section id="seed">
-  <h2><span class="no">02</span>Seed script — Claude Code prompt</h2>
-  <p class="sec-note">Drop this prompt into Claude Code at the root of the repo. It will read your API routes and generate <code>scripts/seed_test_data.py</code> and <code>scripts/reset_test_data.py</code>.</p>
+  <h2><span class="no">02</span>Seed &amp; reset scripts</h2>
+  <p class="sec-note">Built 1 Oct from the seed-script prompt. Everything goes through the API, so every rule and database trigger fires as in real use. It adds authorizations to the fixture patients Jane Doe and John Doe (never changing them) and creates Joan B Doe.</p>
 
-  <p class="pcap">Claude Code prompt</p>
-  <pre class="prompt">I need a test data seed script for the DeYoe Wellness Acupuncture packet tool.
+  <pre>cd backend
+python scripts/seed_test_data.py                   # local app, demo sign-in — prints every scenario with its IDs and links
+python scripts/seed_test_data.py --api http://HOST:8000/api --web http://HOST:8080 --email … --password …
+docker compose exec backend python scripts/seed_test_data.py   # inside Docker</pre>
 
-Before writing anything, read the API route definitions and the database schema
-(models/tables) so the script calls real endpoints with the correct payloads.
-
-Create two scripts:
-1. scripts/seed_test_data.py  — populates all the scenarios below
-2. scripts/reset_test_data.py — wipes only the seeded records so we can run clean
-
-Use only fictional patients (Jane Doe / John Doe style). No real names, DOBs,
-VA numbers or SSN digits anywhere — HIPAA applies even in dev. Use the existing
-fixture VA numbers and names already in the codebase (e.g. VA0011223344,
-Jane Doe 1234) wherever they exist.
-
-Call the FastAPI endpoints in sequence (use httpx), not the database directly —
-we want the business logic and triggers to fire as they would in real use.
-Tag every created record with test_seed=true (or a notes/label field if that
-doesn't exist) so reset_test_data.py can remove them without touching real data.
-
-Scenarios to seed:
-
-PATIENT + AUTHORIZATION
-S1. New patient Jane Doe · Low Back Pain – Left · 8 visits approved
-    period 2026-09-01 to 2026-11-30 · VA facility Atlanta VAMC
-S2. Same patient Jane Doe · second authorization · same diagnosis (Low Back Pain – Left)
-    · 6 visits · period 2026-12-01 to 2027-02-28  (tests pre-fill from previous auth)
-S3. Same patient Jane Doe · new authorization · different diagnosis (Dorsalgia – Right)
-    · 6 visits  (tests answers reset to diagnosis defaults)
-S4. New patient John Doe · Pain in Hip – Left · 4 visits · all 4 visits recorded
-    so the authorization is AT its approved limit  (tests "Add visit" is blocked)
-S5. New patient John Smith · Low Back Pain – Left · 8 visits ·
-    narrow date range 2026-10-01 to 2026-10-31  (used for date-period boundary tests)
-
-VISIT TRACKING
-S6. Jane Doe auth S1: record 5 of 8 visits with these pain levels: 8, 6, 5, 5, 4
-    Visit 3 should have one answer manually changed (uncheck an activity that was
-    pre-filled from visit 2). Set answer_source correctly.
-S7. John Doe auth S4: all 4 visits recorded; mark visit 4 as is_final=true.
-    (Tests completed authorization and last-page rules.)
-
-PACKET GENERATION
-S8.  Jane Doe auth S1 (5 visits recorded): generate an 8-visit packet — leave 3 visits
-     pending so the packet reflects visits 1–5 only. (Tests mid-auth partial packet.)
-     Note: adjust if the API requires all visits before generation.
-S9.  John Doe auth S4 (4 visits, is_final set): generate a 4-visit completed packet.
-     Then apply a per-page edit on visit 2: change the pain level display on that page
-     to 7 (override only; do not change the stored visit record). Log the edit.
-S10. Create a 12-visit authorization for a new patient Jane Smith · Low Back Pain – Left ·
-     record all 12 visits · mark visit 12 is_final · generate packet.
-     (One of the formal acceptance criteria.)
-
-FAX-READY STATE
-S11. Take John Doe auth S4 packet through to approved state so S13 (fax confirm screen)
-     can be tested without regenerating. Cover sheet: Atlanta VAMC Request for Services.
-     RFS: omit (Pain in Hip – Left ICD-10 unconfirmed).
-
-At the end of seed_test_data.py print a summary table:
-  scenario | what was created | key IDs (patient_id, auth_id, packet_id)
-
-In reset_test_data.py delete only records tagged test_seed=true.
-Print a confirmation of what was deleted.</pre>
+  <div class="tblwrap" style="margin-top:12px;"><table>
+    <thead><tr><th>Seed</th><th>Patient · diagnosis</th><th>What it sets up</th><th>VA number</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td>Joan B Doe (new) · Pain in Knee – Left</td><td>0 of 6, no visits — visit 1 starts from the diagnosis defaults</td><td>VA0090000001</td></tr>
+      <tr><td>2</td><td>Jane Doe · Low Back Pain – Left</td><td>0 of 8 — visit 1 continues from her last Low Back Pain visit</td><td>VA0090000002</td></tr>
+      <tr><td>3</td><td>Jane Doe · Pain in Shoulder – Right</td><td>0 of 6 — a diagnosis she's never had: its defaults</td><td>VA0090000003</td></tr>
+      <tr><td>4</td><td>John Doe · Dorsalgia – Left</td><td>4 of 4, last visit final — at the limit</td><td>VA0090000004</td></tr>
+      <tr><td>5</td><td>Jane Doe · Pain in Knee – Left</td><td>2 of 6, a 30-day period (seed day → +30)</td><td>VA0090000005</td></tr>
+      <tr><td>6</td><td>John Doe · Pain in Shoulder – Left</td><td>5 of 8, pain 3 · 4 · 3 · 5 · 4; visit 4 changes Type of pain</td><td>VA0090000006</td></tr>
+      <tr><td>7</td><td>Jane Doe · Cervicalgia – Right</td><td>5 of 5, last visit final — completed</td><td>VA0090000007</td></tr>
+      <tr><td>8</td><td>(seed 5)</td><td>a visit dated outside the period — refused with HTTP 422 and logged; nothing created</td><td>—</td></tr>
+      <tr><td>9</td><td>John Doe · Pain in Knee – Right</td><td>8 of 8 — ready to build</td><td>VA0090000009</td></tr>
+      <tr><td>10</td><td>Jane Doe · Low Back Pain – Right</td><td>12 of 12 — ready to build</td><td>VA0090000010</td></tr>
+      <tr><td>11</td><td>John Doe · Dorsalgia – Right</td><td>4 of 4 + draft packet: visit 3's pain corrected 5 → 6 (Edit visit), notes page 3 edited on its own (name “Jon Doe”)</td><td>VA0090000011</td></tr>
+      <tr><td>12</td><td>Jane Doe · Pain in Hip – Right</td><td>3 of 3 + packet approved (demo fax) — for Send result and the fax log</td><td>VA0090000012</td></tr>
+      <tr><td>12b</td><td>John Doe · Other Chronic Pain · Blairsville VA</td><td>3 of 3 + draft built, RFS signed — waiting on Review &amp; send; two faxes (Blairsville + Atlanta copy)</td><td>VA0090000013</td></tr>
+    </tbody>
+  </table></div>
 
   <div class="callout navy" style="margin-top:14px">
-    <b>After running the seed script</b> — check the printed summary table for the IDs, then open the app in a browser and confirm the seeded patients and authorizations appear on the dashboard (S2). Use those IDs in the manual scenarios below.
+    <b>After running the seed script</b> — check the printed table for the IDs and links, then open the app and confirm the seeded authorizations on the dashboard (S2). To seed again, run the reset first (section 08) — the seed stops if its VA numbers are already there.
   </div>
 </section>
 
@@ -264,7 +225,7 @@ Print a confirmation of what was deleted.</pre>
 
 <section id="patients">
   <h2><span class="no">03</span>Patient &amp; authorization scenarios</h2>
-  <p class="sec-note">Covers patient creation, authorization entry and the visit-limit and date-period guards.</p>
+  <p class="sec-note">Covers patient creation and correction, authorization entry, and the visit-limit and date-period guards.</p>
 
   <div class="scenario-group">
 
@@ -273,16 +234,17 @@ Print a confirmation of what was deleted.</pre>
         <span class="scenario-id">P-01</span>
         <span class="scenario-title">New patient, first authorization</span>
         <span class="badge positive">Positive</span>
-        <span class="scenario-tag">Seed: S1</span>
+        <span class="scenario-tag">Seed 1 — or by hand</span>
       </div>
       <div class="scenario-body">
-        <p>A brand-new patient with no prior history. Confirms the patient and authorization are created correctly and the dashboard tile appears.</p>
+        <p>A brand-new patient with no prior history. Confirms the patient and authorization are created correctly and appear on the dashboard.</p>
         <ol class="steps">
-          <li>Open S6 (New authorization). Enter: <b>Jane Doe</b>, DOB <b>1960-03-15</b>, last four <b>1234</b>, title <b>Ms.</b>, pronoun <b>her</b>.</li>
-          <li>Diagnosis: <b>Low Back Pain – Left</b>. Approved visits: <b>8</b>. Period: <b>2026-09-01 → 2026-11-30</b>. VA number: <b>VA0011223344</b>. Facility: <b>Atlanta VAMC</b>.</li>
-          <li>Save. Check S2 (dashboard) — Jane Doe tile shows <b>0 of 8 visits</b>.</li>
+          <li>Patients › <b>+ Add patient</b>: a made-up patient, e.g. <b>Jake Doe</b>, DOB <b>1972-02-12</b>, last four <b>2222</b>, <b>Mr.</b> / <b>his</b>. Save — it opens New authorization for him.</li>
+          <li>Diagnosis: <b>Pain in Knee – Left</b>. VA number: <b>an unused one</b> (VA + 10 digits, e.g. VA0090000060). Facility <b>Atlanta VAMC</b>, office <b>Clarkesville</b>, approved visits <b>6</b>, period <b>today → +60 days</b>.</li>
+          <li>Create. S7 shows <b>0 of 6 approved</b>; the authorization is on the dashboard (S2) and the patient list.</li>
+          <li>Note: a period can't start in the past (open finding M1), and each VA number is used once — VA0011223344 is Jane's earlier authorization.</li>
         </ol>
-        <span class="expect pass">✓ Authorization saved · patient record created · tile on dashboard</span>
+        <span class="expect pass">✓ Patient saved · authorization saved · 0 of 6 on S7 · listed on the dashboard</span>
       </div>
     </div>
 
@@ -291,16 +253,16 @@ Print a confirmation of what was deleted.</pre>
         <span class="scenario-id">P-02</span>
         <span class="scenario-title">Same patient, second authorization, same diagnosis</span>
         <span class="badge positive">Positive</span>
-        <span class="scenario-tag">Seed: S2</span>
+        <span class="scenario-tag">Seed 2</span>
       </div>
       <div class="scenario-body">
-        <p>Jane Doe returns with a new VA authorization for the same diagnosis. Visit 1 of the new auth should pre-fill answers from her last visit under this diagnosis in S1.</p>
+        <p>Jane Doe returns with a new VA authorization for the same diagnosis. Visit 1 of the new authorization pre-fills from her last Low Back Pain – Left visit.</p>
         <ol class="steps">
-          <li>Find Jane Doe on S2. Create a second authorization: <b>Low Back Pain – Left</b>, 6 visits, period <b>2026-12-01 → 2027-02-28</b>, new VA number.</li>
-          <li>Add visit 1 on S9. Open the answer panel.</li>
-          <li>Confirm pre-fill source shows <code>previous_authorization</code> for the carried-over answers.</li>
+          <li>Open seed 2 (Jane Doe · Low Back Pain – Left · 0 of 8) and click <b>+ Add visit</b>.</li>
+          <li>The visit screen says “Continued from the last Low Back Pain – Left authorization (VA0012345678, …)” and the answers match her last visit there.</li>
+          <li>Enter a date, a pain level, sign, save. The visit's answers are recorded with source <code>previous_authorization</code>.</li>
         </ol>
-        <span class="expect pass">✓ Answers pre-filled from last visit of previous authorization · answer_source = previous_authorization</span>
+        <span class="expect pass">✓ Answers pre-filled from her previous authorization · answer_source = previous_authorization</span>
       </div>
     </div>
 
@@ -309,17 +271,16 @@ Print a confirmation of what was deleted.</pre>
         <span class="scenario-id">P-03</span>
         <span class="scenario-title">Same patient, different diagnosis — answers reset</span>
         <span class="badge positive">Positive</span>
-        <span class="scenario-tag">Seed: S3</span>
+        <span class="scenario-tag">Seed 3</span>
       </div>
       <div class="scenario-body">
-        <p>Jane Doe starts a new authorization with a different diagnosis. Visit 1 answers must come from the new diagnosis's defaults, not from her Low Back Pain history.</p>
+        <p>Jane Doe starts an authorization for a diagnosis she has never had. Visit 1 answers come from that diagnosis's defaults, not her Low Back Pain history.</p>
         <ol class="steps">
-          <li>Create a third authorization for Jane Doe: diagnosis <b>Dorsalgia – Right</b>, 6 visits.</li>
-          <li>Add visit 1. Open the answer panel.</li>
-          <li>Confirm answers match the Dorsalgia – Right defaults from its settings file, not Low Back Pain values.</li>
-          <li>Confirm <code>answer_source</code> = <code>default</code> for all answers.</li>
+          <li>Open seed 3 (Jane Doe · Pain in Shoulder – Right · 0 of 6) and click <b>+ Add visit</b>.</li>
+          <li>The screen says “Started from the Pain in Shoulder – Right template's default ticks”; the answers match that template's defaults.</li>
+          <li>Save visit 1: source <code>default</code>.</li>
         </ol>
-        <span class="expect pass">✓ Answers reset to Dorsalgia – Right defaults · no carry-over from Low Back Pain</span>
+        <span class="expect pass">✓ Answers start from Pain in Shoulder – Right defaults · no carry-over from Low Back Pain</span>
       </div>
     </div>
 
@@ -328,17 +289,17 @@ Print a confirmation of what was deleted.</pre>
         <span class="scenario-id">P-04</span>
         <span class="scenario-title">Authorization at visit limit — add visit blocked</span>
         <span class="badge negative">Negative</span>
-        <span class="scenario-tag">Seed: S4</span>
+        <span class="scenario-tag">Seed 4</span>
       </div>
       <div class="scenario-body">
-        <p>John Doe's authorization has 4 visits approved and all 4 recorded. Adding a 5th visit must be blocked at every layer.</p>
+        <p>John Doe's Dorsalgia – Left authorization has 4 visits approved and all 4 recorded. A 5th visit is blocked at every layer.</p>
         <ol class="steps">
-          <li>Open John Doe's authorization (S7). Confirm visit count shows <b>4 of 4</b>.</li>
-          <li>Attempt to add a 5th visit via S9's "Add visit" button — it should be disabled with a clear reason shown.</li>
-          <li>Try a direct <code>POST /visits</code> API call with this authorization ID. Expect a <b>409</b> response.</li>
-          <li>Confirm the SQLite trigger also blocks a direct DB insert (check logs).</li>
+          <li>Open seed 4 on S7: <b>4 of 4 approved</b>, “All 4 approved visits are recorded”, <b>+ Add visit</b> disabled.</li>
+          <li>Open the visit screen directly (<code>…/visits/new</code>): “All approved visits recorded”, no form.</li>
+          <li>API: <code>POST /api/authorizations/{id}/visits</code> → <b>422</b> (“Visit 4 was the final visit — no visits can follow it”).</li>
+          <li>Database: a direct insert is refused by the visit triggers.</li>
         </ol>
-        <span class="expect block">✗ UI button disabled · API returns 409 · DB trigger fires</span>
+        <span class="expect block">✗ Button disabled · visit screen blocked · API 422 · database trigger refuses</span>
       </div>
     </div>
 
@@ -347,15 +308,35 @@ Print a confirmation of what was deleted.</pre>
         <span class="scenario-id">P-05</span>
         <span class="scenario-title">Duplicate patient detection</span>
         <span class="badge boundary">Boundary</span>
+        <span class="scenario-tag">By hand</span>
       </div>
       <div class="scenario-body">
-        <p>A second patient with the same last name, DOB, and last four as Jane Doe is entered. The system should warn but not block.</p>
+        <p>A new patient with the same last name, date of birth and last four as Jane Doe. The app warns and never merges.</p>
         <ol class="steps">
-          <li>On S6, enter a new patient: last name <b>Doe</b>, DOB <b>1960-03-15</b>, last four <b>1234</b>, first name <b>Joan</b>.</li>
-          <li>Confirm a duplicate warning is surfaced (suggested match shown).</li>
-          <li>Confirm the system does <b>not</b> merge automatically — Joan Doe can still be saved as a separate patient.</li>
+          <li>Add patient: first name <b>Joan</b>, last name <b>Doe</b>, DOB <b>1961-03-14</b>, last four <b>1234</b> (Jane Doe's).</li>
+          <li>As soon as the details match, a warning appears: “Possible duplicate: Jane Doe … already exists. Nothing is merged automatically”, with <b>View that patient</b>. <b>Save patient</b> stays disabled.</li>
+          <li>Tick “This is a different person — create a new patient anyway” — saves as a separate patient.</li>
         </ol>
-        <span class="expect warn">⚠ Duplicate warning shown · not merged automatically · can be saved</span>
+        <span class="expect warn">⚠ Duplicate warning · never merged · saved only once confirmed as a different person</span>
+      </div>
+    </div>
+
+    <div class="scenario">
+      <div class="scenario-header">
+        <span class="scenario-id">P-06</span>
+        <span class="scenario-title">Correct a saved patient's details</span>
+        <span class="badge positive">Positive</span>
+        <span class="scenario-tag">By hand</span>
+      </div>
+      <div class="scenario-body">
+        <p>A typo in a saved patient is corrected on Edit patient. Same checks as adding; packets already sent keep the details they went with.</p>
+        <ol class="steps">
+          <li>Open a patient (e.g. Jake Doe from P-01) › <b>Edit patient</b>: the saved details are filled in.</li>
+          <li>Change the middle initial; click Cancel — “Leave without saving?” asks first. Stay.</li>
+          <li>Type another patient's last name, DOB and last four: the duplicate warning appears and Save is disabled. Put them back.</li>
+          <li><b>Save changes</b> → back on the patient; the change is in the activity log (S20) with before and after.</li>
+        </ol>
+        <span class="expect pass">✓ Saved details shown · same checks · duplicate caught · saved and logged</span>
       </div>
     </div>
 
@@ -364,7 +345,7 @@ Print a confirmation of what was deleted.</pre>
 
 <section id="visits">
   <h2><span class="no">04</span>Visit tracking scenarios</h2>
-  <p class="sec-note">Covers date validation, answer pre-fill carry-forward, manual edits, and the final visit rule.</p>
+  <p class="sec-note">Covers answer carry-forward, corrections, date validation, the final visit and the visits-left warning.</p>
 
   <div class="scenario-group">
 
@@ -373,17 +354,15 @@ Print a confirmation of what was deleted.</pre>
         <span class="scenario-id">V-01</span>
         <span class="scenario-title">Consecutive visits — answers carry forward</span>
         <span class="badge positive">Positive</span>
-        <span class="scenario-tag">Seed: S6</span>
+        <span class="scenario-tag">Seed 6</span>
       </div>
       <div class="scenario-body">
-        <p>Visits 2–5 on Jane Doe's S1 authorization. Each visit's answers should pre-fill from the immediately preceding visit.</p>
+        <p>On John Doe's Pain in Shoulder – Left (5 of 8, pain 3 · 4 · 3 · 5 · 4), each visit's answers start from the visit before.</p>
         <ol class="steps">
-          <li>Open visit 2 on S9. Confirm all answers match visit 1 exactly. <code>answer_source</code> = <code>previous_visit</code> for all.</li>
-          <li>Change one answer on visit 2 (e.g. uncheck an activity). Save.</li>
-          <li>Open visit 3. Confirm it reflects visit 2's changed state. The unchecked activity should still be unchecked. <code>answer_source</code> for that field = <code>previous_visit</code>.</li>
-          <li>Confirm pain level is <b>not</b> pre-selected on any visit — it shows the previous value as a hint only.</li>
+          <li>On S7, visits 2, 3 and 5 show “same as last visit”; visit 4 shows <b>changed</b> (its Type of pain differs).</li>
+          <li>Click <b>+ Add visit</b>: the answers match visit 5; the pain level is <b>not</b> pre-selected — “Last visit: 4 — a hint only”.</li>
         </ol>
-        <span class="expect pass">✓ Answers carry forward visit-by-visit · pain level hint shown but not pre-selected · answer_source correct</span>
+        <span class="expect pass">✓ Answers carry forward · “changed” marked · pain level a hint only</span>
       </div>
     </div>
 
@@ -392,16 +371,16 @@ Print a confirmation of what was deleted.</pre>
         <span class="scenario-id">V-02</span>
         <span class="scenario-title">Edit on visit 3 carries forward to visits 4+</span>
         <span class="badge positive">Positive</span>
-        <span class="scenario-tag">Seed: S6</span>
+        <span class="scenario-tag">Seed 6 · Seed 12</span>
       </div>
       <div class="scenario-body">
-        <p>An answer changed on visit 3 should propagate to all later unsent visits. Sent visits must not change.</p>
+        <p>Correcting an answer on visit 3 carries to the later visits that kept it unchanged. Sent visits can't be edited.</p>
         <ol class="steps">
-          <li>On visit 3 (unsent), uncheck an activity that was previously checked.</li>
-          <li>Open visit 4. Confirm the unchecked state carried over. <code>answer_source</code> = <code>previous_visit</code>.</li>
-          <li>If visit 1 or 2 were already sent, confirm they are unchanged.</li>
+          <li>On seed 6, click <b>Edit →</b> on visit 3, untick a painful activity, sign again (required), <b>Save changes</b>.</li>
+          <li>Visits 4 and 5 lose that activity too; visit 4 keeps its own Type of pain change.</li>
+          <li>On seed 12 (packet approved) there are no Edit links; <code>PUT …/visits/{id}</code> → <b>409</b> “sent packets are never edited”.</li>
         </ol>
-        <span class="expect pass">✓ Edit carries forward to unsent visits · sent visits untouched</span>
+        <span class="expect pass">✓ Edit carries forward to unsent visits · doctor signs again · sent visits locked</span>
       </div>
     </div>
 
@@ -410,17 +389,16 @@ Print a confirmation of what was deleted.</pre>
         <span class="scenario-id">V-03</span>
         <span class="scenario-title">Visit date outside authorization period — blocked</span>
         <span class="badge negative">Negative</span>
-        <span class="scenario-tag">Seed: S5</span>
+        <span class="scenario-tag">Seed 5</span>
       </div>
       <div class="scenario-body">
-        <p>John Smith's authorization runs 2026-10-01 to 2026-10-31. A visit dated November 1 must be blocked.</p>
+        <p>Seed 5's period runs from the day you seeded to 30 days later. Dates outside it are refused.</p>
         <ol class="steps">
-          <li>Open John Smith's authorization. Try to add a visit with date <b>2026-11-01</b>.</li>
-          <li>Confirm the UI shows a clear error: date is outside the authorization period.</li>
-          <li>Try a direct <code>POST /visits</code> with the same date. Expect a <b>409</b> or <b>422</b>.</li>
-          <li>Try a date of <b>2026-09-30</b> (one day before the period starts). Same result expected.</li>
+          <li>On seed 5, Add visit with the date <b>period end + 1 day</b>: “Outside the authorization period (…)” shows on the date box.</li>
+          <li>API: the same date → <b>422</b>.</li>
+          <li>A date before the previous visit is refused too: “Must be after the previous visit (…)”.</li>
         </ol>
-        <span class="expect block">✗ UI error shown · API blocks with 409/422 · dates outside period rejected</span>
+        <span class="expect block">✗ Error on the date box · API 422 · dates outside the period refused</span>
       </div>
     </div>
 
@@ -429,13 +407,13 @@ Print a confirmation of what was deleted.</pre>
         <span class="scenario-id">V-04</span>
         <span class="scenario-title">Visit date on first and last day of period — allowed</span>
         <span class="badge boundary">Boundary</span>
-        <span class="scenario-tag">Seed: S5</span>
+        <span class="scenario-tag">Seed 5</span>
       </div>
       <div class="scenario-body">
-        <p>Confirm the authorization period boundary is inclusive on both ends.</p>
+        <p>The period is inclusive at both ends.</p>
         <ol class="steps">
-          <li>Add a visit to John Smith's authorization with date <b>2026-10-01</b> (period start). Should succeed.</li>
-          <li>Add a second visit with date <b>2026-10-31</b> (period end). Should succeed.</li>
+          <li>Seed 5's visit 1 is on the period start date — accepted.</li>
+          <li>Add a visit dated exactly on the <b>period end</b> — accepted.</li>
         </ol>
         <span class="expect pass">✓ Both boundary dates accepted</span>
       </div>
@@ -444,19 +422,18 @@ Print a confirmation of what was deleted.</pre>
     <div class="scenario">
       <div class="scenario-header">
         <span class="scenario-id">V-05</span>
-        <span class="scenario-title">Final visit — last-page rules applied</span>
+        <span class="scenario-title">Final visit — last-page rules</span>
         <span class="badge positive">Positive</span>
-        <span class="scenario-tag">Seed: S7</span>
+        <span class="scenario-tag">Seed 7</span>
       </div>
       <div class="scenario-body">
-        <p>John Doe's 4th visit is marked <code>is_final=true</code>. The generated page must carry the last-visit label, closing note, and Excellent ticked.</p>
+        <p>The final visit's page carries the last-visit label, the closing note and Excellent ticked; nothing can follow it.</p>
         <ol class="steps">
-          <li>On John Doe auth S4, open visit 4 on S9. Mark it as final.</li>
-          <li>Generate the packet (S11 → S12). Open the last page of the notes PDF.</li>
-          <li>Confirm: label <b>"Last Visit in authorization"</b> present; closing note present; <b>Excellent</b> ticked under Today's response.</li>
-          <li>Attempt to add a visit 5 — it must be blocked (final visit already set + limit reached).</li>
+          <li>Build seed 7's packet (S11 → S12). On the last notes page: <b>“Last Visit in authorization”</b>, the closing note (“Pt responded well to tx. Pt had an excellent outcome w/ acupuncture”), <b>Excellent</b> ticked under Today's response.</li>
+          <li>S7: Add visit is disabled.</li>
+          <li>Ending early: mark an earlier visit final (Edit visit › “Mark as final visit”). S7 then says “Visit N is marked final — treatment ended, so no more visits can follow it”, Add visit is disabled, and the visit screen shows “Treatment ended — no more visits”.</li>
         </ol>
-        <span class="expect pass">✓ Last-page rules on visit 4 · no visit after final</span>
+        <span class="expect pass">✓ Last-page rules on the final visit · no visit after final, explained up front</span>
       </div>
     </div>
 
@@ -465,16 +442,34 @@ Print a confirmation of what was deleted.</pre>
         <span class="scenario-id">V-06</span>
         <span class="scenario-title">Warning at 2 visits remaining</span>
         <span class="badge boundary">Boundary</span>
-        <span class="scenario-tag">Seed: S1 (6 of 8 visits recorded)</span>
+        <span class="scenario-tag">Seed 6</span>
       </div>
       <div class="scenario-body">
-        <p>At 6 of 8 visits recorded the dashboard and S7 must show a "2 visits remaining" warning.</p>
+        <p>With 2 approved visits left, S7 and the dashboard warn.</p>
         <ol class="steps">
-          <li>Ensure Jane Doe auth S1 has exactly 6 visits recorded.</li>
-          <li>Check S2 (dashboard tile) — warning badge should appear.</li>
-          <li>Open S7 (authorization detail) — warning message visible.</li>
+          <li>Record visit 6 on seed 6 (6 of 8).</li>
+          <li>S7 shows “2 approved visits left on this authorization”.</li>
+          <li>The dashboard's <b>Nearing last visit</b> tile and Needs attention list include it.</li>
         </ol>
-        <span class="expect warn">⚠ Warning shown on dashboard and S7 at 2 visits left</span>
+        <span class="expect warn">⚠ Warning on S7 and the dashboard at 2 visits left</span>
+      </div>
+    </div>
+
+    <div class="scenario">
+      <div class="scenario-header">
+        <span class="scenario-id">V-07</span>
+        <span class="scenario-title">A half-entered visit isn't lost by accident</span>
+        <span class="badge boundary">Boundary</span>
+        <span class="scenario-tag">Any authorization</span>
+      </div>
+      <div class="scenario-body">
+        <p>Leaving the visit screen with something entered asks first.</p>
+        <ol class="steps">
+          <li>Start a visit (e.g. pick a pain level), then click a sidebar link, Cancel or Back: “Leave without saving?” — <b>Stay and keep editing</b> keeps what you typed.</li>
+          <li>Refresh or close the tab: the browser's own “Leave site?” prompt.</li>
+          <li>Nothing entered, or just saved: no question.</li>
+        </ol>
+        <span class="expect warn">⚠ Asks before discarding · never after saving</span>
       </div>
     </div>
 
@@ -483,7 +478,7 @@ Print a confirmation of what was deleted.</pre>
 
 <section id="packets">
   <h2><span class="no">05</span>Packet generation scenarios</h2>
-  <p class="sec-note">Covers the 8-visit and 12-visit acceptance criteria, per-page edits, and the three-file structure.</p>
+  <p class="sec-note">Covers the 8-visit and 12-visit acceptance criteria, per-page edits, the cover page count and the three-file structure.</p>
 
   <div class="scenario-group">
 
@@ -492,14 +487,14 @@ Print a confirmation of what was deleted.</pre>
         <span class="scenario-id">G-01</span>
         <span class="scenario-title">8-visit completed packet — acceptance criterion</span>
         <span class="badge positive">Positive</span>
-        <span class="scenario-tag">Seed: S4 (John Doe, 4 visits) — or use a fresh 8-visit auth</span>
+        <span class="scenario-tag">Seed 9</span>
       </div>
       <div class="scenario-body">
-        <p>One of the two formal acceptance criteria. A completed 8-visit authorization must produce a correctly structured packet.</p>
+        <p>One of the two formal acceptance criteria. A completed 8-visit authorization produces a correctly structured packet.</p>
         <ol class="steps">
-          <li>Ensure an authorization with exactly 8 visits recorded and visit 8 marked <code>is_final</code>.</li>
-          <li>Build packet on S11. Select cover sheet: <b>Atlanta VAMC Request for Services</b>. Include RFS if diagnosis ICD-10 is confirmed.</li>
-          <li>Open the notes PDF (S12). Check every page:</li>
+          <li>Seed 9 (John Doe · Pain in Knee – Right · 8 of 8, visit 8 final).</li>
+          <li>Build packet (S11): cover <b>Atlanta VAMC — Request for Services</b>, tick <b>Include RFS</b>, sign box 21 (page 2 is faxed blank — nothing to sign there).</li>
+          <li>Open the notes on Preview (S12) and check every page:</li>
         </ol>
         <div class="tblwrap" style="margin-top:10px;"><table>
           <thead><tr><th>Page</th><th>Must have</th></tr></thead>
@@ -518,36 +513,36 @@ Print a confirmation of what was deleted.</pre>
         <span class="scenario-id">G-02</span>
         <span class="scenario-title">12-visit completed packet — acceptance criterion</span>
         <span class="badge positive">Positive</span>
-        <span class="scenario-tag">Seed: S10</span>
+        <span class="scenario-tag">Seed 10</span>
       </div>
       <div class="scenario-body">
-        <p>Second formal acceptance criterion. Same structure as G-01 but 12 pages.</p>
+        <p>Second formal acceptance criterion. Same structure as G-01 with 12 pages.</p>
         <ol class="steps">
-          <li>Use Jane Smith's 12-visit authorization (seed S10). All 12 visits recorded; visit 12 <code>is_final</code>.</li>
-          <li>Build and open the packet. Verify pages 1, 2–11 (middle), and 12 follow the same rules as G-01.</li>
-          <li>Count: cover sheet (1) + RFS (2, if included) + notes (12) = total pages. Confirm the cover sheet's page count field matches.</li>
+          <li>Seed 10 (Jane Doe · Low Back Pain – Right · 12 of 12, visit 12 final). Build with the RFS.</li>
+          <li>Pages 1, 2–11 and 12 follow the G-01 rules.</li>
+          <li>The cover sheet's page total reads <b>15</b> (cover 1 + notes 12 + RFS 2).</li>
         </ol>
-        <span class="expect pass">✓ 12 pages correct · cover sheet page count accurate</span>
+        <span class="expect pass">✓ 12 pages correct · cover page count 15</span>
       </div>
     </div>
 
     <div class="scenario">
       <div class="scenario-header">
         <span class="scenario-id">G-03</span>
-        <span class="scenario-title">Per-page edit — change appears in output</span>
+        <span class="scenario-title">Per-page edit — appears in the output and blocks sending</span>
         <span class="badge positive">Positive</span>
-        <span class="scenario-tag">Seed: S9</span>
+        <span class="scenario-tag">Seed 11</span>
       </div>
       <div class="scenario-body">
-        <p>A single page can be edited after packet generation and the change must appear in the merged PDF.</p>
+        <p>A single notes page can carry its own name, VA number or last four (S12 “Edit this page”). It is flagged everywhere and the packet can't be sent until it is undone. A page edit can't change the pain level — that is corrected on the visit itself (Edit visit).</p>
         <ol class="steps">
-          <li>On John Doe's packet (S12), open the per-page editor for visit 2. Change the displayed pain level to <b>7</b> (page override only — do not change the visit record).</li>
-          <li>Confirm S12 shows "edited since generated" indicator.</li>
-          <li>Regenerate / refresh the PDF. Open page 2. Pain level must read <b>7</b>.</li>
-          <li>Confirm the edit is logged in S20 (activity log) with before/after values.</li>
-          <li>Confirm the consistency check panel flags the mismatch between the stored visit value and the page override.</li>
+          <li>Seed 11's notes page 3 was edited to the name “Jon Doe”: the notes PDF page 3 shows it; the other pages show John Doe.</li>
+          <li>Preview flags it: “Name, VA number or last four don't match across the files — Clinical notes page 3: …”, and the page shows “Edited since generated”.</li>
+          <li>Review &amp; send: <b>Confirm and send</b> is disabled; the API refuses approval (422) — “undo the page edits first”.</li>
+          <li>The edit is in the activity log (S20). Seed 11's visit 3 pain was corrected 5 → 6 through Edit visit — all pages follow it.</li>
+          <li><b>Undo edit</b> on page 3 clears the warning.</li>
         </ol>
-        <span class="expect pass">✓ Edited value on page 2 · logged in activity log · mismatch flag shown</span>
+        <span class="expect pass">✓ Edited value on its page · flagged on Preview and S13 · sending blocked until undone · logged</span>
       </div>
     </div>
 
@@ -556,15 +551,15 @@ Print a confirmation of what was deleted.</pre>
         <span class="scenario-id">G-04</span>
         <span class="scenario-title">Cover sheet page count matches actual files</span>
         <span class="badge positive">Positive</span>
+        <span class="scenario-tag">Seed 9</span>
       </div>
       <div class="scenario-body">
-        <p>The cover sheet's total page count field must equal 1 (cover) + notes pages + RFS pages (if included).</p>
+        <p>The cover sheet's total = 1 (cover) + notes pages + RFS pages (if included).</p>
         <ol class="steps">
-          <li>Generate a packet: 8 notes + RFS (2 pages) + cover sheet = <b>11 pages total</b>.</li>
-          <li>Open the cover sheet PDF. Confirm the page count field reads <b>11</b>.</li>
-          <li>Repeat without RFS: 8 notes + cover = <b>9 pages</b>. Confirm cover reads <b>9</b>.</li>
+          <li>Seed 9 with the RFS: the cover reads <b>11</b> (1 + 8 + 2).</li>
+          <li>Rebuild without the RFS: the cover reads <b>9</b>.</li>
         </ol>
-        <span class="expect pass">✓ Page count on cover sheet matches actual file total in both cases</span>
+        <span class="expect pass">✓ Page count on the cover matches in both cases</span>
       </div>
     </div>
 
@@ -573,15 +568,15 @@ Print a confirmation of what was deleted.</pre>
         <span class="scenario-id">G-05</span>
         <span class="scenario-title">Three separate PDF files — not merged</span>
         <span class="badge positive">Positive</span>
+        <span class="scenario-tag">Seed 9 · Seed 12</span>
       </div>
       <div class="scenario-body">
-        <p>The output must be three separate files (client decision). A single merged PDF would be rejected by the VA.</p>
+        <p>The output is always three separate files (client decision) — a merged PDF is rejected by the VA.</p>
         <ol class="steps">
-          <li>After building a packet with cover + RFS + notes, go to S12 download area.</li>
-          <li>Confirm three separate download links: cover sheet, clinical notes, RFS.</li>
-          <li>Download each. Confirm they are three distinct PDF files, not one merged file.</li>
+          <li>Preview (S12): three tabs — Cover sheet, Clinical notes, RFS — and <b>Download all 3 files</b>; each download is logged.</li>
+          <li>Seed 12 (approved): the fax log's Cover · Notes · RFS links open three distinct PDFs (1, 3 and 2 pages), exactly as sent.</li>
         </ol>
-        <span class="expect pass">✓ Three separate PDFs available for download</span>
+        <span class="expect pass">✓ Three separate PDFs, downloadable and kept as sent</span>
       </div>
     </div>
 
@@ -590,47 +585,43 @@ Print a confirmation of what was deleted.</pre>
 
 <section id="fax">
   <h2><span class="no">06</span>Fax flow scenarios</h2>
-  <p class="sec-note">Covers the review → confirm → send → status flow. Use the test fax destination Lorraine provides — 404-738-1714 is the practice's own sending number, not a test destination.</p>
+  <p class="sec-note">Covers review → confirm → send → status. Demo mode (<code>FAX_MODE=fake</code>) runs every step without dialling. For real SRFax, only the numbers in <code>FAX_ALLOWED_NUMBERS</code> are dialled before go-live — 404-738-1714 is the practice's own sending number, never a destination.</p>
 
-  <div class="callout" style="margin-top:0;">
-    <b>Before running fax scenarios:</b> confirm SRFax API credentials are entered in S19 (settings). Use a test destination number Lorraine has confirmed — never the practice's own fax number.
-  </div>
-
-  <div class="scenario-group" style="margin-top:18px;">
+  <div class="scenario-group">
 
     <div class="scenario">
       <div class="scenario-header">
         <span class="scenario-id">F-01</span>
-        <span class="scenario-title">Fax flow blocked until approved</span>
+        <span class="scenario-title">Nothing is sent, or shown as sent, before confirming</span>
         <span class="badge negative">Negative</span>
-        <span class="scenario-tag">Seed: S11</span>
+        <span class="scenario-tag">Seed 9 · Seed 12b</span>
       </div>
       <div class="scenario-body">
-        <p>The send screen (S13) must not be reachable until the packet is in <code>approved</code> state.</p>
+        <p>Review &amp; send (S13) <b>is</b> the confirmation: “Confirm and send” approves the packet and hands its faxes to the sender. There is no separate “approved” step before it.</p>
         <ol class="steps">
-          <li>Take a packet in <code>draft</code> state. Try navigating directly to its S13 URL.</li>
-          <li>Confirm the app redirects away or shows a clear block — it must not show "Sent · Delivery confirmed".</li>
-          <li>Try the same with a packet in <code>ready</code> state (built but not approved).</li>
+          <li>Open S13 for a draft (seed 12b): it shows what will be sent and offers <b>Confirm and send</b> — Cancel in its dialog sends nothing (still a draft).</li>
+          <li>Open Send result (S14) for a packet not yet confirmed (seed 9): “This packet hasn't been approved yet — nothing has been sent”.</li>
+          <li>After confirming, a fax shows <b>Queued</b> until the service reports it — never “Sent” before that.</li>
         </ol>
-        <span class="expect block">✗ S13 and S14 unreachable until packet is approved · no skip-ahead via direct URL</span>
+        <span class="expect block">✗ Nothing sent without Confirm and send · Queued never shown as Sent</span>
       </div>
     </div>
 
     <div class="scenario">
       <div class="scenario-header">
         <span class="scenario-id">F-02</span>
-        <span class="scenario-title">Confirm screen shows destinations and sending number</span>
+        <span class="scenario-title">Confirm screen shows destinations, sending number and files</span>
         <span class="badge positive">Positive</span>
-        <span class="scenario-tag">Seed: S11</span>
+        <span class="scenario-tag">Seed 12b</span>
       </div>
       <div class="scenario-body">
-        <p>S13 must show each destination fax number and the sending number before the user confirms.</p>
+        <p>S13 shows each destination, the sending number and the files before the confirmation.</p>
         <ol class="steps">
-          <li>Approve John Doe's packet (S11 seed). Proceed to S13.</li>
-          <li>Confirm S13 shows: destination number, sending number <b>404-738-1714</b>, and a summary of each file being sent.</li>
-          <li>Do not confirm yet — just verify the display.</li>
+          <li>Open seed 12b's Review &amp; send — also straight from a bookmark or typed link: it shows the saved packet.</li>
+          <li>Check: Blairsville VA 404-417-1581 and Atlanta VAMC 404-639-9335 (automatic copy), sending from <b>404-738-1714</b>, and the cover, notes and RFS file names with page counts.</li>
+          <li>Don't confirm yet.</li>
         </ol>
-        <span class="expect pass">✓ Destination + sending number visible · file list shown before confirm</span>
+        <span class="expect pass">✓ Destinations + sending number + files shown before confirming</span>
       </div>
     </div>
 
@@ -639,15 +630,15 @@ Print a confirmation of what was deleted.</pre>
         <span class="scenario-id">F-03</span>
         <span class="scenario-title">Blairsville send also goes to Atlanta automatically</span>
         <span class="badge positive">Positive</span>
+        <span class="scenario-tag">Seed 12b</span>
       </div>
       <div class="scenario-body">
-        <p>Any authorization with facility Blairsville VA must automatically add Atlanta VAMC as a second destination.</p>
+        <p>A Blairsville VA packet always adds Atlanta VAMC as a second destination.</p>
         <ol class="steps">
-          <li>Create an authorization with facility <b>Blairsville VA</b>. Build and approve a packet.</li>
-          <li>On S13, confirm two destination rows: Blairsville VA (primary) and Atlanta VAMC (automatic copy).</li>
-          <li>Confirm the Atlanta copy uses the <b>Atlanta VAMC Request for Services</b> cover sheet.</li>
+          <li>On seed 12b, <b>Confirm and send</b> → <b>Send 2 faxes</b>.</li>
+          <li>Send result (S14) lists two faxes — Blairsville VA and the automatic Atlanta copy (Atlanta “Request for Services” cover) — Queued, then Sent (demo: “Demo — not faxed”).</li>
         </ol>
-        <span class="expect pass">✓ Two destinations on S13 · correct cover sheet for Atlanta copy</span>
+        <span class="expect pass">✓ Two destinations · correct cover for the Atlanta copy · each tracked</span>
       </div>
     </div>
 
@@ -656,16 +647,16 @@ Print a confirmation of what was deleted.</pre>
         <span class="scenario-id">F-04</span>
         <span class="scenario-title">Failed send shows clearly and can be retried</span>
         <span class="badge negative">Negative</span>
+        <span class="scenario-tag">Any packet · test fax</span>
       </div>
       <div class="scenario-body">
-        <p>Simulate a fax failure (disconnect SRFax credentials or use an invalid destination). The failure must be clear and retryable.</p>
+        <p>A failure is shown with its reason and retried as a new attempt; every attempt is kept.</p>
         <ol class="steps">
-          <li>Temporarily set an invalid SRFax API key in S19.</li>
-          <li>Attempt to send a packet. Confirm S14 / S15 shows a clear failure state — not "Sent" or blank.</li>
-          <li>Restore the correct API key. Use the retry action. Confirm a new transmission attempt is logged.</li>
-          <li>Confirm the failed attempt is also logged in the fax log (S20) with status <code>failed</code>.</li>
+          <li>Demo mode: start the backend with <code>FAX_FAKE_FAIL_NUMBERS=[&quot;706-555-0199&quot;]</code>; on Practice &amp; sending send a test fax to 706-555-0199 (or set a VA facility's fax to it for a packet — and set it back after).</li>
+          <li>The fax log (S15) shows <b>Failed</b> with the reason (“No answer (demo failure)”). With real SRFax: e.g. “SRFax refused it: …”.</li>
+          <li><b>Retry</b> (S14 or S15) adds attempt <b>2 of 2</b>; attempt 1 stays as it was. Each step is in the activity log (S20).</li>
         </ol>
-        <span class="expect block">✗ Failure shown clearly · retry creates new attempt · both logged</span>
+        <span class="expect block">✗ Failure shown with its reason · retry = new attempt · all attempts kept and logged</span>
       </div>
     </div>
 
@@ -674,16 +665,16 @@ Print a confirmation of what was deleted.</pre>
         <span class="scenario-id">F-05</span>
         <span class="scenario-title">Sent packet is read-only</span>
         <span class="badge negative">Negative</span>
+        <span class="scenario-tag">Seed 12</span>
       </div>
       <div class="scenario-body">
-        <p>Once a packet moves to <code>sent</code> state the authorization must become read-only. No edits, no new visits, no re-build.</p>
+        <p>Once a packet is approved its contents are frozen: the visits can't be edited and the files as sent never change.</p>
         <ol class="steps">
-          <li>After a successful send, return to the authorization (S7).</li>
-          <li>Confirm: Edit authorization button is disabled or hidden; "Add visit" is disabled; "Build packet" is disabled.</li>
-          <li>Try direct API calls to edit the authorization or add a visit. Expect rejection.</li>
-          <li>Confirm a correction flow (new packet linked to the old) is the only path forward.</li>
+          <li>Seed 12's S7: no Edit links on the visits; <code>PUT …/visits/{id}</code> → <b>409</b> “sent packets are never edited”.</li>
+          <li>The files as sent (fax log links) stay exactly as approved.</li>
+          <li>Today the authorization itself can still be extended and a new packet built — the linked correct-and-re-send packet (S21) isn't built yet (QA M3).</li>
         </ol>
-        <span class="expect block">✗ All edit actions disabled on sent authorization · correction flow available</span>
+        <span class="expect block">✗ Visits locked · files as sent unchanged · correction flow still to come (M3)</span>
       </div>
     </div>
 
@@ -692,71 +683,76 @@ Print a confirmation of what was deleted.</pre>
 
 <section id="negative">
   <h2><span class="no">07</span>Quick negative-case reference</h2>
-  <p class="sec-note">Each of these should be blocked with a clear message. Run these after the positive scenarios pass.</p>
+  <p class="sec-note">Each of these should be blocked with a clear message. Run these after the positive scenarios pass. Refusals from the API are <b>422</b> with the reason; a stale save or a locked visit is <b>409</b>.</p>
 
   <div class="tblwrap"><table>
     <thead><tr><th>ID</th><th>Action attempted</th><th>Expected outcome</th></tr></thead>
     <tbody>
-      <tr><td>N-01</td><td>Pain level entered as 11 (out of 0–10 range)</td><td class="block">Blocked — inline validation error</td></tr>
-      <tr><td>N-02</td><td>Pain level entered as -1</td><td class="block">Blocked — inline validation error</td></tr>
-      <tr><td>N-03</td><td>Visit date duplicated within the same authorization</td><td class="block">Blocked — duplicate date error</td></tr>
-      <tr><td>N-04</td><td>Visit date entered before a previous visit's date</td><td class="block">Blocked — dates must be in order</td></tr>
+      <tr><td>N-01</td><td>Pain level entered as 11 (out of 0–10 range)</td><td class="block">Blocked — “Pain level is 0 to 10.”</td></tr>
+      <tr><td>N-02</td><td>Pain level entered as -1</td><td class="block">Blocked — “Pain level is 0 to 10.”</td></tr>
+      <tr><td>N-03</td><td>Visit date duplicated within the same authorization</td><td class="block">Blocked — “A visit is already recorded on this date.”</td></tr>
+      <tr><td>N-04</td><td>Visit date entered before a previous visit's date</td><td class="block">Blocked — “Must be after the previous visit (…)”</td></tr>
       <tr><td>N-05</td><td>Reduce approved visits below the number already recorded</td><td class="block">Blocked — names the conflicting visit</td></tr>
       <tr><td>N-06</td><td>Shorten authorization end date to exclude a recorded visit</td><td class="block">Blocked — names the conflicting visit</td></tr>
-      <tr><td>N-07</td><td>Build packet with mismatch (name on page ≠ cover sheet)</td><td class="warn">Flagged before approval — can't finalize</td></tr>
+      <tr><td>N-07</td><td>Send a packet with a page edit (name / VA number / last four differ on one page)</td><td class="warn">Flagged on Preview and S13 — Confirm disabled; the API refuses until undone</td></tr>
       <tr><td>N-08</td><td>Change diagnosis after at least one visit exists</td><td class="block">Blocked — diagnosis locked once visits exist</td></tr>
-      <tr><td>N-09</td><td>Add a second "is_final" visit when one already exists</td><td class="block">Blocked — at most one final visit</td></tr>
-      <tr><td>N-10</td><td>Add a visit after is_final is set</td><td class="block">Blocked — no visits after final</td></tr>
-      <tr><td>N-11</td><td>Navigate to S14 "Sent" without confirming on S13</td><td class="block">Blocked — redirect to correct state</td></tr>
-      <tr><td>N-12</td><td>Enter a VA number with incorrect format</td><td class="warn">Inline validation error shown</td></tr>
+      <tr><td>N-09</td><td>Mark a second visit final (Edit visit on an earlier visit)</td><td class="block">Blocked — “Only the last recorded visit can be final”</td></tr>
+      <tr><td>N-10</td><td>Add a visit after a visit marked final</td><td class="block">Blocked — S7 disables Add visit; the visit screen says why; API refuses</td></tr>
+      <tr><td>N-11</td><td>Open Send result (S14) without confirming on S13</td><td class="block">Shows “hasn't been approved yet — nothing has been sent”</td></tr>
+      <tr><td>N-12</td><td>Enter a VA number with incorrect format</td><td class="warn">“VA number must be "VA" followed by 10 digits”</td></tr>
+      <tr><td>N-13</td><td>Start an authorization period in the past</td><td class="block">Blocked — “Period start can't be in the past” (open finding M1)</td></tr>
+      <tr><td>N-14</td><td>Edit a patient into another patient's last name, DOB and last four</td><td class="warn">Duplicate warning — saved only if confirmed as a different person</td></tr>
     </tbody>
   </table></div>
 </section>
 
 <section id="reset">
   <h2><span class="no">08</span>Reset procedure</h2>
-  <p class="sec-note">Run this to wipe seeded test data and return to a clean state. It removes only records tagged <code>test_seed=true</code>.</p>
+  <p class="sec-note">Removes what the seed added — and nothing else — so the scenarios can be seeded again.</p>
 
-  <pre>python scripts/reset_test_data.py --base-url http://localhost:8000</pre>
+  <pre>cd backend
+python scripts/reset_test_data.py          # lists what it would remove
+python scripts/reset_test_data.py --yes    # removes it
+docker compose exec backend python scripts/reset_test_data.py --yes   # inside Docker</pre>
 
-  <p>The script will print a confirmation of each record deleted. If you need a full database wipe (e.g. after a schema change), delete the SQLite file and re-run migrations, then re-seed.</p>
+  <p>It removes every authorization with a seed VA number (VA0090000001–099) — with its visits, packets, page edits, fax records and stored PDFs, including anything a tester added to them — and Joan B Doe (kept, with a warning, if she has been given another authorization). Jane Doe and John Doe themselves, every other patient and the activity log are never touched (the log can't be changed). It works on the database directly because the app has no hard delete by design. For a full wipe (e.g. after a schema change), delete the SQLite file, restart (migrations and the demo clinic load on start), then re-seed.</p>
 
   <div class="callout red" style="margin-top:14px;">
-    <b>Never run reset_test_data.py against the production Mac.</b> The reset script has a guard that refuses to run if <code>BASE_URL</code> is not localhost, but confirm visually before running.
+    <b>Never run reset_test_data.py against the production Mac.</b> It refuses to run with <code>ENVIRONMENT=production</code> and deletes only with <code>--yes</code> — check what it lists first.
   </div>
 </section>
 
 <section id="fixtures">
   <h2><span class="no">09</span>Fixture reference</h2>
-  <p class="sec-note">Canonical fake-data values used across all seed scenarios. Use these exactly — do not invent new VA numbers or names for test records.</p>
+  <p class="sec-note">The fake data in <code>fixtures/</code> (Jane and John Doe — build fix F1) and the one patient the seed creates. Use these; don't invent new identities for test records.</p>
 
   <div class="tblwrap"><table>
-    <thead><tr><th>Field</th><th>Jane Doe</th><th>John Doe</th><th>Jane Smith</th><th>John Smith</th></tr></thead>
+    <thead><tr><th>Field</th><th>Jane Doe</th><th>John Doe</th><th>Joan B Doe (seed)</th></tr></thead>
     <tbody>
-      <tr><td>Last name</td><td>Doe</td><td>Doe</td><td>Smith</td><td>Smith</td></tr>
-      <tr><td>First name</td><td>Jane</td><td>John</td><td>Jane</td><td>John</td></tr>
-      <tr><td>DOB</td><td>1960-03-15</td><td>1958-07-22</td><td>1965-11-04</td><td>1955-01-30</td></tr>
-      <tr><td>Last four</td><td>1234</td><td>5678</td><td>9012</td><td>3456</td></tr>
-      <tr><td>Title</td><td>Ms.</td><td>Mr.</td><td>Ms.</td><td>Mr.</td></tr>
-      <tr><td>Pronoun</td><td>her</td><td>his</td><td>her</td><td>his</td></tr>
-      <tr><td>VA number (auth 1)</td><td>VA0011223344</td><td>VA0044332211</td><td>VA0055667788</td><td>VA0099887766</td></tr>
+      <tr><td>Name</td><td>Jane A Doe</td><td>John Doe</td><td>Joan B Doe</td></tr>
+      <tr><td>DOB</td><td>1961-03-14</td><td>1958-06-22</td><td>1964-04-04</td></tr>
+      <tr><td>Last four</td><td>1234</td><td>0001</td><td>4321</td></tr>
+      <tr><td>Title · pronoun</td><td>Ms. · her</td><td>Mr. · his</td><td>Ms. · her</td></tr>
+      <tr><td>Fixture authorizations</td><td>VA0012345678 Low Back Pain – Left 12/12 (ready) · VA0011223344 Low Back Pain – Left 8/8 (sent) · VA0011122233 Headache 6/6 (failed fax) · VA0077788899 Dorsalgia – Left 10/12</td><td>VA0023456789 Pain in Hip – Left 8/8, Blairsville (ready) · VA0055512340 Cervicalgia – Right 7/12 · VA0034567890 Anosmia 0/6</td><td>— (seed 1 only)</td></tr>
     </tbody>
   </table></div>
 
-  <h3>Seed scenario summary</h3>
+  <h3>Scenario map</h3>
   <div class="tblwrap"><table>
-    <thead><tr><th>Seed ID</th><th>Patient</th><th>Diagnosis</th><th>Visits approved</th><th>Used by scenarios</th></tr></thead>
+    <thead><tr><th>Seed</th><th>Patient</th><th>Diagnosis</th><th>State</th><th>Used by scenarios</th></tr></thead>
     <tbody>
-      <tr><td>S1</td><td>Jane Doe</td><td>Low Back Pain – Left</td><td>8</td><td>P-01, V-01, V-02, V-06, G-01</td></tr>
-      <tr><td>S2</td><td>Jane Doe</td><td>Low Back Pain – Left (2nd auth)</td><td>6</td><td>P-02</td></tr>
-      <tr><td>S3</td><td>Jane Doe</td><td>Dorsalgia – Right</td><td>6</td><td>P-03</td></tr>
-      <tr><td>S4</td><td>John Doe</td><td>Pain in Hip – Left</td><td>4 (at limit)</td><td>P-04, V-05, G-01, F-01, F-02, F-05</td></tr>
-      <tr><td>S5</td><td>John Smith</td><td>Low Back Pain – Left</td><td>8 (narrow period)</td><td>V-03, V-04</td></tr>
-      <tr><td>S6</td><td>Jane Doe (S1)</td><td>—</td><td>5 of 8 visits recorded</td><td>V-01, V-02, V-06</td></tr>
-      <tr><td>S7</td><td>John Doe (S4)</td><td>—</td><td>4 visits, is_final set</td><td>V-05</td></tr>
-      <tr><td>S9</td><td>John Doe</td><td>Pain in Hip – Left</td><td>4, packet with page edit</td><td>G-03</td></tr>
-      <tr><td>S10</td><td>Jane Smith</td><td>Low Back Pain – Left</td><td>12, all visits, is_final</td><td>G-02</td></tr>
-      <tr><td>S11</td><td>John Doe (S4)</td><td>—</td><td>Packet in approved state</td><td>F-01, F-02</td></tr>
+      <tr><td>1</td><td>Joan B Doe</td><td>Pain in Knee – Left</td><td>0 of 6</td><td>P-01</td></tr>
+      <tr><td>2</td><td>Jane Doe</td><td>Low Back Pain – Left</td><td>0 of 8</td><td>P-02</td></tr>
+      <tr><td>3</td><td>Jane Doe</td><td>Pain in Shoulder – Right</td><td>0 of 6</td><td>P-03</td></tr>
+      <tr><td>4</td><td>John Doe</td><td>Dorsalgia – Left</td><td>4 of 4 (at limit)</td><td>P-04</td></tr>
+      <tr><td>5</td><td>Jane Doe</td><td>Pain in Knee – Left</td><td>2 of 6, 30-day period</td><td>V-03, V-04, N-01–N-03</td></tr>
+      <tr><td>6</td><td>John Doe</td><td>Pain in Shoulder – Left</td><td>5 of 8</td><td>V-01, V-02, V-06, N-04–N-06, N-08, N-09</td></tr>
+      <tr><td>7</td><td>Jane Doe</td><td>Cervicalgia – Right</td><td>5 of 5, final</td><td>V-05</td></tr>
+      <tr><td>9</td><td>John Doe</td><td>Pain in Knee – Right</td><td>8 of 8</td><td>G-01, G-04, G-05, F-01</td></tr>
+      <tr><td>10</td><td>Jane Doe</td><td>Low Back Pain – Right</td><td>12 of 12</td><td>G-02</td></tr>
+      <tr><td>11</td><td>John Doe</td><td>Dorsalgia – Right</td><td>4 of 4 + draft with page edit</td><td>G-03, N-07</td></tr>
+      <tr><td>12</td><td>Jane Doe</td><td>Pain in Hip – Right</td><td>3 of 3 + packet approved</td><td>V-02, G-05, F-05</td></tr>
+      <tr><td>12b</td><td>John Doe</td><td>Other Chronic Pain (Blairsville)</td><td>3 of 3 + draft, RFS signed</td><td>F-01, F-02, F-03</td></tr>
     </tbody>
   </table></div>
 </section>
