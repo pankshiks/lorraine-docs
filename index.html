@@ -331,7 +331,7 @@
       <tr><td>Sending</td><td>Only after an explicit confirmation on S13 showing each destination number and the sending number. One transmission per destination and attempt.</td></tr>
       <tr><td>Status</td><td>queued → sent | failed, by polling SRFax. <b>Queued is never shown as sent.</b> "Waiting too long" raised on the dashboard. Retry = new attempt.</td></tr>
       <tr><td>Corrections</td><td>A sent packet never changes. A correction is a new packet linked to the old one.</td></tr>
-      <tr><td>RFS signature (box 21)</td><td>Not signed by the tool yet — show "RFS not signed" in preview and review until the practice decides.</td></tr>
+      <tr><td>RFS signature (box 21)</td><td>Not signed by the tool yet — show "RFS not signed" in preview and review until the practice decides. <i>(Client, 2 Oct; confirmed 5 Oct: Dr. DeYoe's signature is pre-printed — uploaded once on S19.)</i></td></tr>
       <tr><td>RFS reason (field 18)</td><td>Standard wording with three fill-ins: title + surname (MR. DOE), body area (LOWER BACK), his/her. Fields 15–16 (CPT/HCPCS) blank. 48-hours NO · continuation YES · referral NO.</td></tr>
     </tbody>
   </table></div>
@@ -991,7 +991,7 @@ Build frontend/src/features/visits/VisitEntryPage.tsx that reproduces the design
     <thead><tr><th>Item</th><th>Blocks</th><th>Workaround meanwhile</th></tr></thead>
     <tbody>
             <tr><td>Confirmation of 3 ICD-10 codes (Hip – Left, Knee – Right, Shoulder – Right)</td><td>RFS for those 3 only</td><td>RFS disabled with a clear reason; the other 17 codes are final</td></tr>
-      <tr><td>RFS signature decision (field 21)</td><td>RFS output in M7</td><td>Flag “RFS not signed” in preview and review</td></tr>
+      <tr><td>RFS signature decision (field 21)</td><td>RFS output in M7</td><td>Flag “RFS not signed” in preview and review <i>(changed 5 Oct: pre-printed signature)</i></td></tr>
       <tr><td>Initial-visit send? · Atlanta cover sheet for the copy · cover and RFS file names</td><td>M7 / M8 details</td><td>Settings with sensible defaults</td></tr>
       <tr><td>SRFax API credentials and a <b>test fax destination</b> (not 404-738-1714, which is our sending number)</td><td>M8 acceptance</td><td>FakeFaxProvider</td></tr>
       <tr><td>Authorization extensions: same VA number or a new one?</td><td>M5 extension flow</td><td>Assume same number, edited with a logged reason</td></tr>

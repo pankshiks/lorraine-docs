@@ -242,7 +242,7 @@ docker compose exec backend python scripts/seed_test_data.py   # inside Docker</
           <li>Patients › <b>+ Add patient</b>: a made-up patient, e.g. <b>Jake Doe</b>, DOB <b>1972-02-12</b>, last four <b>2222</b>, <b>Mr.</b> / <b>his</b>. Save — it opens New authorization for him.</li>
           <li>Diagnosis: <b>Pain in Knee – Left</b>. VA number: <b>an unused one</b> (VA + 10 digits, e.g. VA0090000060). Facility <b>Atlanta VAMC</b>, office <b>Clarkesville</b>, approved visits <b>6</b>, period <b>today → +60 days</b>.</li>
           <li>Create. S7 shows <b>0 of 6 approved</b>; the authorization is on the dashboard (S2) and the patient list.</li>
-          <li>Note: a period can't start in the past (open finding M1), and each VA number is used once — VA0011223344 is Jane's earlier authorization.</li>
+          <li>A period may also lie in the past (client, 2 Oct) — e.g. 05/04/2026 → 07/03/2026 for an authorization that already ended. Each VA number is used once — VA0011223344 is Jane's earlier authorization.</li>
         </ol>
         <span class="expect pass">✓ Patient saved · authorization saved · 0 of 6 on S7 · listed on the dashboard</span>
       </div>
@@ -260,7 +260,7 @@ docker compose exec backend python scripts/seed_test_data.py   # inside Docker</
         <ol class="steps">
           <li>Open seed 2 (Jane Doe · Low Back Pain – Left · 0 of 8) and click <b>+ Add visit</b>.</li>
           <li>The visit screen says “Continued from the last Low Back Pain – Left authorization (VA0012345678, …)” and the answers match her last visit there.</li>
-          <li>Enter a date, a pain level, sign, save. The visit's answers are recorded with source <code>previous_authorization</code>.</li>
+          <li>Enter a date and a pain level, save (nothing to sign — the signature is pre-printed). The visit's answers are recorded with source <code>previous_authorization</code>.</li>
         </ol>
         <span class="expect pass">✓ Answers pre-filled from her previous authorization · answer_source = previous_authorization</span>
       </div>
@@ -376,11 +376,11 @@ docker compose exec backend python scripts/seed_test_data.py   # inside Docker</
       <div class="scenario-body">
         <p>Correcting an answer on visit 3 carries to the later visits that kept it unchanged. Sent visits can't be edited.</p>
         <ol class="steps">
-          <li>On seed 6, click <b>Edit →</b> on visit 3, untick a painful activity, sign again (required), <b>Save changes</b>.</li>
+          <li>On seed 6, click <b>Edit →</b> on visit 3, untick a painful activity, <b>Save changes</b>.</li>
           <li>Visits 4 and 5 lose that activity too; visit 4 keeps its own Type of pain change.</li>
           <li>On seed 12 (packet approved) there are no Edit links; <code>PUT …/visits/{id}</code> → <b>409</b> “sent packets are never edited”.</li>
         </ol>
-        <span class="expect pass">✓ Edit carries forward to unsent visits · doctor signs again · sent visits locked</span>
+        <span class="expect pass">✓ Edit carries forward to unsent visits · sent visits locked</span>
       </div>
     </div>
 
@@ -493,7 +493,7 @@ docker compose exec backend python scripts/seed_test_data.py   # inside Docker</
         <p>One of the two formal acceptance criteria. A completed 8-visit authorization produces a correctly structured packet.</p>
         <ol class="steps">
           <li>Seed 9 (John Doe · Pain in Knee – Right · 8 of 8, visit 8 final).</li>
-          <li>Build packet (S11): cover <b>Atlanta VAMC — Request for Services</b>, tick <b>Include RFS</b>, sign box 21 (page 2 is faxed blank — nothing to sign there).</li>
+          <li>Build packet (S11): cover <b>Atlanta VAMC — Request for Services</b>, tick <b>Include RFS</b> — box 21 carries Dr. DeYoe's pre-printed signature (page 2 is faxed blank — nothing to sign there).</li>
           <li>Open the notes on Preview (S12) and check every page:</li>
         </ol>
         <div class="tblwrap" style="margin-top:10px;"><table>
@@ -672,7 +672,7 @@ docker compose exec backend python scripts/seed_test_data.py   # inside Docker</
         <ol class="steps">
           <li>Seed 12's S7: no Edit links on the visits; <code>PUT …/visits/{id}</code> → <b>409</b> “sent packets are never edited”.</li>
           <li>The files as sent (fax log links) stay exactly as approved.</li>
-          <li>Today the authorization itself can still be extended and a new packet built — the linked correct-and-re-send packet (S21) isn't built yet (QA M3).</li>
+          <li>Today the authorization itself can still be corrected (Edit authorization — the VA no longer extends authorizations, client 2 Oct) and a new packet built — the linked correct-and-re-send packet (S21) isn't built yet (QA M3).</li>
         </ol>
         <span class="expect block">✗ Visits locked · files as sent unchanged · correction flow still to come (M3)</span>
       </div>
@@ -700,8 +700,9 @@ docker compose exec backend python scripts/seed_test_data.py   # inside Docker</
       <tr><td>N-10</td><td>Add a visit after a visit marked final</td><td class="block">Blocked — S7 disables Add visit; the visit screen says why; API refuses</td></tr>
       <tr><td>N-11</td><td>Open Send result (S14) without confirming on S13</td><td class="block">Shows “hasn't been approved yet — nothing has been sent”</td></tr>
       <tr><td>N-12</td><td>Enter a VA number with incorrect format</td><td class="warn">“VA number must be "VA" followed by 10 digits”</td></tr>
-      <tr><td>N-13</td><td>Start an authorization period in the past</td><td class="block">Blocked — “Period start can't be in the past” (open finding M1)</td></tr>
+      <tr><td>N-13</td><td>Enter a period more than 3 years back (a mistyped year)</td><td class="block">Blocked — “Period start looks wrong — it's before …” (past dates within 3 years are allowed)</td></tr>
       <tr><td>N-14</td><td>Edit a patient into another patient's last name, DOB and last four</td><td class="warn">Duplicate warning — saved only if confirmed as a different person</td></tr>
+      <tr><td>N-15</td><td>Confirm and send while Dr. DeYoe's signature isn't uploaded (Practice &amp; sending)</td><td class="block">Blocked — “Dr. DeYoe's signature isn't set up yet”; every screen says so</td></tr>
     </tbody>
   </table></div>
 </section>

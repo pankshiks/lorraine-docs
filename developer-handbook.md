@@ -6,7 +6,7 @@
 
 ### The client
 - DeYoe Wellness Acupuncture, Georgia, USA. Three offices: Clarkesville, Blairsville, Decatur.
-- Dr. James DeYoe, LAc — the acupuncturist. Signs the templates. Does **not** use the tool. *(Changed 29 Sep, user decision awaiting Poonam: he signs each visit on S9, and the RFS (boxes 21 and 29) on S11, in signature boxes — the only things he does in the tool. *Client instruction 1 Oct: box 21 only — RFS page 2 is faxed completely blank.*)*
+- Dr. James DeYoe, LAc — the acupuncturist. Signs the templates. Does **not** use the tool. *(Changed 29 Sep, user decision awaiting Poonam: he signs each visit on S9, and the RFS (boxes 21 and 29) on S11, in signature boxes — the only things he does in the tool. *Client instruction 1 Oct: box 21 only — RFS page 2 is faxed completely blank.* *Client, 2 Oct: his signature is pre-printed instead — uploaded once on S19 and printed on every progress note and RFS page 1, as the VA has approved; nothing is signed on screen. Confirmed 5 Oct (relayed by Harish).*)*
 - Lorraine Fordham, Practice Manager — the **only user** at go-live. Prepares, approves and sends everything. Non-technical, busy, careful.
 - Office is 7 hours behind India (US Eastern).
 
@@ -99,7 +99,7 @@ Confirmed in writing by Lorraine (2026-09-19). **These override anything older, 
 |---|---|
 | Left / right | Never print the side in the diagnosis title. "Left/Right" is only in template names so staff pick the right one. The side is shown on the page in the Post Treatment "Location of pain" area, which is already on each template. |
 | Post-treatment severity | Always 1/10 on every diagnosis (bottom-left, Post Treatment), whatever the scan shows. |
-| Last page | "Excellent" ticked under today's response on the final visit, for every diagnosis (covers the pre-printed "Good"). |
+| Last page | "Excellent" ticked under today's response on the final visit, for every diagnosis (covers the pre-printed "Good"). *(Client, 2 Oct: the Physician's note box is never blank — first page its note, last page the closing note, every page between "Patient responded well to treatment. Rx: continue tx plan.")* |
 | Who uses it | Lorraine only prepares and approves. Dr. DeYoe takes no part. Roles exist for future staff. |
 | Blairsville | Every send to Blairsville VA also goes to Atlanta VAMC — automatically. |
 | Hosting | Office Mac desktop. **SQLite**, FileVault, nightly encrypted backups. *(Build 29 Sep, QA H5: `ops/backup.sh` backs up the database, the PDFs as sent (`backend/data/documents`) and `backend/config` to the external encrypted drive (`BACKUP_DIR`, refused on the Mac's own disk), checks each copy, keeps 30 days.)* |
@@ -154,7 +154,7 @@ Every rule the code must enforce. Tests should cover each row.
 | Rule | Behaviour |
 |---|---|
 | Visit count ≤ visits approved | Hard block in the service, the API (409), and a SQLite trigger. "Add visit" disabled with the reason. |
-| Visit date inside the authorization period | Hard block. Period start and end are required. |
+| Visit date inside the authorization period | Hard block. Period start and end are required. *(Client, 2 Oct: periods may be in the past — authorizations already under way or expired still need their notes faxed. Only a date more than 3 years back or 2 ahead is refused as a likely typo. Confirmed 5 Oct (relayed by Harish).)* |
 | Dates | Required, unique within the authorization, after the previous visit. |
 | Nearing the limit | Warning at 2 visits left, on S7 and the dashboard. |
 | Reducing approved visits or the period | Refused if it would exclude a recorded visit (name the visit). |
@@ -203,7 +203,7 @@ Per the source doc: *"Put these in the repo's `CLAUDE.md` (section 15) so every 
 
 1. **No real patient data, anywhere, until go-live.** Designs, prompts, fixtures, tests, the repo and review links use fake patients only — Jane Doe, John Doe. Never paste a real name, date of birth, SSN or VA number into Claude Design, Claude Code or Grok.
 2. **We print on the practice's scans; we never redraw their forms.** Every output page is their scanned template with values stamped on top (reportlab + pypdf).
-   *Changed 25 Sep (user decision, awaiting Poonam's confirmation under rule 8):* no clean scans, so the clinical notes, RFS and cover sheets are new PDFs generated from the practice's forms as HTML templates, filled from the saved records and printed with headless Chromium (`backend/app/pdf/`). All 20 diagnosis forms are set up (28 Sep). Signature areas stay blank.
+   *Changed 25 Sep (user decision, awaiting Poonam's confirmation under rule 8):* no clean scans, so the clinical notes, RFS and cover sheets are new PDFs generated from the practice's forms as HTML templates, filled from the saved records and printed with headless Chromium (`backend/app/pdf/`). All 20 diagnosis forms are set up (28 Sep). Signature areas stay blank. *(5 Oct: the cover sheets are printed on the practice's own blank for each sheet, supplied 5 Oct — values stamped on top, as this rule intends.)*
 3. **Forms come from configuration.** The visit form is rendered from the master form definition and the diagnosis settings. Never hard-code a diagnosis's checkboxes in a component.
 4. **Every query is scoped to a clinic.** All clinic data goes through the tenant-scoped data layer. No raw query without `tenant_id`.
 5. **Three files, never merged.** Cover sheet, clinical notes and RFS are always separate PDFs.

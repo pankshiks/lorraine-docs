@@ -147,9 +147,9 @@
         <tr><td>Hosting on the office Mac</td><td class="y">Confirmed</td><td>Backup and encryption status shown in settings</td><td>S19</td></tr>
         <tr><td>Patient answers recorded per visit</td><td class="y">Decided</td><td>Carried forward from the last visit; defaults from the diagnosis settings; same patient + same diagnosis continues from their last recorded visit</td><td>S9, S10</td></tr>
         <tr><td>Visits limited to the approved number and period</td><td class="y">Decided</td><td>Hard block, with the reason shown; extensions recorded on S8 and logged</td><td>S7, S8, S9</td></tr>
-        <tr><td>VA extends an authorization</td><td class="warn">To confirm</td><td>Assumed: same VA number, more visits or a later end date, edited on S8. If the VA issues a new number, it becomes a new authorization.</td><td>S8</td></tr>
+        <tr><td>VA extends an authorization</td><td class="warn">To confirm</td><td>Assumed: same VA number, more visits or a later end date, edited on S8. If the VA issues a new number, it becomes a new authorization. <i>Client, 2 Oct: the VA no longer extends authorizations — S8 “Edit authorization” only corrects a typing mistake, with the reason logged.</i></td><td>S8</td></tr>
         <tr><td>Initial-visit records sent early</td><td class="warn">To confirm</td><td>Supported as a packet type, hidden until confirmed</td><td>S2, S11</td></tr>
-        <tr><td>RFS provider signature (field 21)</td><td class="warn">To confirm</td><td>Flagged as unsigned in preview and review</td><td>S12, S13</td></tr>
+        <tr><td>RFS provider signature (field 21)</td><td class="warn">To confirm</td><td>Flagged as unsigned in preview and review. <i>Client, 2 Oct (confirmed 5 Oct): Dr. DeYoe's signature is pre-printed in box 21 — uploaded once on S19.</i></td><td>S12, S13</td></tr>
         <tr><td>Which cover sheet goes with the Atlanta copy</td><td class="warn">Assumed</td><td>Atlanta — Request for Services, RFS included</td><td>S18</td></tr>
       </tbody>
     </table>
@@ -296,7 +296,7 @@ Use <u>LBP Left side template</u>. Schedule NV for: two weeks, on a Wednesday @ 
       <tr><td>48 hours · continuation · referral</td><td>10–12</td><td>fixed</td><td>NO · YES · NO</td></tr>
       <tr><td>ICD-10 · description</td><td>13, 14</td><td>diagnosis</td><td>M54.50 · LOW BACK PAIN, UNSPECIFIED</td></tr>
       <tr><td>Reason for request</td><td>18</td><td>assembled</td><td>see below</td></tr>
-      <tr><td>Provider signature</td><td>21</td><td>—</td><td class="warn">Required · not signed by the tool yet</td></tr>
+      <tr><td>Provider signature</td><td>21</td><td>—</td><td class="warn">Required · <i>pre-printed from the signature uploaded on S19 (client, 2 Oct)</i></td></tr>
       <tr><td>Today's date</td><td>22</td><td>system</td><td>today</td></tr>
     </tbody>
   </table></div>
