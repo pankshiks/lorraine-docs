@@ -40,7 +40,7 @@ A small web app on the office Mac. Lorraine picks a patient and diagnosis, recor
 | # | Today (by hand) | With the tool |
 |---|---|---|
 | 1 | VA approves an authorization (diagnosis, visits, VA number). | Lorraine enters it once (S6). |
-| 2 | Dr. DeYoe writes a short note: diagnosis, symptoms, which template to use. | She can paste it; Grok suggests diagnosis and first-visit answers (S10). |
+| 2 | Dr. DeYoe writes a short note: diagnosis, symptoms, which template to use. | She can paste it; Grok suggests diagnosis and first-visit answers (S10). *(6 Oct: on New authorization, when choosing the template.)* |
 | 3 | Patient visits happen over weeks. | After each visit she records date, pain level, answers (S9) — mostly pre-filled. |
 | 4 | She picks the diagnosis template and types a page per visit: name, dates (top and bottom), pain, VA number, last four, labels, notes. | The tool prints every page onto the scan. Date entered once, printed twice. |
 | 5 | She fills a cover sheet and maybe an RFS, counts pages by hand. | Built automatically, page count calculated (S11). |
@@ -135,7 +135,7 @@ Every rule the code must enforce. Tests should cover each row.
 | Pain level | 0–10, entered every visit. The tool shows last visit's value as a hint but never pre-selects or generates it. |
 | Post-treatment | Always 1/10. |
 | Printed on every page | Patient name, VA number, last four, date (×2), pain level, the patient's answers (ticks), any cover-ups from the template settings. |
-| Never changed | Clinical sections (objective, pulse/tongue, assessment, prognosis, plan, treatments, point prescription, therapies) and Dr. DeYoe's signature stay exactly as scanned. *(Build now, awaiting Poonam/Shikha: S9 shows these sections pre-filled from the form and editable per visit. Since 29 Sep Dr. DeYoe signs every visit on S9 — required to save — and the signature prints beside the visit date on that page.)* |
+| Never changed | Clinical sections (objective, pulse/tongue, assessment, prognosis, plan, treatments, point prescription, therapies) and Dr. DeYoe's signature stay exactly as scanned. *(Build now, awaiting Poonam/Shikha: S9 shows these sections pre-filled from the form and editable per visit. Since 29 Sep Dr. DeYoe signs every visit on S9 — required to save — and the signature prints beside the visit date on that page.)* *(Client, 6 Oct: therapies 1 Acupressure, 4 Mobilization/gliding and 5 Therapeutic stretching removed from every template, the rest numbered 1–3; Pulse, Tongue and Assessment on one row; a Comments box under Post Treatment — migration 0009.)* *(Client, 6 Oct: provider block, practice footer, patient name, date, Auth #, last four, diagnosis and the INITIAL / LAST VISIT IN AUTHORIZATION banners printed large and bold on every page.)* |
 | Pre-printed first-visit wording | On Anosmia and Vertebrogenic, cover it on every page except the first (default; awaiting confirmation). |
 | Missing top pain value | Shoulder (both), Dorsalgia – Right, Cervicalgia – Right, Low Back Pain – Right: print it in the standard position used by the other templates (default). |
 | Title wording | Print the diagnosis title as on its template, without the side. Where typed text overlaps form lines (Dorsalgia – Left, Vertebrogenic), cover and re-type it cleanly. |
@@ -178,14 +178,14 @@ Full fields and states are in the screen spec (not yet captured in this repo —
 | S7 | Authorization detail | Visits, "7 of 12 approved", packets, faxes | M5 |
 | S8 | Edit authorization | Fixes and extensions (with reason) | M5 |
 | S9 | Visit entry | **Most used.** Date, pain, answers via FormRenderer, final-visit switch | M6 |
-| S10 | AI assist | Paste doctor's note, accept proposals | M9 |
+| S10 | AI assist | Paste doctor's note, accept proposals *(Changed 6 Oct, user decision: built on S6 New authorization — details first, then Choose template or Paste doctor's note; the accepted answers start visit 1. No separate S10 page.)* | M9 |
 | S11 | Build packet | Kind, cover sheet, auto Atlanta, RFS toggle, page counts | M7 |
 | S12 | Preview | Tab per file, per-page edit, consistency panel, download | M7 |
 | S13 | Review and send | The one irreversible step; explicit confirmation | M8 |
 | S14 | Send result | Per destination: queued / sent / failed / waiting too long | M8 |
 | S15 | Fax log | Every transmission, retry, open files as sent | M8 |
-| S16 | Diagnoses | Read-only list, versions, sample-page previews | M10 |
-| S17 | — | Not built. Diagnoses are added by developers via config. | — |
+| S16 | Diagnoses | Read-only list, versions, sample-page previews *(changed 6 Oct, confirmed by Poonam: Create new template / Edit template on every diagnosis — see S17)* | M10 |
+| S17 | — | Not built. Diagnoses are added by developers via config. *(User decision 5–6 Oct, confirmed by Poonam 6 Oct (rule 8): the client wants to add and edit diagnosis templates himself — a template builder on Admin › Diagnoses is being built on branch `diagnosis-template-changes`. Phase 1 done: one master progress note with the fixed top and bottom, and the 20 diagnoses as templates of sections and fields. Phase 2 done: S9 draws its form from the diagnosis's template. Phase 3 done: Admin › Diagnoses › Create new template / Edit template — name, RFS details, sections and fields, each save a new version.)* | — |
 | S18 | Cover sheets, RFS, destinations | Cover sheets, RFS versions, Blairsville → Atlanta rule | M10 |
 | S19 | Practice and sending | Provider, NPI, phone, fax, SRFax (write-only), retention, backup status, test fax *(Build 1 Oct: VA facility fax numbers are editable here too — used from the next packet built)* | M10 |
 | S20 | Users and activity log | Users/roles; log filtered by type | M10 |
@@ -203,7 +203,7 @@ Per the source doc: *"Put these in the repo's `CLAUDE.md` (section 15) so every 
 
 1. **No real patient data, anywhere, until go-live.** Designs, prompts, fixtures, tests, the repo and review links use fake patients only — Jane Doe, John Doe. Never paste a real name, date of birth, SSN or VA number into Claude Design, Claude Code or Grok.
 2. **We print on the practice's scans; we never redraw their forms.** Every output page is their scanned template with values stamped on top (reportlab + pypdf).
-   *Changed 25 Sep (user decision, awaiting Poonam's confirmation under rule 8):* no clean scans, so the clinical notes, RFS and cover sheets are new PDFs generated from the practice's forms as HTML templates, filled from the saved records and printed with headless Chromium (`backend/app/pdf/`). All 20 diagnosis forms are set up (28 Sep). Signature areas stay blank. *(5 Oct: the cover sheets are printed on the practice's own blank for each sheet, supplied 5 Oct — values stamped on top, as this rule intends.)*
+   *Changed 25 Sep (user decision, awaiting Poonam's confirmation under rule 8):* no clean scans, so the clinical notes, RFS and cover sheets are new PDFs generated from the practice's forms as HTML templates, filled from the saved records and printed with headless Chromium (`backend/app/pdf/`). All 20 diagnosis forms are set up (28 Sep). Signature areas stay blank. *(5 Oct: the cover sheets are printed on the practice's own blank for each sheet, supplied 5 Oct — values stamped on top, as this rule intends.)* *Changed 6 Oct (client — the VA may deny services if the form is changed):* the RFS is printed on the VA's own form, VA Form 10-10172 MAR 2025 — both pages are scans (`backend/config/shared/forms/rfs_page1.jpg`, `rfs_page2.jpg`) with the values placed in page 1's boxes (`rfs.html`); boxes 6/10/11/12 have the chosen radio filled in, box 11's answer is circled (radio and word in one oval), page 2 is faxed as scanned.
 3. **Forms come from configuration.** The visit form is rendered from the master form definition and the diagnosis settings. Never hard-code a diagnosis's checkboxes in a component.
 4. **Every query is scoped to a clinic.** All clinic data goes through the tenant-scoped data layer. No raw query without `tenant_id`.
 5. **Three files, never merged.** Cover sheet, clinical notes and RFS are always separate PDFs.
@@ -215,3 +215,103 @@ Per the source doc: *"Put these in the repo's `CLAUDE.md` (section 15) so every 
 *Annotated 28 Sep with build changes awaiting Poonam's confirmation (marked "changed" / "update"); see `changelog.html` v2.4–v2.5.*
 
 *Transcribed from the project doc's "Developer handbook (main)" tab on 2026-09-22 (§§01–03 from screenshot 1, §§04–05 from screenshot 2, §§08–09 from screenshot 3). §06–07 (patient answers detail continuation, data validation?) and the Screen spec, Data model, Current process, SOW tabs still need to be captured when shared. §05 "Patient answers — pre-fill" rule 1 and part of rule 2 were cut off by a screenshot page break — confirm exact wording before treating as final.*
+
+## Appendix · Setup and operations — as built (6 Oct)
+
+*Added 6 Oct as the handover for installing the tool on the practice's computer; the plan's version is in the site's section 22. Not a rule change.*
+
+### What runs
+
+| Part | What it is |
+|---|---|
+| Two Docker containers | frontend — the web app, http://localhost:8080 · backend — the API, http://localhost:8000 (health: /api/health), with Chromium inside for printing the PDFs |
+| backend/data/lorraine.db | the database (SQLite) — every record, setting, template and the activity log |
+| backend/data/documents/ | the PDFs exactly as sent — never rebuilt (rule 6) |
+| backend/config/ | the master progress note, the VA's RFS pages and their box positions, the cover-sheet blanks and wording, the 20 diagnoses' starting templates |
+| backend/.env | the server's settings and secrets — never committed |
+| On every start | the database is brought up to date (Alembic migrations, now at 0010); on the first start only, the clinic and its first administrator are created from fixtures/ and the 20 templates copied in from config |
+
+### Install
+
+1. On the office Mac: check FileVault is on; install Docker Desktop (set it to start at login) and git. sqlite3, used by the backup, comes with macOS.
+2. Get the code: `git clone https://github.com/dev-ckln/lorraine-ai-automation.git lorraine-ai`, then `cd lorraine-ai` and check out the release branch.
+3. Create the settings file: `cp backend/.env.example backend/.env` and fill it in (table below). Generate SECRET_KEY with `python3 -c "import secrets; print(secrets.token_urlsafe(48))"` and keep a copy somewhere safe off the Mac.
+4. Start: `ops/start.sh` (Windows: `ops/start.ps1`) — it runs `docker compose up -d --build`. Open http://localhost:8080.
+5. Sign in with SEED_ADMIN_EMAIL / SEED_ADMIN_PASSWORD, then change the password (Change password, top right).
+
+### Settings — `backend/.env`
+
+| Setting | Value | What it does |
+|---|---|---|
+| ENVIRONMENT | development · production | production refuses the built-in SECRET_KEY and demo password, requires FAX_MODE=srfax and turns off demo sign-in |
+| SECRET_KEY | a long random string | signs sessions and encrypts the SRFax password and the xAI key saved in the database — if it changes, both must be entered again on Practice & sending |
+| SEED_ADMIN_EMAIL · _NAME · _PASSWORD | Lorraine's sign-in | the first administrator, created on the first start only |
+| FAX_MODE | fake · srfax | fake runs every step without dialling (“Demo — not faxed”); srfax sends with the account saved on Practice & sending |
+| FAX_ALLOWED_NUMBERS | ["706-664-0421"] | outside production only these numbers are dialled (e.g. the client's test fax), so a demo packet never reaches a VA |
+| FAX_POLL_SECONDS · SRFAX_RETRIES · FAX_FAKE_FAIL_NUMBERS | 30 · 3 · [] | how often SRFax is asked for status · SRFax's redials · numbers that “fail” in demo mode |
+| AI_MODE | fake · grok | fake reads Dr. DeYoe's note inside the app and sends nothing; grok uses xAI with the key saved on Practice & sending |
+| GROK_MODEL · GROK_TIMEOUT_SECONDS · GROK_API_KEY | grok-4 · 30 · (empty) | the model if none is saved on the screen · the wait · a fallback key (normally the key is saved on the screen) |
+| SMTP_HOST · _PORT · _USERNAME · _PASSWORD · MAIL_FROM · APP_BASE_URL | smtp.gmail.com · 587 · … | password-reset emails only (Gmail: an app password); APP_BASE_URL is the link in the email |
+| LOCKOUT_ATTEMPTS · LOCKOUT_MINUTES · IDLE_TIMEOUT_MINUTES | 3 · 15 · 15 | lock after wrong passwords · for how long · sign out when idle (0 = off) |
+| COOKIE_SECURE · CORS_ORIGINS · QUICK_SIGN_IN | false · [...] · false | true once served over HTTPS · the web app's address · development only |
+| DATABASE_URL · CONFIG_ROOT · FIXTURES_DIR | as in docker-compose.yml | leave as they are |
+
+### First-time setup in the app (administrator)
+
+- **Admin › Practice & sending**: the practice details printed on every document (name, provider, NPI, phone, sending fax 404-738-1714, email) · **Dr. DeYoe's signature** (PNG or JPEG, up to 2 MB — nothing can be sent until it is uploaded) · **SRFax** account ID, password and account email (write-only), then **Send test fax** to the client's test number · the **VA facility fax numbers** · **AI assist**: the xAI key and model.
+- **Admin › Diagnoses**: the 20 diagnoses are set up with their ICD-10 codes; templates are edited or created there (template builder) — each save is a new version.
+- **Admin › Cover sheets & RFS**: check the five cover sheets and the three RFS office versions.
+- **Users**: only the first administrator exists. Adding more users isn't built yet (the + Add user button is disabled).
+
+### Go-live checklist
+
+1. ENVIRONMENT=production and FAX_MODE=srfax, SRFax details saved and a test fax received.
+2. A strong SECRET_KEY and SEED_ADMIN_PASSWORD, kept safely off the Mac.
+3. Dr. DeYoe's signature uploaded; practice details and VA fax numbers checked.
+4. SMTP set, so “Forgot password” works; IDLE_TIMEOUT_MINUTES=15.
+5. AI_MODE=grok only once the practice agrees to send de-identified notes to xAI (a BAA may be needed) and the key is saved; until then leave it fake.
+6. Nightly backups to an encrypted external drive scheduled, and one restore practised.
+7. **Demo data (open item):** the first start loads the made-up demo patients (Jane Doe, John Doe) and their authorizations. Before real patients are entered they must be removed — decide with us whether the go-live install starts from an empty clinic. *Decided 6 Oct (user decision): the local development copy keeps the demo users and the made-up patients for testing; on the client's system all demo users and demo data are removed before go-live, so Lorraine starts from an empty clinic with only her own sign-in. Dr. DeYoe's signature is uploaded there on Admin › Practice & sending (never in git).*
+8. Golden rule 1: no real patient data anywhere until this list is done.
+
+### Day to day
+
+- **Start · stop**: `ops/start.sh` · `ops/stop.sh` (Windows: the .ps1 versions). The containers restart by themselves when Docker Desktop starts.
+- **Logs**: `docker compose logs backend` — IDs only, never patient data. What people did: Admin › Users & activity.
+- **Faxes**: Fax log and Send result show each fax; a failed fax has its reason and Retry. Check the SRFax portal before re-sending a fax that may have arrived.
+
+### Backups and restore
+
+- **What**: `ops/backup.sh` copies the database (checked after copying), the sent PDFs and the config, with checksums; keeps 30 days.
+- **Where**: `BACKUP_DIR` must be an encrypted external drive — with `REQUIRE_SEPARATE_DISK=1` it refuses the Mac's own disk.
+- **Nightly**: edit the paths in `ops/ai.lorraine.backup.plist`, copy it to `~/Library/LaunchAgents/`, then `launchctl load ~/Library/LaunchAgents/ai.lorraine.backup.plist` (runs at 02:00).
+- **Restore**: `ops/stop.sh` → in the backup set, `shasum -a 256 -c SHA256SUMS` → copy `lorraine.db` into `backend/data/` (delete `lorraine.db-wal` and `-shm` there first) → `tar -xzf documents.tar.gz -C backend/data` and `tar -xzf config.tar.gz` from the project folder → `ops/start.sh` → sign in and check the latest packets.
+
+### Updating
+
+1. Back up first (`ops/backup.sh`).
+2. `git pull` on the release branch, then `ops/start.sh` — it rebuilds, and the database is updated on start.
+3. Templates edited on Diagnoses are kept (config only seeds them once); PDFs already sent never change.
+
+### Where things are configured
+
+| Where | What |
+|---|---|
+| backend/.env | the mode switches (fax, AI), sign-in rules, email, and the secret for sessions and stored keys |
+| The database — Admin screens | practice details, Dr. DeYoe's signature, SRFax and xAI keys, VA fax numbers, diagnosis templates (with every version), users, all records and the activity log |
+| backend/config/ | the master progress note · the RFS: the VA's two pages and the box positions · cover-sheet blanks and wording · the starting templates |
+| fixtures/ | made-up demo and test data only — never real data |
+
+### Troubleshooting
+
+| What you see | What to do |
+|---|---|
+| “Dr. DeYoe's signature isn't set up yet” | Upload it on Practice & sending. |
+| Faxes wait, or show “Demo — not faxed” | SRFax details not saved, or FAX_MODE=fake. |
+| A fax failed | Read the reason on Send result / Fax log, fix the number if needed, Retry. |
+| AI assist “isn't available right now” | No xAI key saved, or Grok didn't answer — choose the template from the list; nothing is lost. |
+| “The saved key/password can't be read” | SECRET_KEY changed — enter the SRFax password and xAI key again. |
+| The backend won't start | `docker compose logs backend`: in production it refuses the built-in SECRET_KEY, the demo password or FAX_MODE=fake. |
+| Locked out / forgot password | Three wrong passwords lock for 15 minutes; “Forgot password” emails a link (needs SMTP). |
+
+Developers: `make setup` once, then `make dev` (API :8000, web :5173), `make test`, `make lint`, `make e2e`; CI runs the same on every push. Fax and AI are fakes in development.

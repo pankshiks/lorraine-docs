@@ -132,7 +132,7 @@
   <h1>Testing guide</h1>
   <p class="standfirst">End-to-end test scenarios covering the full patient journey: authorization, visit tracking, packet generation and fax. Includes the seed and reset scripts and how to run them. Use fake data only.</p>
   <div class="meta">
-    <span><b>Version</b> 1.1 · 1 Oct 2026 — matched to the build</span>
+    <span><b>Version</b> 1.2 · 6 Oct 2026 — template builder added</span>
     <span><b>Internal</b> not for the client</span>
     <span><b>HIPAA</b> fake data only — never real names, VA numbers or DOBs</span>
   </div>
@@ -143,9 +143,10 @@
     <a href="#visits"><span>04</span>Visit tracking</a>
     <a href="#packets"><span>05</span>Packet generation</a>
     <a href="#fax"><span>06</span>Fax flow</a>
-    <a href="#negative"><span>07</span>Negative / blocked cases</a>
-    <a href="#reset"><span>08</span>Reset procedure</a>
-    <a href="#fixtures"><span>09</span>Fixture reference</a>
+    <a href="#builder"><span>07</span>Template builder</a>
+    <a href="#negative"><span>08</span>Negative / blocked cases</a>
+    <a href="#reset"><span>09</span>Reset procedure</a>
+    <a href="#fixtures"><span>10</span>Fixture reference</a>
   </nav>
 </header>
 
@@ -240,7 +241,7 @@ docker compose exec backend python scripts/seed_test_data.py   # inside Docker</
         <p>A brand-new patient with no prior history. Confirms the patient and authorization are created correctly and appear on the dashboard.</p>
         <ol class="steps">
           <li>Patients › <b>+ Add patient</b>: a made-up patient, e.g. <b>Jake Doe</b>, DOB <b>1972-02-12</b>, last four <b>2222</b>, <b>Mr.</b> / <b>his</b>. Save — it opens New authorization for him.</li>
-          <li>Diagnosis: <b>Pain in Knee – Left</b>. VA number: <b>an unused one</b> (VA + 10 digits, e.g. VA0090000060). Facility <b>Atlanta VAMC</b>, office <b>Clarkesville</b>, approved visits <b>6</b>, period <b>today → +60 days</b>.</li>
+          <li>Diagnosis: <b>Pain in Knee – Left</b>. VA number: <b>an unused one</b> (VA00 + 8 digits, e.g. VA0090000060). Facility <b>Atlanta VAMC</b>, office <b>Clarkesville</b>, approved visits <b>6</b>, period <b>today → +60 days</b>.</li>
           <li>Create. S7 shows <b>0 of 6 approved</b>; the authorization is on the dashboard (S2) and the patient list.</li>
           <li>A period may also lie in the past (client, 2 Oct) — e.g. 05/04/2026 → 07/03/2026 for an authorization that already ended. Each VA number is used once — VA0011223344 is Jane's earlier authorization.</li>
         </ol>
@@ -493,7 +494,7 @@ docker compose exec backend python scripts/seed_test_data.py   # inside Docker</
         <p>One of the two formal acceptance criteria. A completed 8-visit authorization produces a correctly structured packet.</p>
         <ol class="steps">
           <li>Seed 9 (John Doe · Pain in Knee – Right · 8 of 8, visit 8 final).</li>
-          <li>Build packet (S11): cover <b>Atlanta VAMC — Request for Services</b>, tick <b>Include RFS</b> — box 21 carries Dr. DeYoe's pre-printed signature (page 2 is faxed blank — nothing to sign there).</li>
+          <li>Build packet (S11): cover <b>Atlanta VAMC — Request for Services</b>, tick <b>Include RFS</b> — box 21 carries Dr. DeYoe's pre-printed signature (page 2 is faxed blank — nothing to sign there). On Preview the RFS is the VA's own form: the values sit inside its boxes, the chosen radios in boxes 6, 10, 11 and 12 are filled, and box 11's answer (YES) is circled.</li>
           <li>Open the notes on Preview (S12) and check every page:</li>
         </ol>
         <div class="tblwrap" style="margin-top:10px;"><table>
@@ -681,8 +682,131 @@ docker compose exec backend python scripts/seed_test_data.py   # inside Docker</
   </div>
 </section>
 
+<section id="builder">
+  <h2><span class="no">07</span>Template builder</h2>
+  <p class="sec-note">Admin › Diagnoses (6 Oct, confirmed by Poonam): the practice creates and edits its diagnosis templates. Sign in as an administrator. Use made-up names only.</p>
+
+  <div class="scenario-group">
+
+    <div class="scenario">
+      <div class="scenario-header">
+        <span class="scenario-id">B-01</span>
+        <span class="scenario-title">Edit an existing template</span>
+        <span class="badge positive">Positive</span>
+        <span class="scenario-tag">Any seed</span>
+      </div>
+      <div class="scenario-body">
+        <p>A new option on Pain in Knee – Left reaches the visit screen; the save is a new version and is logged.</p>
+        <ol class="steps">
+          <li>Diagnoses › <b>Edit template</b> on <b>Pain in Knee – Left</b>.</li>
+          <li>Section 1, field 2 (painful activities): <b>+ Add option</b>, type <b>Kneeling</b>, tick <b>Mark checked</b> beside it.</li>
+          <li><b>Save as a new version</b>. The list says “Pain in Knee – Left saved — version 2”.</li>
+          <li>Open a Knee – Left authorization with no visits and <b>+ Add visit</b>: Kneeling is offered and starts ticked.</li>
+          <li>Users &amp; activity shows “Diagnosis template Pain in Knee – Left saved (version 2)”.</li>
+        </ol>
+        <span class="expect pass">✓ New option on S9, ticked at start · version 2 · logged</span>
+      </div>
+    </div>
+
+    <div class="scenario">
+      <div class="scenario-header">
+        <span class="scenario-id">B-02</span>
+        <span class="scenario-title">Create a diagnosis from a copy</span>
+        <span class="badge positive">Positive</span>
+        <span class="scenario-tag">Any seed</span>
+      </div>
+      <div class="scenario-body">
+        <p>A new diagnosis can be chosen for an authorization at once and its notes print.</p>
+        <ol class="steps">
+          <li>Diagnoses › <b>Create new template</b>. Start from: <b>A copy of Pain in Knee – Left</b>.</li>
+          <li>Template name <b>Pain in Left Ankle</b>, printed <b>PAIN IN LEFT ANKLE</b>, ICD-10 <b>M25.572</b>, description <b>Pain in left ankle</b>, body area <b>LEFT ANKLE</b>.</li>
+          <li><b>Create template</b>. It is listed as Set up · v1 with the code.</li>
+          <li>John Doe › New authorization: pick <b>Pain in Left Ankle</b>, an unused VA number, 6 visits. Add a visit, mark it final, Build packet with the RFS, Preview.</li>
+          <li>The notes show PAIN IN LEFT ANKLE and the copied sections; RFS boxes 13–14 show M25.572 · Pain in left ankle.</li>
+        </ol>
+        <span class="expect pass">✓ Listed · selectable · notes and RFS print with its details</span>
+      </div>
+    </div>
+
+    <div class="scenario">
+      <div class="scenario-header">
+        <span class="scenario-id">B-03</span>
+        <span class="scenario-title">A new section with a grid and a fixed field</span>
+        <span class="badge positive">Positive</span>
+        <span class="scenario-tag">Any seed</span>
+      </div>
+      <div class="scenario-body">
+        <p>Every field type prints; a fixed field can't be changed on the visit screen.</p>
+        <ol class="steps">
+          <li>Edit any template, <b>+ Add section</b> “HOME CARE”. Add a <b>Checkbox grid</b>: rows Ankle, Foot; columns L, R (tick “gap before” on R).</li>
+          <li>Add a <b>Textarea</b> “Advice”, set it to <b>Fixed</b> and type a default, e.g. “Ice 15 min twice a day”.</li>
+          <li>Save. On a visit for that diagnosis the grid can be ticked; Advice shows the text and is greyed out.</li>
+          <li>Build and preview: the HOME CARE heading, the grid and the advice text print.</li>
+        </ol>
+        <span class="expect pass">✓ Grid and fixed text on S9 and the PDF</span>
+      </div>
+    </div>
+
+    <div class="scenario">
+      <div class="scenario-header">
+        <span class="scenario-id">B-04</span>
+        <span class="scenario-title">Edits survive a restart</span>
+        <span class="badge positive">Positive</span>
+        <span class="scenario-tag">Any seed</span>
+      </div>
+      <div class="scenario-body">
+        <p>The database is the source once a template is saved; config never overwrites it.</p>
+        <ol class="steps">
+          <li>After B-01, restart the backend (<code>docker compose restart backend</code>).</li>
+          <li>Edit template on Pain in Knee – Left still shows Kneeling and “Version 2 in use”.</li>
+        </ol>
+        <span class="expect pass">✓ Still version 2 after the restart</span>
+      </div>
+    </div>
+
+    <div class="scenario">
+      <div class="scenario-header">
+        <span class="scenario-id">B-05</span>
+        <span class="scenario-title">The practice's 6 Oct progress-note changes</span>
+        <span class="badge positive">Positive</span>
+        <span class="scenario-tag">Any seed</span>
+      </div>
+      <div class="scenario-body">
+        <p>On every diagnosis: three therapies gone, one Pulse / Tongue / Assessment row, a Comments box, larger text, still one page — and the signature on every page.</p>
+        <ol class="steps">
+          <li>Upload a made-up signature on Practice &amp; sending (if none is there).</li>
+          <li>New authorization for a made-up patient, <b>12</b> approved. Record <b>7</b> visits; on visit 7 tick <b>Mark as final visit</b> and type a comment, e.g. “Patient moved out of state”.</li>
+          <li>The visit screen shows Pulse, Tongue and Assessment — diagnosis side by side, and Comments under Post Treatment.</li>
+          <li>Build and preview the notes: 7 pages, each one page, each signed; therapies list only 1 Manual Therapy, 2 Myofascial release, 3 Trigger Point; page 7 shows the comment.</li>
+        </ol>
+        <span class="expect pass">✓ 7 one-page notes · signed on every page · 3 therapies · comment printed</span>
+      </div>
+    </div>
+
+    <div class="scenario">
+      <div class="scenario-header">
+        <span class="scenario-id">A-01</span>
+        <span class="scenario-title">New authorization from Dr. DeYoe's note (AI assist)</span>
+        <span class="badge positive">Positive</span>
+        <span class="scenario-tag">Any seed</span>
+      </div>
+      <div class="scenario-body">
+        <p>The note suggests the template and the first visit's answers; visit 1 starts from what was accepted. Use a made-up note only — <code>fixtures/doctor_notes.json</code> has examples.</p>
+        <ol class="steps">
+          <li>John Doe › New authorization: fill the VA number (VA00 + 8 digits), visits and period first.</li>
+          <li>Diagnosis template › <b>Paste doctor's note (AI assist)</b>: paste the John Doe knee note, <b>Read note</b>. The line “Names and ID numbers are removed before the note is read” is always there, with how many were removed.</li>
+          <li>Suggested template: <b>Pain in Knee – Right</b>; the words it came from are highlighted in the note; Sharp, Burning, Swelling are ticked. Untick Burning, <b>Accept these suggestions</b>, Create authorization.</li>
+          <li><b>Add the first visit</b>: “Started from Dr. DeYoe's note …”; Sharp and Swelling are ticked, Burning isn't.</li>
+          <li>Users &amp; activity: “Doctor's note read (fake) — pain-in-knee-right; … names/IDs removed first” and “Doctor's note suggestions accepted”.</li>
+        </ol>
+        <span class="expect pass">✓ Template and answers suggested · evidence highlighted · visit 1 starts from the accepted answers · logged</span>
+      </div>
+    </div>
+  </div>
+</section>
+
 <section id="negative">
-  <h2><span class="no">07</span>Quick negative-case reference</h2>
+  <h2><span class="no">08</span>Quick negative-case reference</h2>
   <p class="sec-note">Each of these should be blocked with a clear message. Run these after the positive scenarios pass. Refusals from the API are <b>422</b> with the reason; a stale save or a locked visit is <b>409</b>.</p>
 
   <div class="tblwrap"><table>
@@ -699,16 +823,19 @@ docker compose exec backend python scripts/seed_test_data.py   # inside Docker</
       <tr><td>N-09</td><td>Mark a second visit final (Edit visit on an earlier visit)</td><td class="block">Blocked — “Only the last recorded visit can be final”</td></tr>
       <tr><td>N-10</td><td>Add a visit after a visit marked final</td><td class="block">Blocked — S7 disables Add visit; the visit screen says why; API refuses</td></tr>
       <tr><td>N-11</td><td>Open Send result (S14) without confirming on S13</td><td class="block">Shows “hasn't been approved yet — nothing has been sent”</td></tr>
-      <tr><td>N-12</td><td>Enter a VA number with incorrect format</td><td class="warn">“VA number must be "VA" followed by 10 digits”</td></tr>
+      <tr><td>N-12</td><td>Enter a VA number with incorrect format, e.g. VA1112345678 (doesn't start with VA00)</td><td class="block">Blocked — “VA number must be "VA00" followed by 8 digits”</td></tr>
       <tr><td>N-13</td><td>Enter a period more than 3 years back (a mistyped year)</td><td class="block">Blocked — “Period start looks wrong — it's before …” (past dates within 3 years are allowed)</td></tr>
       <tr><td>N-14</td><td>Edit a patient into another patient's last name, DOB and last four</td><td class="warn">Duplicate warning — saved only if confirmed as a different person</td></tr>
       <tr><td>N-15</td><td>Confirm and send while Dr. DeYoe's signature isn't uploaded (Practice &amp; sending)</td><td class="block">Blocked — “Dr. DeYoe's signature isn't set up yet”; every screen says so</td></tr>
+      <tr><td>N-16</td><td>Template builder: save a template with an option, row or column left without a label</td><td class="block">Blocked — says where, e.g. “Section 6 (PLAN), field 1: … at least 1 character”</td></tr>
+      <tr><td>N-18</td><td>AI assist with the server on AI_MODE=grok and no xAI key saved (S19), or Grok not answering</td><td class="block">“AI assist isn't available right now — choose the template yourself”, with a button to the list; nothing is lost</td></tr>
+      <tr><td>N-17</td><td>Template builder: create a template named like an existing diagnosis, or with an ICD-10 code like 54.5</td><td class="block">Blocked — “A diagnosis called … already exists.” / “Enter the ICD-10 code like M54.50.”</td></tr>
     </tbody>
   </table></div>
 </section>
 
 <section id="reset">
-  <h2><span class="no">08</span>Reset procedure</h2>
+  <h2><span class="no">09</span>Reset procedure</h2>
   <p class="sec-note">Removes what the seed added — and nothing else — so the scenarios can be seeded again.</p>
 
   <pre>cd backend
@@ -724,7 +851,7 @@ docker compose exec backend python scripts/reset_test_data.py --yes   # inside D
 </section>
 
 <section id="fixtures">
-  <h2><span class="no">09</span>Fixture reference</h2>
+  <h2><span class="no">10</span>Fixture reference</h2>
   <p class="sec-note">The fake data in <code>fixtures/</code> (Jane and John Doe — build fix F1) and the one patient the seed creates. Use these; don't invent new identities for test records.</p>
 
   <div class="tblwrap"><table>

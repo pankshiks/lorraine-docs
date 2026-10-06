@@ -135,7 +135,7 @@
   </nav>
 </header>
 
-<div class="callout" style="margin-top:28px"><b>What changed in 2.2 (23 Sep).</b> The practice delivered all 20 clean templates, the ICD-10 codes, the GitHub username and the Mac details on 22 Sep. Updated: the 20-diagnosis table (07) with ICD-10 codes and the pain values on the new scans; decisions (04); open items and what is still awaited (06, 21); fixtures (16). <b>Three ICD-10 codes are unconfirmed</b> (Hip – Left, Knee – Right, Shoulder – Right) — keep RFS disabled for those until Poonam confirms. Use only the 22 Sep scans; retire every earlier scan. Full list of changes: <a href="changelog.html">Changelog</a>.</div>
+<div class="callout" style="margin-top:28px"><b>What changed in 2.2 (23 Sep).</b> The practice delivered all 20 clean templates, the ICD-10 codes, the GitHub username and the Mac details on 22 Sep. Updated: the 20-diagnosis table (07) with ICD-10 codes and the pain values on the new scans; decisions (04); open items and what is still awaited (06, 21); fixtures (16). <b>Three ICD-10 codes are unconfirmed</b> (Hip – Left, Knee – Right, Shoulder – Right) — keep RFS disabled for those until Poonam confirms. <i>(Resolved: the practice's codes are used for both sides — user decision 28 Sep; all 20 confirmed 6 Oct, the RFS is available for every diagnosis.)</i> Use only the 22 Sep scans; retire every earlier scan. Full list of changes: <a href="changelog.html">Changelog</a>.</div>
 <div class="callout navy" style="margin-top:12px"><b>How to use this handbook.</b> This is the main document. The <a href="screen-spec.html">screen spec</a> (every field and state — needed for design and frontend), <a href="data-model.html">data model</a> (diagram and relationships) and <a href="current-process.html">current process</a> (the manual workflow) add detail; if they ever disagree with this page, this page wins. Everything you need is on this page: what the practice does, every decision the client has made, the business rules, the reference data, and the build steps. You don't need the client chat, the emails or the Scope of Work to build this. If something is missing or two rules conflict, <b>don't contact the client</b> — raise it with Poonam (client owner) and Shikha (delivery), and use the default written here until you hear back.</div>
 
 <p class="partlabel">Part 1 · Understand the project</p>
@@ -168,7 +168,7 @@
       <tr><td>Diagnosis template</td><td>The scanned blank progress note for one diagnosis, with that diagnosis's usual ticks already on it. There are 20.</td></tr>
       <tr><td>Cover sheet</td><td>The fax cover page. One per destination. Five versions.</td></tr>
       <tr><td>RFS</td><td>Request for Service — VA Form 10-10172, two pages, asks the VA to continue care. Three versions, one per office address.</td></tr>
-      <tr><td>ICD-10</td><td>The standard diagnosis code printed on the RFS (fields 13–14). Received 22 Sep — see 07; three are awaiting confirmation.</td></tr>
+      <tr><td>ICD-10</td><td>The standard diagnosis code printed on the RFS (fields 13–14). Received 22 Sep — see 07; three are awaiting confirmation. <i>(All 20 ICD-10 codes are confirmed (6 Oct): hips M25.551, knees M25.562, shoulders M25.512 — the codes the practice gives for both sides (user decision 28 Sep) — so the RFS is available for every diagnosis. The codes can be changed on Diagnoses › Edit template.)</i></td></tr>
       <tr><td>HSRM</td><td>The VA's online portal. The practice uploads there by hand. <b>Out of scope</b> — we only let them download the files.</td></tr>
       <tr><td>SRFax</td><td>The practice's fax provider (HIPAA, API). Practice fax number <b>404-738-1714</b>.</td></tr>
       <tr><td>BAA</td><td>Business Associate Agreement (HIPAA). Signed with us and with SRFax. Real patient data is allowed only in production on the Mac.</td></tr>
@@ -358,7 +358,7 @@
       <tr><td>Top pain position · pre-printed wording · title wording</td><td>As in 05.</td></tr>
       <tr><td>Cover sheet and RFS file names</td><td><code>John Doe 1234 Fax Cover Sheet.pdf</code> · <code>John Doe 1234 RFS VA0023456789.pdf</code></td></tr>
       <tr><td>Retention</td><td>Packets 10 years, logs 6 years (settings).</td></tr>
-      <tr><td>ICD-10 for Hip – Left, Knee – Right, Shoulder – Right (sent codes are for the other side)</td><td><code>icd10_confirmed = false</code>; RFS disabled with the reason “ICD-10 code awaiting confirmation”. Do not seed the sent codes as final.</td></tr>
+      <tr><td>ICD-10 for Hip – Left, Knee – Right, Shoulder – Right (sent codes are for the other side)</td><td><code>icd10_confirmed = false</code>; RFS disabled with the reason “ICD-10 code awaiting confirmation”. Do not seed the sent codes as final. <i>(All 20 ICD-10 codes are confirmed (6 Oct): hips M25.551, knees M25.562, shoulders M25.512 — the codes the practice gives for both sides (user decision 28 Sep) — so the RFS is available for every diagnosis. The codes can be changed on Diagnoses › Edit template.)</i></td></tr>
       <tr><td>Left Shoulder scan prints “Pain In Left Shoulder”</td><td>Cover the title and print “Pain in shoulder” from template settings (config only).</td></tr>
       <tr><td>RFS field 18 wording for Anosmia (not a pain diagnosis) · body area for Fibromyalgia</td><td>Anosmia: RFS off by default with a reason. Fibromyalgia body area: “BODY” until confirmed.</td></tr>
       <tr><td>Hip – Left point Rx reads “ashi r hip” · Dorsalgia shows the same location and points as Cervicalgia</td><td>Print the scans as they are — clinical content is the practice's.</td></tr>
@@ -390,12 +390,12 @@
       <tr><td>Other Chronic Pain</td><td>Other</td><td>other chronic pain</td><td>blank</td><td class="m">G89.29</td><td>Ready</td></tr>
       <tr><td>Other Spondylosis – Left</td><td>Back</td><td>OTHER SPONDYLOSIS</td><td>blank</td><td class="m">M47.896</td><td>Ready · low-quality scan: calibrate boxes by hand, check fax legibility</td></tr>
       <tr><td>Other Spondylosis – Right</td><td>Back</td><td>Other Spondylosis</td><td>blank</td><td class="m">M47.896</td><td>Ready · low-quality scan: calibrate by hand · use the clean copy only</td></tr>
-      <tr><td>Pain in Hip – Left</td><td>Hip</td><td>PAIN IN HIP</td><td>8/10 — cover</td><td class="m"><b>unconfirmed</b></td><td>Ready · <b>RFS blocked</b>: practice sent M25.551 (= right hip); left hip is M25.552 — awaiting confirmation</td></tr>
+      <tr><td>Pain in Hip – Left</td><td>Hip</td><td>PAIN IN HIP</td><td>8/10 — cover</td><td class="m"><b>unconfirmed</b></td><td>Ready · <b>RFS blocked</b>: practice sent M25.551 (= right hip); left hip is M25.552 — awaiting confirmation <i>(Resolved: the practice's code is used for both sides — user decision 28 Sep; confirmed 6 Oct, RFS available.)</i></td></tr>
       <tr><td>Pain in Hip – Right</td><td>Hip</td><td>PAIN IN HIP</td><td>8/10 — cover</td><td class="m">M25.551</td><td>Ready</td></tr>
       <tr><td>Pain in Knee – Left</td><td>Knee</td><td>PAIN IN KNEE</td><td>blank</td><td class="m">M25.562</td><td>Ready · corrected copy</td></tr>
-      <tr><td>Pain in Knee – Right</td><td>Knee</td><td>Pain In Knee</td><td>blank</td><td class="m"><b>unconfirmed</b></td><td>Ready · <b>RFS blocked</b>: practice sent M25.562 (= left knee); right knee is M25.561 — awaiting confirmation</td></tr>
+      <tr><td>Pain in Knee – Right</td><td>Knee</td><td>Pain In Knee</td><td>blank</td><td class="m"><b>unconfirmed</b></td><td>Ready · <b>RFS blocked</b>: practice sent M25.562 (= left knee); right knee is M25.561 — awaiting confirmation <i>(Resolved: the practice's code is used for both sides — user decision 28 Sep; confirmed 6 Oct, RFS available.)</i></td></tr>
       <tr><td>Pain in Shoulder – Left</td><td>Shoulder</td><td>Pain In Left Shoulder — <b>side printed</b></td><td>blank</td><td class="m">M25.512</td><td>Ready · <b>new 22 Sep</b> · default: cover the title and print “Pain in shoulder” (see note)</td></tr>
-      <tr><td>Pain in Shoulder – Right</td><td>Shoulder</td><td>Pain in shoulder</td><td>blank</td><td class="m"><b>unconfirmed</b></td><td>Ready · <b>RFS blocked</b>: practice sent M25.512 (= left shoulder); right is M25.511 · two identical files received, register one</td></tr>
+      <tr><td>Pain in Shoulder – Right</td><td>Shoulder</td><td>Pain in shoulder</td><td>blank</td><td class="m"><b>unconfirmed</b></td><td>Ready · <b>RFS blocked</b>: practice sent M25.512 (= left shoulder); right is M25.511 · two identical files received, register one <i>(Resolved: the practice's code is used for both sides — user decision 28 Sep; confirmed 6 Oct, RFS available.)</i></td></tr>
       <tr><td>Vertebrogenic Low Back Pain – Left</td><td>Back</td><td>VERTEBROGENIC LOW BACK PAIN</td><td>blank</td><td class="m">M54.51</td><td>Ready · corrected 22 Sep copy · check overlap; confirm pre-printed first-visit wording is gone</td></tr>
       <tr><td>Vertebrogenic Low Back Pain – Right</td><td>Back</td><td>Vertebrogenic low back pain</td><td>blank</td><td class="m">M54.51</td><td>Ready · <b>new 22 Sep</b> (replacement 1) · confirm signature</td></tr>
     </tbody>
@@ -506,8 +506,8 @@ THANK YOU.</pre>
       <tr><td>S13</td><td>Review and send</td><td>The one irreversible step; explicit confirmation</td><td>M8</td></tr>
       <tr><td>S14</td><td>Send result</td><td>Per destination: queued / sent / failed / waiting too long</td><td>M8</td></tr>
       <tr><td>S15</td><td>Fax log</td><td>Every transmission, retry, open files as sent</td><td>M8</td></tr>
-      <tr><td>S16</td><td>Diagnoses</td><td>Read-only list, versions, sample-page previews</td><td>M10</td></tr>
-      <tr><td>S17</td><td>—</td><td>Not built. Diagnoses are added by developers via config.</td><td>—</td></tr>
+      <tr><td>S16</td><td>Diagnoses</td><td>Read-only list, versions, sample-page previews <i>(changed 6 Oct, confirmed by Poonam: Create new template / Edit template — the template builder)</i></td><td>M10</td></tr>
+      <tr><td>S17</td><td>—</td><td>Not built. Diagnoses are added by developers via config. <i>(Changed 6 Oct: built as the template builder page — sections and fields, each asked per visit or fixed, saved as versions.)</i></td><td>—</td></tr>
       <tr><td>S18</td><td>Cover sheets, RFS, destinations</td><td>Cover sheets, RFS versions, Blairsville → Atlanta rule</td><td>M10</td></tr>
       <tr><td>S19</td><td>Practice and sending</td><td>Provider, NPI, phone, fax, SRFax (write-only), retention, backup status, test fax</td><td>M10</td></tr>
       <tr><td>S20</td><td>Users and activity log</td><td>Users/roles; log filtered by type</td><td>M10</td></tr>
@@ -1106,6 +1106,7 @@ Build frontend/src/features/visits/VisitEntryPage.tsx that reproduces the design
   </table></div>
 
   <h3>Environment settings (<code>.env</code>)</h3>
+  <p class="sec-note"><i>The plan — the settings as built are in “As built” below.</i></p>
   <div class="tblwrap"><table>
     <thead><tr><th>Variable</th><th>Dev value</th><th>Notes</th></tr></thead>
     <tbody>
@@ -1123,6 +1124,7 @@ Build frontend/src/features/visits/VisitEntryPage.tsx that reproduces the design
   </table></div>
 
   <h3>Local setup</h3>
+  <p class="sec-note"><i>The plan — as built: <code>make setup</code>, <code>make dev</code>, <code>make test</code> (see “As built” below).</i></p>
   <ol>
     <li>Install Docker, Python 3.12, Node 20 and <code>make</code>.</li>
     <li><code>git clone</code> the repo, then <code>cp .env.example .env</code>.</li>
@@ -1133,6 +1135,7 @@ Build frontend/src/features/visits/VisitEntryPage.tsx that reproduces the design
   </ol>
 
   <h3>Operations runbook (office Mac)</h3>
+  <p class="sec-note"><i>The plan — the steps as built are in “As built” below.</i></p>
   <div class="tblwrap"><table>
     <thead><tr><th>Situation</th><th>What to do</th></tr></thead>
     <tbody>
@@ -1149,6 +1152,112 @@ Build frontend/src/features/visits/VisitEntryPage.tsx that reproduces the design
       <tr><td>New or replacement Mac</td><td>Fresh install as above, then restore the latest backup.</td></tr>
     </tbody>
   </table></div>
+
+
+  <h3 id="as-built">As built — setting up and running on the practice's computer (6 Oct)</h3>
+  <p class="sec-note">The environment table and runbook above are the plan. This is how the tool is installed, configured and run as built — everything needed to set it up on the practice's computer.</p>
+  <h4>What runs</h4>
+  <div class="tblwrap"><table>
+    <thead><tr><th>Part</th><th>What it is</th></tr></thead>
+    <tbody>
+      <tr><td>Two Docker containers</td><td>frontend — the web app, http://localhost:8080 · backend — the API, http://localhost:8000 (health: /api/health), with Chromium inside for printing the PDFs</td></tr>
+      <tr><td>backend/data/lorraine.db</td><td>the database (SQLite) — every record, setting, template and the activity log</td></tr>
+      <tr><td>backend/data/documents/</td><td>the PDFs exactly as sent — never rebuilt (rule 6)</td></tr>
+      <tr><td>backend/config/</td><td>the master progress note, the VA&#x27;s RFS pages and their box positions, the cover-sheet blanks and wording, the 20 diagnoses&#x27; starting templates</td></tr>
+      <tr><td>backend/.env</td><td>the server&#x27;s settings and secrets — never committed</td></tr>
+      <tr><td>On every start</td><td>the database is brought up to date (Alembic migrations, now at 0010); on the first start only, the clinic and its first administrator are created from fixtures/ and the 20 templates copied in from config</td></tr>
+    </tbody>
+  </table></div>
+  <h4>Install</h4>
+  <ol>
+    <li>On the office Mac: check FileVault is on; install Docker Desktop (set it to start at login) and git. sqlite3, used by the backup, comes with macOS.</li>
+    <li>Get the code: <code>git clone https://github.com/dev-ckln/lorraine-ai-automation.git lorraine-ai</code>, then <code>cd lorraine-ai</code> and check out the release branch.</li>
+    <li>Create the settings file: <code>cp backend/.env.example backend/.env</code> and fill it in (table below). Generate SECRET_KEY with <code>python3 -c "import secrets; print(secrets.token_urlsafe(48))"</code> and keep a copy somewhere safe off the Mac.</li>
+    <li>Start: <code>ops/start.sh</code> (Windows: <code>ops/start.ps1</code>) — it runs <code>docker compose up -d --build</code>. Open http://localhost:8080.</li>
+    <li>Sign in with SEED_ADMIN_EMAIL / SEED_ADMIN_PASSWORD, then change the password (Change password, top right).</li>
+  </ol>
+  <h4>Settings — <code>backend/.env</code></h4>
+  <div class="tblwrap"><table>
+    <thead><tr><th>Setting</th><th>Value</th><th>What it does</th></tr></thead>
+    <tbody>
+      <tr><td>ENVIRONMENT</td><td>development · production</td><td>production refuses the built-in SECRET_KEY and demo password, requires FAX_MODE=srfax and turns off demo sign-in</td></tr>
+      <tr><td>SECRET_KEY</td><td>a long random string</td><td>signs sessions and encrypts the SRFax password and the xAI key saved in the database — if it changes, both must be entered again on Practice &amp; sending</td></tr>
+      <tr><td>SEED_ADMIN_EMAIL · _NAME · _PASSWORD</td><td>Lorraine&#x27;s sign-in</td><td>the first administrator, created on the first start only</td></tr>
+      <tr><td>FAX_MODE</td><td>fake · srfax</td><td>fake runs every step without dialling (“Demo — not faxed”); srfax sends with the account saved on Practice &amp; sending</td></tr>
+      <tr><td>FAX_ALLOWED_NUMBERS</td><td>[&quot;706-664-0421&quot;]</td><td>outside production only these numbers are dialled (e.g. the client&#x27;s test fax), so a demo packet never reaches a VA</td></tr>
+      <tr><td>FAX_POLL_SECONDS · SRFAX_RETRIES · FAX_FAKE_FAIL_NUMBERS</td><td>30 · 3 · []</td><td>how often SRFax is asked for status · SRFax&#x27;s redials · numbers that “fail” in demo mode</td></tr>
+      <tr><td>AI_MODE</td><td>fake · grok</td><td>fake reads Dr. DeYoe&#x27;s note inside the app and sends nothing; grok uses xAI with the key saved on Practice &amp; sending</td></tr>
+      <tr><td>GROK_MODEL · GROK_TIMEOUT_SECONDS · GROK_API_KEY</td><td>grok-4 · 30 · (empty)</td><td>the model if none is saved on the screen · the wait · a fallback key (normally the key is saved on the screen)</td></tr>
+      <tr><td>SMTP_HOST · _PORT · _USERNAME · _PASSWORD · MAIL_FROM · APP_BASE_URL</td><td>smtp.gmail.com · 587 · …</td><td>password-reset emails only (Gmail: an app password); APP_BASE_URL is the link in the email</td></tr>
+      <tr><td>LOCKOUT_ATTEMPTS · LOCKOUT_MINUTES · IDLE_TIMEOUT_MINUTES</td><td>3 · 15 · 15</td><td>lock after wrong passwords · for how long · sign out when idle (0 = off)</td></tr>
+      <tr><td>COOKIE_SECURE · CORS_ORIGINS · QUICK_SIGN_IN</td><td>false · [...] · false</td><td>true once served over HTTPS · the web app&#x27;s address · development only</td></tr>
+      <tr><td>DATABASE_URL · CONFIG_ROOT · FIXTURES_DIR</td><td>as in docker-compose.yml</td><td>leave as they are</td></tr>
+    </tbody>
+  </table></div>
+  <h4>First-time setup in the app (administrator)</h4>
+  <ul>
+    <li><b>Admin › Practice &amp; sending</b>: the practice details printed on every document (name, provider, NPI, phone, sending fax 404-738-1714, email) · <b>Dr. DeYoe's signature</b> (PNG or JPEG, up to 2 MB — nothing can be sent until it is uploaded) · <b>SRFax</b> account ID, password and account email (write-only), then <b>Send test fax</b> to the client's test number · the <b>VA facility fax numbers</b> · <b>AI assist</b>: the xAI key and model.</li>
+    <li><b>Admin › Diagnoses</b>: the 20 diagnoses are set up with their ICD-10 codes; templates are edited or created there (template builder) — each save is a new version.</li>
+    <li><b>Admin › Cover sheets &amp; RFS</b>: check the five cover sheets and the three RFS office versions.</li>
+    <li><b>Users</b>: only the first administrator exists. Adding more users isn't built yet (the + Add user button is disabled).</li>
+  </ul>
+  <h4>Go-live checklist</h4>
+  <ol>
+    <li>ENVIRONMENT=production and FAX_MODE=srfax, SRFax details saved and a test fax received.</li>
+    <li>A strong SECRET_KEY and SEED_ADMIN_PASSWORD, kept safely off the Mac.</li>
+    <li>Dr. DeYoe's signature uploaded; practice details and VA fax numbers checked.</li>
+    <li>SMTP set, so “Forgot password” works; IDLE_TIMEOUT_MINUTES=15.</li>
+    <li>AI_MODE=grok only once the practice agrees to send de-identified notes to xAI (a BAA may be needed) and the key is saved; until then leave it fake.</li>
+    <li>Nightly backups to an encrypted external drive scheduled, and one restore practised.</li>
+    <li><b>Demo data (open item):</b> the first start loads the made-up demo patients (Jane Doe, John Doe) and their authorizations. Before real patients are entered they must be removed — decide with us whether the go-live install starts from an empty clinic. <i>Decided 6 Oct (user decision): the local development copy keeps the demo users and the made-up patients for testing; on the client's system all demo users and demo data are removed before go-live, so Lorraine starts from an empty clinic with only her own sign-in. Dr. DeYoe's signature is uploaded there on Admin › Practice &amp; sending (never in git).</i></li>
+    <li>Golden rule 1: no real patient data anywhere until this list is done.</li>
+  </ol>
+  <h4>Day to day</h4>
+  <div class="tblwrap"><table>
+    <thead><tr><th></th><th></th></tr></thead>
+    <tbody>
+      <tr><td>Start · stop</td><td><code>ops/start.sh</code> · <code>ops/stop.sh</code> (Windows: the .ps1 versions). The containers restart by themselves when Docker Desktop starts.</td></tr>
+      <tr><td>Logs</td><td><code>docker compose logs backend</code> — IDs only, never patient data. What people did: Admin › Users &amp; activity.</td></tr>
+      <tr><td>Faxes</td><td>Fax log and Send result show each fax; a failed fax has its reason and Retry. Check the SRFax portal before re-sending a fax that may have arrived.</td></tr>
+    </tbody>
+  </table></div>
+  <h4>Backups and restore</h4>
+  <ul>
+    <li><b>What</b>: <code>ops/backup.sh</code> copies the database (checked after copying), the sent PDFs and the config, with checksums; keeps 30 days.</li>
+    <li><b>Where</b>: <code>BACKUP_DIR</code> must be an encrypted external drive — with <code>REQUIRE_SEPARATE_DISK=1</code> it refuses the Mac's own disk.</li>
+    <li><b>Nightly</b>: edit the paths in <code>ops/ai.lorraine.backup.plist</code>, copy it to <code>~/Library/LaunchAgents/</code>, then <code>launchctl load ~/Library/LaunchAgents/ai.lorraine.backup.plist</code> (runs at 02:00).</li>
+    <li><b>Restore</b>: <code>ops/stop.sh</code> → in the backup set, <code>shasum -a 256 -c SHA256SUMS</code> → copy <code>lorraine.db</code> into <code>backend/data/</code> (delete <code>lorraine.db-wal</code> and <code>-shm</code> there first) → <code>tar -xzf documents.tar.gz -C backend/data</code> and <code>tar -xzf config.tar.gz</code> from the project folder → <code>ops/start.sh</code> → sign in and check the latest packets.</li>
+  </ul>
+  <h4>Updating</h4>
+  <ol>
+    <li>Back up first (<code>ops/backup.sh</code>).</li>
+    <li><code>git pull</code> on the release branch, then <code>ops/start.sh</code> — it rebuilds, and the database is updated on start.</li>
+    <li>Templates edited on Diagnoses are kept (config only seeds them once); PDFs already sent never change.</li>
+  </ol>
+  <h4>Where things are configured</h4>
+  <div class="tblwrap"><table>
+    <thead><tr><th>Where</th><th>What</th></tr></thead>
+    <tbody>
+      <tr><td>backend/.env</td><td>the mode switches (fax, AI), sign-in rules, email, and the secret for sessions and stored keys</td></tr>
+      <tr><td>The database — Admin screens</td><td>practice details, Dr. DeYoe&#x27;s signature, SRFax and xAI keys, VA fax numbers, diagnosis templates (with every version), users, all records and the activity log</td></tr>
+      <tr><td>backend/config/</td><td>the master progress note · the RFS: the VA&#x27;s two pages and the box positions · cover-sheet blanks and wording · the starting templates</td></tr>
+      <tr><td>fixtures/</td><td>made-up demo and test data only — never real data</td></tr>
+    </tbody>
+  </table></div>
+  <h4>Troubleshooting</h4>
+  <div class="tblwrap"><table>
+    <thead><tr><th>What you see</th><th>What to do</th></tr></thead>
+    <tbody>
+      <tr><td>“Dr. DeYoe's signature isn't set up yet”</td><td>Upload it on Practice &amp; sending.</td></tr>
+      <tr><td>Faxes wait, or show “Demo — not faxed”</td><td>SRFax details not saved, or FAX_MODE=fake.</td></tr>
+      <tr><td>A fax failed</td><td>Read the reason on Send result / Fax log, fix the number if needed, Retry.</td></tr>
+      <tr><td>AI assist “isn't available right now”</td><td>No xAI key saved, or Grok didn't answer — choose the template from the list; nothing is lost.</td></tr>
+      <tr><td>“The saved key/password can't be read”</td><td>SECRET_KEY changed — enter the SRFax password and xAI key again.</td></tr>
+      <tr><td>The backend won't start</td><td><code>docker compose logs backend</code>: in production it refuses the built-in SECRET_KEY, the demo password or FAX_MODE=fake.</td></tr>
+      <tr><td>Locked out / forgot password</td><td>Three wrong passwords lock for 15 minutes; “Forgot password” emails a link (needs SMTP).</td></tr>
+    </tbody>
+  </table></div>
+  <p class="sec-note">Developers: <code>make setup</code> once, then <code>make dev</code> (API :8000, web :5173), <code>make test</code>, <code>make lint</code>, <code>make e2e</code>; CI runs the same on every push. Fax and AI are fakes in development.</p>
 
   <h3>Testing approach</h3>
   <div class="tblwrap"><table>

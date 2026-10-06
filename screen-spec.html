@@ -114,7 +114,7 @@
     <li><span class="cnum">4</span><div><b>Forms built from configuration</b><span>The visit screen shows exactly the options each diagnosis uses. A searchable diagnosis picker is ready for more than 20 diagnoses.</span></div></li>
     <li><span class="cnum">6</span><div><b>Visits held to what the VA approved</b><span>No more visits than approved, and no visit dates outside the authorization period. Warnings two visits before the limit. Treatment that ends early is marked as the final visit.</span></div></li>
     <li><span class="cnum">7</span><div><b>Answers filled in automatically, always editable</b><span>Every visit starts from the previous visit's answers. The first visit of a new authorization for the same patient and the same diagnosis starts from that patient's last recorded visit; otherwise from the diagnosis defaults (or Dr. DeYoe's note). Any answer can be changed; the change carries forward. The pain level is always entered, never carried over.</span></div></li>
-    <li><span class="cnum">8</span><div><b>Diagnoses set up by our team in this release</b><span>Each diagnosis is a settings file prepared and added by our team. S16 is a read-only list; there is no on-screen form editor (S17 is not part of this project).</span></div></li>
+    <li><span class="cnum">8</span><div><b>Diagnoses set up by our team in this release</b><span>Each diagnosis is a settings file prepared and added by our team. S16 is a read-only list; there is no on-screen form editor (S17 is not part of this project). <i>Changed 6 Oct (confirmed by Poonam): the practice creates and edits its diagnosis templates itself on S16's template builder — see S16 and S17 below.</i></span></div></li>
     <li><span class="cnum">5</span><div><b>Reference data refreshed</b><span>20 diagnoses (PTSD and Brain Stem Stroke removed; Headache and Cervicalgia – Left added), the new fax number, and the practice's answers of 19 September.</span></div></li>
     <li><span class="cnum">9</span><div><b>All 20 templates and ICD-10 codes received (rev 7, 23 Sep)</b><span>The two replacements are Vertebrogenic Low Back Pain – Right and Fibromyalgia; the “May 30” shoulder is Pain in Shoulder – Left. ICD-10 codes added; three await confirmation, and the RFS stays off for those diagnoses until then.</span></div></li>
   </ul>
@@ -242,17 +242,17 @@ Use <u>LBP Left side template</u>. Schedule NV for: two weeks, on a Wednesday @ 
       <tr><td>Other Chronic Pain</td><td>Other</td><td>other chronic pain</td><td>blank</td><td>G89.29</td><td class="y">Ready</td></tr>
       <tr><td>Other Spondylosis – Left</td><td>Back</td><td>OTHER SPONDYLOSIS</td><td>blank</td><td>M47.896</td><td class="y">Ready</td></tr>
       <tr><td>Other Spondylosis – Right</td><td>Back</td><td>Other Spondylosis</td><td>blank</td><td>M47.896</td><td class="y">Ready</td></tr>
-      <tr><td>Pain in Hip – Left</td><td>Hip</td><td>PAIN IN HIP</td><td>8/10 — cover</td><td><b>unconfirmed</b></td><td class="warn">Ready · RFS awaits ICD-10</td></tr>
+      <tr><td>Pain in Hip – Left</td><td>Hip</td><td>PAIN IN HIP</td><td>8/10 — cover</td><td>M25.551</td><td class="y">Ready</td></tr>
       <tr><td>Pain in Hip – Right</td><td>Hip</td><td>PAIN IN HIP</td><td>8/10 — cover</td><td>M25.551</td><td class="y">Ready</td></tr>
       <tr><td>Pain in Knee – Left</td><td>Knee</td><td>PAIN IN KNEE</td><td>blank</td><td>M25.562</td><td class="y">Ready</td></tr>
-      <tr><td>Pain in Knee – Right</td><td>Knee</td><td>Pain In Knee</td><td>blank</td><td><b>unconfirmed</b></td><td class="warn">Ready · RFS awaits ICD-10</td></tr>
+      <tr><td>Pain in Knee – Right</td><td>Knee</td><td>Pain In Knee</td><td>blank</td><td>M25.562</td><td class="y">Ready</td></tr>
       <tr><td>Pain in Shoulder – Left</td><td>Shoulder</td><td>Pain In Left Shoulder — <b>side printed</b></td><td>blank</td><td>M25.512</td><td class="y">Ready · new</td></tr>
-      <tr><td>Pain in Shoulder – Right</td><td>Shoulder</td><td>Pain in shoulder</td><td>blank</td><td><b>unconfirmed</b></td><td class="warn">Ready · RFS awaits ICD-10</td></tr>
+      <tr><td>Pain in Shoulder – Right</td><td>Shoulder</td><td>Pain in shoulder</td><td>blank</td><td>M25.512</td><td class="y">Ready</td></tr>
       <tr><td>Vertebrogenic Low Back Pain – Left</td><td>Back</td><td>VERTEBROGENIC LOW BACK PAIN</td><td>blank</td><td>M54.51</td><td class="y">Ready · corrected copy</td></tr>
       <tr><td>Vertebrogenic Low Back Pain – Right</td><td>Back</td><td>Vertebrogenic low back pain</td><td>blank</td><td>M54.51</td><td class="y">Ready · new</td></tr>
     </tbody>
   </table></div>
-  <p class="sec-note" style="margin-top:12px"><b>All 20 received (22 Sep).</b> ICD-10 codes received for all 20; for Hip – Left, Knee – Right and Shoulder – Right the code sent is for the other side, so the RFS stays off for those with “ICD-10 code awaiting confirmation” until the practice confirms. Pain in Shoulder – Left prints the side in its scanned title; the page covers it and prints “Pain in shoulder”. The practice has asked about 22 more diagnoses, so the picker must scale to 40+.</p>
+  <p class="sec-note" style="margin-top:12px"><b>All 20 received (22 Sep).</b> ICD-10 codes received for all 20; for Hip – Left, Knee – Right and Shoulder – Right the code sent is for the other side, so the RFS stays off for those with “ICD-10 code awaiting confirmation” until the practice confirms. Pain in Shoulder – Left prints the side in its scanned title; the page covers it and prints “Pain in shoulder”. The practice has asked about 22 more diagnoses, so the picker must scale to 40+. <i>All 20 ICD-10 codes are confirmed (6 Oct): hips M25.551, knees M25.562, shoulders M25.512 — the codes the practice gives for both sides (user decision 28 Sep) — so the RFS is available for every diagnosis. The codes can be changed on Diagnoses › Edit template.</i></p>
 
   <h3 class="grp">Cover sheets, destinations and files</h3>
   <div class="tblwrap"><table>
@@ -268,7 +268,7 @@ Use <u>LBP Left side template</u>. Schedule NV for: two weeks, on a Wednesday @ 
   <div class="grid3">
     <div><b>File 1</b>Cover sheet — one per destination · e.g. <code>John Doe 1234 Fax Cover Sheet.pdf</code> <span class="n">(name to confirm)</span></div>
     <div><b>File 2</b>Clinical notes — all visits · <code>John Doe 1234 Acupuncture Records VA0023456789.pdf</code></div>
-    <div><b>File 3</b>RFS — both pages, when requested · e.g. <code>John Doe 1234 RFS VA0023456789.pdf</code> <span class="n">(name to confirm)</span></div>
+    <div><b>File 3</b>RFS — both pages, when requested · e.g. <code>John Doe 1234 RFS VA0023456789.pdf</code> <span class="n">(name to confirm)</span> <span class="n">(6 Oct: the VA's own Form 10-10172 with the values in its boxes; box 11's answer circled; page 2 as supplied)</span></div>
   </div>
   <p class="sec-note" style="margin-top:12px">Sending from the practice fax <b>404-738-1714</b> (the supplied forms still show the old 706-664-0421). Phone <code>678-982-7714</code>.</p>
 
@@ -370,7 +370,7 @@ THANK YOU.</p>
       <tr><td>Period start · end</td><td>date</td><td>required; end after start; visit dates must fall inside</td><td>04/01/2026 · 05/31/2026</td></tr>
     </tbody></table></div>
     <dl class="sd"><dt>Diagnosis picker</dt><dd><span class="flag">Important</span> Type-to-search, grouped by body area (Back, Neck, Hip, Knee, Shoulder, Head, Other), showing the name <b>with</b> the side. Must stay usable at 40+ diagnoses. Templates not yet ready are shown greyed with a plain reason (“Template not received yet”), not hidden.</dd>
-    <dt>Optional</dt><dd>Start from Dr. DeYoe's note (S10) to pre-select the diagnosis.</dd></dl>
+    <dt>Optional</dt><dd>Start from Dr. DeYoe's note (S10) to pre-select the diagnosis.</dd><dt>Changed 6 Oct</dt><dd>Changed 6 Oct (user decision): AI assist moved onto New authorization (S6). The authorization&#x27;s details come first, then its diagnosis template — chosen from the list, or with the &#x27;Paste doctor&#x27;s note (AI assist)&#x27; button at the top right of the Diagnosis template section (&#x27;Choose from the list&#x27; switches back): the note is read (names and ID numbers removed first), the template and the first visit&#x27;s answers (type of pain, painful activities, interferes with) are suggested beside it with the words they came from highlighted; Lorraine changes or unticks anything and accepts; nothing is saved until the authorization is created, and then visit 1 starts from the accepted answers (answer source doctor_note). The visit screen&#x27;s &#x27;Paste doctor&#x27;s note&#x27; button and the old S10 page are gone. The closing-note draft is not built yet.</dd></dl>
   </div></div>
 
   <div class="screen"><header><span class="sid">S7</span><h4>Authorization detail</h4><span class="who">All users</span></header><div class="body">
@@ -405,7 +405,7 @@ THANK YOU.</p>
       <dt>Notes</dt><dd><span class="flag">Key</span> The date is entered once and prints at both the top and bottom of the page — say so, because staff who know the paper will look for a second date. Clinical findings (objective, prognosis, plan, point prescription) are not on this screen: they stay as printed on Dr. DeYoe's template.</dd>
       <dt>Limits</dt><dd>Visit number shown as “Visit 7 of 12 approved”. The screen can't be opened for a visit beyond the approved number; a date outside the period is an inline error that names the period.</dd>
       <dt>States</dt><dd>First visit · a later visit, pre-filled · unchanged since last visit · errors (duplicate date, out of order, outside the period) · 2 visits left · last approved visit (final visit on) · limit reached.</dd>
-    </dl>
+    <dt>As built 6 Oct</dt><dd>The fields below the pain level come from the diagnosis&#x27;s template (template builder, S16): each &#x27;asked on each visit&#x27; field shows as text, a text box, checkboxes, radio buttons, a select or a checkbox grid; &#x27;fixed&#x27; fields print their default and are not asked. Visit 1 starts from the defaults, from the patient&#x27;s last visit with the same diagnosis, or from Dr. DeYoe&#x27;s note accepted on S6 (no separate S10 page); later visits start from the previous one. A &#x27;changed since last visit&#x27; badge replaces the where-from markers. The physician&#x27;s note is asked on the first, a middle and the last visit; Comments is a free-text box in the post-treatment section. Nothing is signed here — Dr. DeYoe&#x27;s signature (S19) is pre-printed on every page.</dd></dl>
   </div></div>
 
   <div class="screen"><header><span class="sid">S10</span><h4>AI assist — read Dr. DeYoe's note</h4><span class="who">All users</span></header><div class="body">
@@ -414,6 +414,7 @@ THANK YOU.</p>
       <dt>Contains</dt><dd>Paste area · “read note” · proposals shown <b>beside</b> the note: diagnosis (<code>Low Back Pain – Left</code>), type of pain (<code>Dull, Sharp, Numbness</code>), with the words they came from highlighted in the note · accept all, accept one, or edit.</dd>
       <dt>Also</dt><dd>Drafts the closing note for the last visit, for Lorraine to accept or edit.</dd>
       <dt>States</dt><dd>Empty · reading · proposals ready · some uncertain (flagged) · nothing recognised · service unavailable (falls back to manual entry).</dd>
+      <dt>Built 6 Oct — on S6</dt><dd>As the second way to set the template on New authorization (see S6). States as above: the empty note box with Read note · “Reading the note…” · suggestions beside the note (template picker pre-set and changeable, answers ticked with the words they came from) · “uncertain” badges · “Nothing in the note matched…” with Choose the template · service unavailable with Choose the template yourself. The privacy line is always shown, with how many names and ID numbers were removed. Grok (xAI) reads the note when the server runs AI_MODE=grok with the key from S19; in demo mode (AI_MODE=fake, the default) the app reads it by word matching and sends nothing. The closing-note draft is not built yet.</dd>
       <dt>Notes</dt><dd><span class="flag">Privacy</span> A quiet, permanent line: <b>“Names and ID numbers are removed before the note is read.”</b> Scheduling and mileage parts of the note are ignored. Nothing is saved until accepted.</dd>
     </dl>
   </div></div>
@@ -430,7 +431,7 @@ THANK YOU.</p>
       <tr><td>Files</td><td>derived</td><td>three, each named</td><td>cover · notes (8 pages) · RFS (2 pages)</td></tr>
       <tr><td>Pages per fax</td><td>derived</td><td>1 + notes + RFS</td><td>1 + 8 + 2 = 11</td></tr>
     </tbody></table></div>
-    <dl class="sd"><dt>States</dt><dd>Default · RFS on/off with the count updating · second destination added automatically, with a one-line reason (“Blairsville VA sends are always copied to Atlanta VA”) · missing ICD-10, offer to continue without RFS.</dd></dl>
+    <dl class="sd"><dt>States</dt><dd>Default · RFS on/off with the count updating · second destination added automatically, with a one-line reason (“Blairsville VA sends are always copied to Atlanta VA”) · missing ICD-10, offer to continue without RFS.</dd><dt>As built 6 Oct</dt><dd>The RFS is the VA&#x27;s own Form 10-10172, filled in as boxes: names, dates, addresses, ICD-10 (all 20 confirmed) and the practice&#x27;s details come pre-filled; boxes 6, 10 and 11 are No/Yes (printed as a filled dot, box 11&#x27;s answer circled), box 12 is the referral with its specialty on the line, the reason and benefit text are editable, and box 21 carries Dr. DeYoe&#x27;s pre-printed signature. Page 2 is always faxed as scanned. Cover sheets print on the practice&#x27;s own blanks, one per sheet.</dd></dl>
   </div></div>
 
   <div class="screen"><header><span class="sid">S12</span><h4>Preview</h4><span class="who">All users</span></header><div class="body">
@@ -440,7 +441,7 @@ THANK YOU.</p>
       <dt>Actions</dt><dd>Edit a page · regenerate · download the files (useful for the manual HSRM upload) · continue to review.</dd>
       <dt>States</dt><dd>Generating · ready · edited since generated · warnings, including <b>RFS not signed</b> until the signature question is settled.</dd>
       <dt>Notes</dt><dd>The consistency panel is normally a calm confirmation; it only raises an alarm if a single page was overridden by hand.</dd>
-    </dl>
+    <dt>As built 6 Oct</dt><dd>No &#x27;RFS not signed&#x27; warning: Dr. DeYoe&#x27;s signature is pre-printed from S19 on every note and in RFS box 21. If no signature is uploaded, approving the packet is refused with a message pointing to Practice &amp; sending.</dd></dl>
   </div></div>
 
   <h3 class="grp">Sending</h3>
@@ -492,11 +493,23 @@ THANK YOU.</p>
       <tr><td>Status · version</td><td>pill · number</td><td>ready / not received / replaced</td><td>Ready · v2</td></tr>
     </tbody></table></div>
     <dl class="sd"><dt>Actions</dt><dd>Search · view a diagnosis's sample first, middle and last pages · see which version is in use.</dd>
-    <dt>Notes</dt><dd><span class="flag">This release</span> Read-only. Diagnoses and replacement scans are added by our team as new versions; a line on the screen says so and how to request one.</dd></dl>
+    <dt>Notes</dt><dd><span class="flag">This release</span> Read-only. Diagnoses and replacement scans are added by our team as new versions; a line on the screen says so and how to request one.</dd>
+    <dt>Changed 6 Oct</dt><dd>Template builder (confirmed by Poonam). Columns: name shown to staff · printed on the page · group · ICD-10 · body area (with an “RFS off by default” badge where it applies) · status · version · <b>Edit template</b>. The Notes and Sample pages columns are removed (setup-phase only). Actions: <b>Create new template</b> (blank, or a copy of an existing diagnosis's template) and <b>Edit template</b> on every row — both open S17. After a save the list says “… saved — version n”.</dd></dl>
   </div></div>
 
   <div class="screen"><header><span class="sid">S17</span><h4>Template set-up</h4><span class="who">Not part of this project — do not design</span></header><div class="body">
     <p class="purpose">There is no screen for this. Our team prepares each diagnosis's settings file (defaults, print positions, cover-ups) and adds it for the practice. The number is kept so screen references stay stable.</p>
+    <dl class="sd"><dt>Changed 6 Oct — template builder</dt><dd>Built as <b>Create new template</b> / <b>Edit template</b> (routes <code>/diagnoses/new</code>, <code>/diagnoses/:slug/template</code>; administrators). One page per diagnosis template:
+      <ul>
+        <li><b>Template:</b> template name (the diagnosis staff choose) · printed on the page (after “Diagnosis:”) · group · ICD-10 code (RFS box 13) · ICD-10 description (box 14; the code prints only with it) · body area (box 18). New: “Start from” a blank template or a copy.</li>
+        <li><b>Sections</b> (add, delete, move up/down): name printed as a heading · small print under it · fields side by side (1–3).</li>
+        <li><b>Fields</b> (add by type, delete, move): label · type — checkboxes, radio options, select box, input field, textarea, checkbox grid · “Asked on each visit” or “Fixed — prints the default every time” · small print after · heading above.
+          Checkboxes / radio / select: options with <b>Mark checked</b> beside each (the starting value; radio and select one only), option layout (in a line / one per line), checkboxes can add “Other ____” with its starting text.
+          Checkbox grid: rows, columns (with “gap before” between column groups), rows printed in 1–4 columns, default ticked in a grid below. Textarea: lines on the page. Input and textarea: default below.</li>
+        <li>The physician's note and the final-visit “Excellent” are filled in by the app — marked so, and can't be deleted or retyped.</li>
+        <li><b>Create template</b> / <b>Save as a new version</b> · <b>Cancel</b>. Leaving with unsaved changes asks first. Refusals say where and why (“Section 6 (PLAN), field 1: …”), a name already in use, a malformed ICD-10 code, or a change saved by someone else meanwhile.</li>
+      </ul>
+      Fixed on every page and not part of a template: practice header, the patient box with the visit date, the INITIAL / Last Visit banner, Diagnosis and pain severity, the signature with the date, the footer.</dd></dl>
   </div></div>
 
   <div class="screen"><header><span class="sid">S18</span><h4>Cover sheets, RFS and destinations</h4><span class="who">Administrator</span></header><div class="body">
@@ -515,14 +528,14 @@ THANK YOU.</p>
       <tr><td>Retention</td><td>months</td><td>confirm with the practice's advisor</td><td>120 packets · 72 logs</td></tr>
       <tr><td>Encryption and backup</td><td>status</td><td>read-only</td><td>FileVault on · last backup today 07:00</td></tr>
     </tbody></table></div>
-    <dl class="sd"><dt>Actions</dt><dd><span class="flag">Key</span> <b>Send a test fax</b> to a number she types, with no patient data. It appears in the fax log as a test.</dd></dl>
+    <dl class="sd"><dt>Actions</dt><dd><span class="flag">Key</span> <b>Send a test fax</b> to a number she types, with no patient data. It appears in the fax log as a test.</dd><dt>As built 6 Oct</dt><dd>Also on this screen: Dr. DeYoe&#x27;s signature (upload a PNG or JPEG, shown to administrators, never logged — it prints on every note and in RFS box 21), the VA facilities&#x27; fax numbers (editable), the SRFax connection (account, password and sender email, write-only) with Send test fax, and &#x27;AI assist (xAI Grok)&#x27; — the xAI key (write-only, last four shown, removable) and the model. The encryption-and-backup line is still a placeholder: backups are the nightly copy described in the handbook appendix, not read from the machine.</dd></dl>
   </div></div>
 
   <div class="screen"><header><span class="sid">S20</span><h4>Users and activity log</h4><span class="who">Administrator</span></header><div class="body">
     <p class="purpose">Who can use the tool, and a record of what was looked at and changed.</p>
     <dl class="sd"><dt>Contains</dt><dd>Users and their roles (Lorraine holds all three at go-live) · add a user later · activity log filtered by person, patient, date and type — <b>records</b> (viewed, created, changed, approved, sent), <b>sign-ins</b> (including failed attempts and lock-outs), <b>downloads</b>, <b>settings changes</b> and <b>system events</b> (diagnosis updates, app updates, test faxes, backups) — showing before and after.</dd>
     <dt>Notes</dt><dd>The log records <b>views</b> of patient records as well as changes, and can't be edited. Passwords and keys never appear in it. Export for an auditor is a later request, not part of this design.</dd>
-    <dt>States</dt><dd>Default · filtered · nothing matching · a failed-sign-in run highlighted.</dd></dl>
+    <dt>States</dt><dd>Default · filtered · nothing matching · a failed-sign-in run highlighted.</dd><dt>As built 6 Oct</dt><dd>Add user is shown but not built — Lorraine holds every role at go-live. The activity log is the newest 500 entries (QA M5). Keys and passwords never appear in it.</dd></dl>
   </div></div>
 </section>
 
@@ -531,7 +544,7 @@ THANK YOU.</p>
   <ul class="plain">
     <li><b>Patient chip</b> — <code>Jane Doe · 1234 · 03/14/1961</code> on every screen that shows patient data.</li>
     <li><b>Status pill</b> — draft · ready · queued · sent · failed. One vocabulary, recognisable by shape as well as colour.</li>
-    <li><b>Answer source marker</b> — tiny and quiet: carried forward · from doctor's note · changed today.</li>
+    <li><b>Answer source marker</b> — tiny and quiet: carried forward · from doctor's note · changed today. <i>As built: a &#x27;changed since last visit&#x27; badge; where an answer came from (defaults, last visit, Dr. DeYoe&#x27;s note) is a one-line note at the top of the visit, not a marker on each answer.</i></li>
     <li><b>File card</b> — file name, page count, open. Used for the three files in S11–S15.</li>
     <li><b>Destination row</b> — facility, fax number in full, “automatic” tag where applicable, status.</li>
     <li><b>Inline validation</b> — on the field, as the user moves on.</li>
