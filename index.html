@@ -506,12 +506,12 @@ THANK YOU.</pre>
       <tr><td>S13</td><td>Review and send</td><td>The one irreversible step; explicit confirmation</td><td>M8</td></tr>
       <tr><td>S14</td><td>Send result</td><td>Per destination: queued / sent / failed / waiting too long</td><td>M8</td></tr>
       <tr><td>S15</td><td>Fax log</td><td>Every transmission, retry, open files as sent</td><td>M8</td></tr>
-      <tr><td>S16</td><td>Diagnoses</td><td>Read-only list, versions, sample-page previews <i>(changed 6 Oct, confirmed by Poonam: Create new template / Edit template — the template builder)</i></td><td>M10</td></tr>
+      <tr><td>S16</td><td>Diagnoses</td><td>Read-only list, versions, sample-page previews <i>(changed 6 Oct, confirmed by Poonam: Create new template / Edit template — the template builder)</i> <i>(7 Oct: Export JSON on each template; Import JSON creates a new template from a file)</i></td><td>M10</td></tr>
       <tr><td>S17</td><td>—</td><td>Not built. Diagnoses are added by developers via config. <i>(Changed 6 Oct: built as the template builder page — sections and fields, each asked per visit or fixed, saved as versions.)</i></td><td>—</td></tr>
       <tr><td>S18</td><td>Cover sheets, RFS, destinations</td><td>Cover sheets, RFS versions, Blairsville → Atlanta rule</td><td>M10</td></tr>
       <tr><td>S19</td><td>Practice and sending</td><td>Provider, NPI, phone, fax, SRFax (write-only), retention, backup status, test fax</td><td>M10</td></tr>
-      <tr><td>S20</td><td>Users and activity log</td><td>Users/roles; log filtered by type</td><td>M10</td></tr>
-      <tr><td>S21</td><td>Correct and re-send</td><td>New packet linked to the sent one (keep simple)</td><td>M8</td></tr>
+      <tr><td>S20</td><td>Users and activity log</td><td>Users/roles; log filtered by type <i>(7 Oct: Add user and accounts off/on; the log is paged and filtered on the server)</i></td><td>M10</td></tr>
+      <tr><td>S21</td><td>Correct and re-send</td><td>New packet linked to the sent one (keep simple) <i>(Built 7 Oct: a correction packet linked to the sent one)</i></td><td>M8</td></tr>
     </tbody>
   </table></div>
 </section>
@@ -527,7 +527,7 @@ THANK YOU.</pre>
     <li><span class="ix">3</span><div><b>Forms come from configuration.</b> The visit form is rendered from the master form definition and the diagnosis settings. Never hard-code a diagnosis's checkboxes in a component.</div></li>
     <li><span class="ix">4</span><div><b>Every query is scoped to a clinic.</b> All clinic data goes through the tenant-scoped data layer. No raw query without <code>tenant_id</code>.</div></li>
     <li><span class="ix">5</span><div><b>Three files, never merged.</b> Cover sheet, clinical notes and RFS are always separate PDFs.</div></li>
-    <li><span class="ix">6</span><div><b>Nothing is faxed without an explicit human confirmation</b>, and nothing sent is ever edited — corrections create a new packet.</div></li>
+    <li><span class="ix">6</span><div><b>Nothing is faxed without an explicit human confirmation</b>, and nothing sent is ever edited — corrections create a new packet. <i>(Enforced 7 Oct: one packet per authorization; after approval the authorization and visits are locked until Correct &amp; re-send opens a linked correction packet.)</i></div></li>
     <li><span class="ix">7</span><div><b>No full SSN.</b> Last four only. No identifiers in any Grok request; the exact prompt sent is stored.</div></li>
     <li><span class="ix">8</span><div><b>This handbook wins.</b> If a design, a document or a generated change disagrees with it, stop and raise it with Poonam — don't let a tool quietly change a rule.</div></li>
   </ul>
@@ -1183,6 +1183,7 @@ Build frontend/src/features/visits/VisitEntryPage.tsx that reproduces the design
       <tr><td>ENVIRONMENT</td><td>development · production</td><td>production refuses the built-in SECRET_KEY and demo password, requires FAX_MODE=srfax and turns off demo sign-in</td></tr>
       <tr><td>SECRET_KEY</td><td>a long random string</td><td>signs sessions and encrypts the SRFax password and the xAI key saved in the database — if it changes, both must be entered again on Practice &amp; sending</td></tr>
       <tr><td>SEED_ADMIN_EMAIL · _NAME · _PASSWORD</td><td>Lorraine&#x27;s sign-in</td><td>the first administrator, created on the first start only</td></tr>
+      <tr><td>BACKUP_STATUS_FILE</td><td>data/backup-status.json</td><td>where ops/backup.sh records its last run; Practice &amp; sending shows it (7 Oct)</td></tr>
       <tr><td>FAX_MODE</td><td>fake · srfax</td><td>fake runs every step without dialling (“Demo — not faxed”); srfax sends with the account saved on Practice &amp; sending</td></tr>
       <tr><td>FAX_ALLOWED_NUMBERS</td><td>[&quot;706-664-0421&quot;]</td><td>outside production only these numbers are dialled (e.g. the client&#x27;s test fax), so a demo packet never reaches a VA</td></tr>
       <tr><td>FAX_POLL_SECONDS · SRFAX_RETRIES · FAX_FAKE_FAIL_NUMBERS</td><td>30 · 3 · []</td><td>how often SRFax is asked for status · SRFax&#x27;s redials · numbers that “fail” in demo mode</td></tr>
@@ -1199,7 +1200,7 @@ Build frontend/src/features/visits/VisitEntryPage.tsx that reproduces the design
     <li><b>Admin › Practice &amp; sending</b>: the practice details printed on every document (name, provider, NPI, phone, sending fax 404-738-1714, email) · <b>Dr. DeYoe's signature</b> (PNG or JPEG, up to 2 MB — nothing can be sent until it is uploaded) · <b>SRFax</b> account ID, password and account email (write-only), then <b>Send test fax</b> to the client's test number · the <b>VA facility fax numbers</b> · <b>AI assist</b>: the xAI key and model.</li>
     <li><b>Admin › Diagnoses</b>: the 20 diagnoses are set up with their ICD-10 codes; templates are edited or created there (template builder) — each save is a new version.</li>
     <li><b>Admin › Cover sheets &amp; RFS</b>: check the five cover sheets and the three RFS office versions.</li>
-    <li><b>Users</b>: only the first administrator exists. Adding more users isn't built yet (the + Add user button is disabled).</li>
+    <li><b>Users</b>: only the first administrator exists at install. <i>(7 Oct: Users &amp; activity › + Add user — they set their own password from an emailed link; an account can be turned off.)</i></li>
   </ul>
   <h4>Go-live checklist</h4>
   <ol>

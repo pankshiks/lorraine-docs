@@ -184,12 +184,12 @@ Full fields and states are in the screen spec (not yet captured in this repo —
 | S13 | Review and send | The one irreversible step; explicit confirmation | M8 |
 | S14 | Send result | Per destination: queued / sent / failed / waiting too long | M8 |
 | S15 | Fax log | Every transmission, retry, open files as sent | M8 |
-| S16 | Diagnoses | Read-only list, versions, sample-page previews *(changed 6 Oct, confirmed by Poonam: Create new template / Edit template on every diagnosis — see S17)* | M10 |
+| S16 | Diagnoses | Read-only list, versions, sample-page previews *(changed 6 Oct, confirmed by Poonam: Create new template / Edit template on every diagnosis — see S17)* | M10 *(7 Oct: Export JSON on each template; Import JSON creates a new template from a file)* |
 | S17 | — | Not built. Diagnoses are added by developers via config. *(User decision 5–6 Oct, confirmed by Poonam 6 Oct (rule 8): the client wants to add and edit diagnosis templates himself — a template builder on Admin › Diagnoses is being built on branch `diagnosis-template-changes`. Phase 1 done: one master progress note with the fixed top and bottom, and the 20 diagnoses as templates of sections and fields. Phase 2 done: S9 draws its form from the diagnosis's template. Phase 3 done: Admin › Diagnoses › Create new template / Edit template — name, RFS details, sections and fields, each save a new version.)* | — |
 | S18 | Cover sheets, RFS, destinations | Cover sheets, RFS versions, Blairsville → Atlanta rule | M10 |
 | S19 | Practice and sending | Provider, NPI, phone, fax, SRFax (write-only), retention, backup status, test fax *(Build 1 Oct: VA facility fax numbers are editable here too — used from the next packet built)* | M10 |
-| S20 | Users and activity log | Users/roles; log filtered by type | M10 |
-| S21 | Correct and re-send | New packet linked to the sent one (keep simple) | M8 |
+| S20 | Users and activity log | Users/roles; log filtered by type | M10 *(7 Oct: Add user (they set their own password from an emailed link), accounts turned off/on; the log is paged and filtered on the server, page loads no longer logged)* |
+| S21 | Correct and re-send | New packet linked to the sent one (keep simple) | M8 *(Built 7 Oct: opens a correction packet linked to the sent one; the authorization and visits unlock while it's open; waits while the original is still sending)* |
 
 `FormRenderer` (S9) is the shared component that renders a diagnosis's master form definition + settings — this is `frontend/src/forms/`. SRFax credentials on S19 are write-only (entered, never displayed back).
 
@@ -207,7 +207,7 @@ Per the source doc: *"Put these in the repo's `CLAUDE.md` (section 15) so every 
 3. **Forms come from configuration.** The visit form is rendered from the master form definition and the diagnosis settings. Never hard-code a diagnosis's checkboxes in a component.
 4. **Every query is scoped to a clinic.** All clinic data goes through the tenant-scoped data layer. No raw query without `tenant_id`.
 5. **Three files, never merged.** Cover sheet, clinical notes and RFS are always separate PDFs.
-6. **Nothing is faxed without an explicit human confirmation**, and nothing sent is ever edited — corrections create a new packet.
+6. **Nothing is faxed without an explicit human confirmation**, and nothing sent is ever edited — corrections create a new packet. *(Enforced 7 Oct: one packet per authorization; after approval the authorization and visits are locked until Correct & re-send opens a linked correction packet.)*
 7. **No full SSN.** Last four only. No identifiers in any Grok request; the exact prompt sent is stored.
 8. **This handbook wins.** If a design, a document or a generated change disagrees with it, stop and raise it with Poonam — don't let a tool quietly change a rule.
 
@@ -246,6 +246,7 @@ Per the source doc: *"Put these in the repo's `CLAUDE.md` (section 15) so every 
 | ENVIRONMENT | development · production | production refuses the built-in SECRET_KEY and demo password, requires FAX_MODE=srfax and turns off demo sign-in |
 | SECRET_KEY | a long random string | signs sessions and encrypts the SRFax password and the xAI key saved in the database — if it changes, both must be entered again on Practice & sending |
 | SEED_ADMIN_EMAIL · _NAME · _PASSWORD | Lorraine's sign-in | the first administrator, created on the first start only |
+| BACKUP_STATUS_FILE | data/backup-status.json | where ops/backup.sh records its last run; Practice & sending shows it under Backups (7 Oct) |
 | FAX_MODE | fake · srfax | fake runs every step without dialling (“Demo — not faxed”); srfax sends with the account saved on Practice & sending |
 | FAX_ALLOWED_NUMBERS | ["706-664-0421"] | outside production only these numbers are dialled (e.g. the client's test fax), so a demo packet never reaches a VA |
 | FAX_POLL_SECONDS · SRFAX_RETRIES · FAX_FAKE_FAIL_NUMBERS | 30 · 3 · [] | how often SRFax is asked for status · SRFax's redials · numbers that “fail” in demo mode |
@@ -261,7 +262,7 @@ Per the source doc: *"Put these in the repo's `CLAUDE.md` (section 15) so every 
 - **Admin › Practice & sending**: the practice details printed on every document (name, provider, NPI, phone, sending fax 404-738-1714, email) · **Dr. DeYoe's signature** (PNG or JPEG, up to 2 MB — nothing can be sent until it is uploaded) · **SRFax** account ID, password and account email (write-only), then **Send test fax** to the client's test number · the **VA facility fax numbers** · **AI assist**: the xAI key and model.
 - **Admin › Diagnoses**: the 20 diagnoses are set up with their ICD-10 codes; templates are edited or created there (template builder) — each save is a new version.
 - **Admin › Cover sheets & RFS**: check the five cover sheets and the three RFS office versions.
-- **Users**: only the first administrator exists. Adding more users isn't built yet (the + Add user button is disabled).
+- **Users**: only the first administrator exists at install. *(7 Oct: Users & activity › + Add user — name, email, roles; the person sets their own password from an emailed link; an account can be turned off.)*
 
 ### Go-live checklist
 
@@ -283,6 +284,7 @@ Per the source doc: *"Put these in the repo's `CLAUDE.md` (section 15) so every 
 ### Backups and restore
 
 - **What**: `ops/backup.sh` copies the database (checked after copying), the sent PDFs and the config, with checksums; keeps 30 days.
+- **Status** *(7 Oct)*: each run writes `backend/data/backup-status.json` (when, OK or the error); Practice & sending shows it under Backups.
 - **Where**: `BACKUP_DIR` must be an encrypted external drive — with `REQUIRE_SEPARATE_DISK=1` it refuses the Mac's own disk.
 - **Nightly**: edit the paths in `ops/ai.lorraine.backup.plist`, copy it to `~/Library/LaunchAgents/`, then `launchctl load ~/Library/LaunchAgents/ai.lorraine.backup.plist` (runs at 02:00).
 - **Restore**: `ops/stop.sh` → in the backup set, `shasum -a 256 -c SHA256SUMS` → copy `lorraine.db` into `backend/data/` (delete `lorraine.db-wal` and `-shm` there first) → `tar -xzf documents.tar.gz -C backend/data` and `tar -xzf config.tar.gz` from the project folder → `ops/start.sh` → sign in and check the latest packets.
@@ -315,3 +317,15 @@ Per the source doc: *"Put these in the repo's `CLAUDE.md` (section 15) so every 
 | Locked out / forgot password | Three wrong passwords lock for 15 minutes; “Forgot password” emails a link (needs SMTP). |
 
 Developers: `make setup` once, then `make dev` (API :8000, web :5173), `make test`, `make lint`, `make e2e`; CI runs the same on every push. Fax and AI are fakes in development.
+
+
+## Appendix · 7 Oct walkthrough changes (as built)
+
+- **One packet per authorization.** Once a packet is approved, Build packet doesn't build it again, and the authorization and its visits are locked (server code `locked`). A busy line is a **Retry** in the fax log; anything to fix goes through **Correct & re-send**, which opens a correction packet (`kind = correction`, `supersedes_packet_id`) — the record unlocks while it is open, and it is built, previewed and confirmed like any packet.
+- **Cover sheets match the RFS.** A packet without the RFS uses each sheet's `comments_without_rfs` / `subject_without_rfs` (`backend/config/clinics/deyoe/cover_sheets.json`) — the sheet never promises an RFS that isn't attached. Wording awaiting the practice's confirmation.
+- **ICD-10 per side.** Hip – Left M25.552, Knee – Right M25.561, Shoulder – Right M25.511 (migration 0012); a restart no longer copies the diagnosis list back over the practice's edits.
+- **No future visits.** A visit can't be dated after today (screen and server).
+- **Backups show their real status** (`ops/backup.sh` → `backend/data/backup-status.json` → Practice & sending › Backups).
+- **Activity log** is read a page at a time and filtered by type and day on the server; loading the workspace isn't logged.
+- **Diagnoses › Export JSON / Import JSON** — a template as a file (`kind: lorraine-diagnosis-template`), and a new template created from one.
+- **Add user** on Users & activity; sending is faster (one browser per approval); diagnosis wording prints in capitals.

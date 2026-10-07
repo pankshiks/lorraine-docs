@@ -358,6 +358,16 @@ Do not start M1, M5–M7 production screens or any backend module (M0, M2, M3, M
   <details><summary>Claude Code prompt</summary><pre class="prompt">Apply screen spec rev 7 to the listed screens without changing flows: S19 add test_fax_number (no patient data; logged as a test), retention_months_packets=120 and retention_months_logs=72, practice email, read-only offices/facilities lists, Save. S1 remove pre-filled credentials and add the wrong-details, locked and idle-signed-out states (UI only until real auth lands). Use PatientChip on S9, S11, S12, S13. Switch S4/S6/S8/S9 validation to inline on blur using the shared validation module. Fix the S2 tile grid at 1280/1440 and the S18 rule sentence layout. Make demo fixtures consistent between S2 and S7. Jane/John data only. Change the demo fax-log test entry to a separate test number (not 404-738-1714).</pre></details>
 </article>
 
+<article class="fix P1" id="F15">
+  <h3><span class="fid">F15</span>7 Oct walkthrough: sent once, corrections, cover wording, ICD-10 sides<span class="pill P1">P1</span><span class="pill">7 Oct</span><span class="pill st done">Status: Done</span></h3>
+  <dl>
+    <dt>Screens</dt><dd>S2 · S7 · S8 · S9 · S11–S16 · S19 · S20 · S21</dd>
+    <dt>Problem</dt><dd>A human walkthrough of the whole tool (7 Oct) found the same packet could be faxed twice, a cover sheet promised an RFS that wasn't attached, the wrong side's ICD-10 code on three diagnoses, records editable after sending, and smaller gaps.</dd>
+    <dt>Why</dt><dd>Golden rule 6 (nothing sent is edited; corrections are new packets); what the VA receives must be true.</dd>
+    <dt>Done when</dt><dd><ul><li>One packet per authorization: no second build or approval after a packet is approved; the authorization and visits are locked until a correction is open (server code locked).</li><li>Correct &amp; re-send opens a correction packet linked to the sent one, starting from its choices; it waits while the original is still sending (QA M3).</li><li>A cover sheet never promises an RFS that isn&#x27;t attached (comments_without_rfs / subject_without_rfs).</li><li>Each side of hip, knee and shoulder has its own ICD-10 code (migration 0012); restarts keep the practice&#x27;s diagnosis edits.</li><li>Visits can&#x27;t be dated in the future (QA M2).</li><li>S19 Backups shows what ops/backup.sh last reported; S20 log paged and filtered on the server, page loads not logged (QA M5).</li><li>Smaller: sent files listed on S7, dashboard action for queued packets, fax-log date = sent date, clickable rows, Same as last visit at the top, pain level chosen on press, capitals for diagnosis wording, en-US, main landmark, faster approval, S20 Add user.</li></ul></dd>
+  </dl>
+</article>
+
 <section class="pend">
   <h3>Parked: don't work on these now</h3>
   <ul><li><b>Responsive tablet/mobile layouts</b>: The tool runs in a browser on the office Mac; mobile apps are out of scope. Keep desktop layouts clean at 1280px+ and don&#x27;t break at 1024px. Nothing more for now.</li><li><b>Grok integration</b>: Milestone 3. Until then S10 shows the &#x27;not connected&#x27; state (F9).</li><li><b>SRFax sending</b>: Milestone 3. Needs the SRFax API details and a test fax destination (not 404-738-1714).</li><li><b>New features from open-ended feedback</b>: Log any new request on feedback.html and raise it with Poonam before building; the budget is fixed.</li><li><b>Cover-sheet wording when no RFS is sent</b>: The Atlanta &#x27;Request for Services&#x27; cover sheet has pre-printed text saying an RFS is attached. Don&#x27;t change or cover it; Poonam/Shikha will ask the practice.</li></ul>
@@ -677,6 +687,25 @@ try{navigator.clipboard.writeText(t).then(function(){done(true)},function(){done
         "Fax log demo data: the test fax goes to a separate test number, not 404-738-1714 (that is the practice's own sending number)."
       ],
       "prompt": "Apply screen spec rev 7 to the listed screens without changing flows: S19 add test_fax_number (no patient data; logged as a test), retention_months_packets=120 and retention_months_logs=72, practice email, read-only offices/facilities lists, Save. S1 remove pre-filled credentials and add the wrong-details, locked and idle-signed-out states (UI only until real auth lands). Use PatientChip on S9, S11, S12, S13. Switch S4/S6/S8/S9 validation to inline on blur using the shared validation module. Fix the S2 tile grid at 1280/1440 and the S18 rule sentence layout. Make demo fixtures consistent between S2 and S7. Jane/John data only. Change the demo fax-log test entry to a separate test number (not 404-738-1714).",
+      "status": "Done"
+    },
+    {
+      "id": "F15",
+      "priority": "P1",
+      "when": "7 Oct",
+      "title": "7 Oct walkthrough: sent once, corrections, cover wording, ICD-10 sides",
+      "screens": "S2 · S7 · S8 · S9 · S11–S16 · S19 · S20 · S21",
+      "problem": "A human walkthrough of the whole tool found the same packet could be faxed twice, a cover sheet promised an RFS that wasn't attached, the wrong side's ICD-10 code on three diagnoses, records editable after sending, and smaller gaps.",
+      "why": "Golden rule 6 (nothing sent is edited; corrections are new packets); what the VA receives must be true.",
+      "done_when": [
+        "One packet per authorization: no second build or approval after a packet is approved; the authorization and visits are locked until a correction is open (server code locked).",
+        "Correct & re-send opens a correction packet linked to the sent one, starting from its choices; it waits while the original is still sending (QA M3).",
+        "A cover sheet never promises an RFS that isn't attached (comments_without_rfs / subject_without_rfs).",
+        "Each side of hip, knee and shoulder has its own ICD-10 code (migration 0012); restarts keep the practice's diagnosis edits.",
+        "Visits can't be dated in the future (QA M2).",
+        "S19 Backups shows what ops/backup.sh last reported; S20 log paged and filtered on the server, page loads not logged (QA M5).",
+        "Smaller: sent files listed on S7, dashboard action for queued packets, fax-log date = sent date, clickable rows, Same as last visit at the top, pain level chosen on press, capitals for diagnosis wording, en-US, main landmark, faster approval, S20 Add user."
+      ],
       "status": "Done"
     }
   ],

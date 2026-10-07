@@ -802,6 +802,82 @@ docker compose exec backend python scripts/seed_test_data.py   # inside Docker</
         <span class="expect pass">✓ Template and answers suggested · evidence highlighted · visit 1 starts from the accepted answers · logged</span>
       </div>
     </div>
+
+    <div class="scenario">
+      <div class="scenario-header">
+        <span class="scenario-id">W-01</span>
+        <span class="scenario-title">A packet is sent once; Correct &amp; re-send opens a linked correction</span>
+        <span class="badge positive">Positive</span>
+        <span class="scenario-tag">Any seed</span>
+      </div>
+      <div class="scenario-body">
+        <p>7 Oct. Use a made-up patient with one final visit.</p>
+        <ol class="steps">
+          <li>Build and preview, Review &amp; send, confirm.</li>
+          <li>Open Build packet again: it says the packet was approved and isn&#x27;t built again — no Build and preview.</li>
+          <li>On the authorization: Add visit, Build packet and Edit authorization are off; the sent files are listed.</li>
+          <li>Once the fax is reported sent or failed: Correct and re-send › choose what needs fixing › Open the correction.</li>
+          <li>The authorization shows “Correction in progress”; Edit authorization works; Build the correction › preview › confirm.</li>
+          <li>Fax log: a “Correction” row; the first packet&#x27;s rows are unchanged.</li>
+        </ol>
+        <span class="expect pass">✓ No second send by mistake · correction linked · first packet unchanged</span>
+      </div>
+    </div>
+
+    <div class="scenario">
+      <div class="scenario-header">
+        <span class="scenario-id">W-02</span>
+        <span class="scenario-title">A cover sheet never promises an RFS that isn&#x27;t attached</span>
+        <span class="badge positive">Positive</span>
+        <span class="scenario-tag">Any seed</span>
+      </div>
+      <div class="scenario-body">
+        <p>7 Oct. Any Atlanta authorization with a final visit.</p>
+        <ol class="steps">
+          <li>Build packet with Include RFS off: the cover sheet&#x27;s help says its wording mentions only the records.</li>
+          <li>Preview the cover sheet: subject ACUPUNCTURE RECORDS, “Please see the attached Acupuncture Records for: …”.</li>
+          <li>Tick Include RFS and preview again: REQUEST FOR SERVICES and the practice&#x27;s RFS wording.</li>
+        </ol>
+        <span class="expect pass">✓ Cover wording matches what is attached</span>
+      </div>
+    </div>
+
+    <div class="scenario">
+      <div class="scenario-header">
+        <span class="scenario-id">W-03</span>
+        <span class="scenario-title">Diagnoses: export a template and create a new one from the file</span>
+        <span class="badge positive">Positive</span>
+        <span class="scenario-tag">Any seed</span>
+      </div>
+      <div class="scenario-body">
+        <p>7 Oct.</p>
+        <ol class="steps">
+          <li>Diagnoses › Export JSON on Pain in Knee – Right: a .template.json file downloads.</li>
+          <li>Change displayName (and the ICD-10 details) in the file, then Import JSON and choose it.</li>
+          <li>Create new template opens filled from the file; Create template.</li>
+          <li>Import a file that isn&#x27;t a template: a plain message, nothing created.</li>
+        </ol>
+        <span class="expect pass">✓ Template copied through a file; bad files refused</span>
+      </div>
+    </div>
+
+    <div class="scenario">
+      <div class="scenario-header">
+        <span class="scenario-id">W-04</span>
+        <span class="scenario-title">Add a user; backups show their real status</span>
+        <span class="badge positive">Positive</span>
+        <span class="scenario-tag">Any seed</span>
+      </div>
+      <div class="scenario-body">
+        <p>7 Oct. Administrator.</p>
+        <ol class="steps">
+          <li>Users &amp; activity › + Add user: name, email, roles › Add user and email the link.</li>
+          <li>The row shows the roles and On; Turn off › Off. Your own row has no Turn off.</li>
+          <li>Practice &amp; sending › Backups: “No backup recorded yet” until ops/backup.sh has run; after a run, its time and OK (or the failure).</li>
+        </ol>
+        <span class="expect pass">✓ Users added and turned off · backup status real</span>
+      </div>
+    </div>
   </div>
 </section>
 
@@ -828,6 +904,9 @@ docker compose exec backend python scripts/seed_test_data.py   # inside Docker</
       <tr><td>N-14</td><td>Edit a patient into another patient's last name, DOB and last four</td><td class="warn">Duplicate warning — saved only if confirmed as a different person</td></tr>
       <tr><td>N-15</td><td>Confirm and send while Dr. DeYoe's signature isn't uploaded (Practice &amp; sending)</td><td class="block">Blocked — “Dr. DeYoe's signature isn't set up yet”; every screen says so</td></tr>
       <tr><td>N-16</td><td>Template builder: save a template with an option, row or column left without a label</td><td class="block">Blocked — says where, e.g. “Section 6 (PLAN), field 1: … at least 1 character”</td></tr>
+      <tr><td>N-21</td><td>A visit dated after today (7 Oct)</td><td class="block">“A visit can't be recorded before it happens — the date is in the future.”</td></tr>
+      <tr><td>N-20</td><td>Build packet, Edit authorization or Add visit after the packet was approved (7 Oct)</td><td class="block">“This authorization's packet was approved … — it isn't built or changed again”, with Retry and Correct &amp; re-send</td></tr>
+      <tr><td>N-19</td><td>Correct &amp; re-send while the sent packet is still on its way (7 Oct)</td><td class="block">“The original packet is still on its way … Wait until it is reported sent or failed”; Open the correction is off</td></tr>
       <tr><td>N-18</td><td>AI assist with the server on AI_MODE=grok and no xAI key saved (S19), or Grok not answering</td><td class="block">“AI assist isn't available right now — choose the template yourself”, with a button to the list; nothing is lost</td></tr>
       <tr><td>N-17</td><td>Template builder: create a template named like an existing diagnosis, or with an ICD-10 code like 54.5</td><td class="block">Blocked — “A diagnosis called … already exists.” / “Enter the ICD-10 code like M54.50.”</td></tr>
     </tbody>
