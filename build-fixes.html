@@ -364,7 +364,17 @@ Do not start M1, M5–M7 production screens or any backend module (M0, M2, M3, M
     <dt>Screens</dt><dd>S2 · S7 · S8 · S9 · S11–S16 · S19 · S20 · S21</dd>
     <dt>Problem</dt><dd>A human walkthrough of the whole tool (7 Oct) found the same packet could be faxed twice, a cover sheet promised an RFS that wasn't attached, the wrong side's ICD-10 code on three diagnoses, records editable after sending, and smaller gaps.</dd>
     <dt>Why</dt><dd>Golden rule 6 (nothing sent is edited; corrections are new packets); what the VA receives must be true.</dd>
-    <dt>Done when</dt><dd><ul><li>One packet per authorization: no second build or approval after a packet is approved; the authorization and visits are locked until a correction is open (server code locked).</li><li>Correct &amp; re-send opens a correction packet linked to the sent one, starting from its choices; it waits while the original is still sending (QA M3).</li><li>A cover sheet never promises an RFS that isn&#x27;t attached (comments_without_rfs / subject_without_rfs).</li><li>Each side of hip, knee and shoulder has its own ICD-10 code (migration 0012); restarts keep the practice&#x27;s diagnosis edits.</li><li>Visits can&#x27;t be dated in the future (QA M2).</li><li>S19 Backups shows what ops/backup.sh last reported; S20 log paged and filtered on the server, page loads not logged (QA M5).</li><li>Smaller: sent files listed on S7, dashboard action for queued packets, fax-log date = sent date, clickable rows, Same as last visit at the top, pain level chosen on press, capitals for diagnosis wording, en-US, main landmark, faster approval, S20 Add user.</li></ul></dd>
+    <dt>Done when</dt><dd><ul><li>One packet per authorization: no second build or approval after a packet is approved; the authorization and visits are locked until a correction is open (server code locked).</li><li>Correct &amp; re-send opens a correction packet linked to the sent one, starting from its choices; it waits while the original is still sending (QA M3).</li><li>A cover sheet never promises an RFS that isn&#x27;t attached (comments_without_rfs / subject_without_rfs).</li><li>Each side of hip, knee and shoulder has its own ICD-10 code (migration 0012); restarts keep the practice&#x27;s diagnosis edits. Superseded 8 Oct: the practice&#x27;s ICD-10 list was confirmed — one code for both sides (M25551, M25562, M25512), written without the dot; migrations 0016 and 0017.</li><li>Visits can&#x27;t be dated in the future (QA M2).</li><li>S19 Backups shows what ops/backup.sh last reported; S20 log paged and filtered on the server, page loads not logged (QA M5).</li><li>Smaller: sent files listed on S7, dashboard action for queued packets, fax-log date = sent date, clickable rows, Same as last visit at the top, pain level chosen on press, capitals for diagnosis wording, en-US, main landmark, faster approval, S20 Add user.</li></ul></dd>
+  </dl>
+</article>
+
+<article class="fix P1" id="F16">
+  <h3><span class="fid">F16</span>8 Oct client feedback: RFS without the side, time zone, progress note layout<span class="pill P1">P1</span><span class="pill">8 Oct</span><span class="pill st done">Status: Done</span></h3>
+  <dl>
+    <dt>Screens</dt><dd>S4 · S6 · S9 · S11 · S12 · S19 · S20 · PDFs</dd>
+    <dt>Problem</dt><dd>The practice's review of the test server: the RFS showed the side and an old date, box 3 had no street address for Blairsville, times were shown in UTC, the wrong template could be picked by search, and the progress note layout needed changes.</dd>
+    <dt>Why</dt><dd>What the VA receives must match the authorization exactly; Lorraine works in US Eastern time.</dd>
+    <dt>Done when</dt><dd><ul><li>RFS: box 14 without the side and editable per authorization; box 18 text without the side; box 22 always today; box 3 from the facility, whose address is editable on S19 (migration 0013).</li><li>One time zone: the practice&#x27;s (US Eastern) for every &quot;today&quot; on the server and every time on screen; API times marked UTC (QA H1).</li><li>Progress notes laid out as the practice asked (header, patient box, logo, check marks, Comments beside Physician&#x27;s Prognosis, signature and date, footer); Type of pain without Cramps, Swelling, Other (migration 0014); new last-visit note.</li><li>Cover sheet total pages and date editable on Preview (migration 0015).</li><li>Diagnosis search by whole words; Blairsville cover closing order; Save visit errors beside the button; Initial visit option hidden; physician&#x27;s note help text; DOB at least 17 years ago; at most 24 approved visits.</li><li>ICD-10 codes exactly as the practice&#x27;s list — one code for both sides, without the dot (migrations 0016, 0017).</li></ul></dd>
   </dl>
 </article>
 
@@ -701,10 +711,28 @@ try{navigator.clipboard.writeText(t).then(function(){done(true)},function(){done
         "One packet per authorization: no second build or approval after a packet is approved; the authorization and visits are locked until a correction is open (server code locked).",
         "Correct & re-send opens a correction packet linked to the sent one, starting from its choices; it waits while the original is still sending (QA M3).",
         "A cover sheet never promises an RFS that isn't attached (comments_without_rfs / subject_without_rfs).",
-        "Each side of hip, knee and shoulder has its own ICD-10 code (migration 0012); restarts keep the practice's diagnosis edits.",
+        "Each side of hip, knee and shoulder has its own ICD-10 code (migration 0012); restarts keep the practice's diagnosis edits. Superseded 8 Oct: the practice's ICD-10 list was confirmed — one code for both sides (M25551, M25562, M25512), written without the dot; migrations 0016 and 0017.",
         "Visits can't be dated in the future (QA M2).",
         "S19 Backups shows what ops/backup.sh last reported; S20 log paged and filtered on the server, page loads not logged (QA M5).",
         "Smaller: sent files listed on S7, dashboard action for queued packets, fax-log date = sent date, clickable rows, Same as last visit at the top, pain level chosen on press, capitals for diagnosis wording, en-US, main landmark, faster approval, S20 Add user."
+      ],
+      "status": "Done"
+    },
+    {
+      "id": "F16",
+      "priority": "P1",
+      "when": "8 Oct",
+      "title": "8 Oct client feedback: RFS without the side, time zone, progress note layout",
+      "screens": "S4 · S6 · S9 · S11 · S12 · S19 · S20 · PDFs",
+      "problem": "The practice's review of the test server: the RFS showed the side and an old date, box 3 had no street address for Blairsville, times were shown in UTC, the wrong template could be picked by search, and the progress note layout needed changes.",
+      "why": "What the VA receives must match the authorization exactly; Lorraine works in US Eastern time.",
+      "done_when": [
+        "RFS: box 14 without the side and editable per authorization; box 18 text without the side; box 22 always today; box 3 from the facility, whose address is editable on S19 (migration 0013).",
+        "One time zone: the practice's (US Eastern) for every \"today\" on the server and every time on screen; API times marked UTC (QA H1).",
+        "Progress notes laid out as the practice asked (header, patient box, logo, check marks, Comments beside Physician's Prognosis, signature and date, footer); Type of pain without Cramps, Swelling, Other (migration 0014); new last-visit note.",
+        "Cover sheet total pages and date editable on Preview (migration 0015).",
+        "Diagnosis search by whole words; Blairsville cover closing order; Save visit errors beside the button; Initial visit option hidden; physician's note help text; DOB at least 17 years ago; at most 24 approved visits.",
+        "ICD-10 codes exactly as the practice's list — one code for both sides, without the dot (migrations 0016, 0017)."
       ],
       "status": "Done"
     }

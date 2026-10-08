@@ -247,6 +247,7 @@ Per the source doc: *"Put these in the repo's `CLAUDE.md` (section 15) so every 
 | SECRET_KEY | a long random string | signs sessions and encrypts the SRFax password and the xAI key saved in the database — if it changes, both must be entered again on Practice & sending |
 | SEED_ADMIN_EMAIL · _NAME · _PASSWORD | Lorraine's sign-in | the first administrator, created on the first start only |
 | BACKUP_STATUS_FILE | data/backup-status.json | where ops/backup.sh records its last run; Practice & sending shows it under Backups (7 Oct) |
+| PRACTICE_TIMEZONE | America/New_York | the practice's "today" and the times shown (8 Oct) |
 | FAX_MODE | fake · srfax | fake runs every step without dialling (“Demo — not faxed”); srfax sends with the account saved on Practice & sending |
 | FAX_ALLOWED_NUMBERS | ["706-664-0421"] | outside production only these numbers are dialled (e.g. the client's test fax), so a demo packet never reaches a VA |
 | FAX_POLL_SECONDS · SRFAX_RETRIES · FAX_FAKE_FAIL_NUMBERS | 30 · 3 · [] | how often SRFax is asked for status · SRFax's redials · numbers that “fail” in demo mode |
@@ -294,6 +295,7 @@ Per the source doc: *"Put these in the repo's `CLAUDE.md` (section 15) so every 
 1. Back up first (`ops/backup.sh`).
 2. `git pull` on the release branch, then `ops/start.sh` — it rebuilds, and the database is updated on start.
 3. Templates edited on Diagnoses are kept (config only seeds them once); PDFs already sent never change.
+4. *(8 Oct)* When `backend/requirements.txt` changes (e.g. `tzdata`), the backend image must be rebuilt — `ops/start.sh` does it; a plain restart doesn't.
 
 ### Where things are configured
 
@@ -323,9 +325,19 @@ Developers: `make setup` once, then `make dev` (API :8000, web :5173), `make tes
 
 - **One packet per authorization.** Once a packet is approved, Build packet doesn't build it again, and the authorization and its visits are locked (server code `locked`). A busy line is a **Retry** in the fax log; anything to fix goes through **Correct & re-send**, which opens a correction packet (`kind = correction`, `supersedes_packet_id`) — the record unlocks while it is open, and it is built, previewed and confirmed like any packet.
 - **Cover sheets match the RFS.** A packet without the RFS uses each sheet's `comments_without_rfs` / `subject_without_rfs` (`backend/config/clinics/deyoe/cover_sheets.json`) — the sheet never promises an RFS that isn't attached. Wording awaiting the practice's confirmation.
-- **ICD-10 per side.** Hip – Left M25.552, Knee – Right M25.561, Shoulder – Right M25.511 (migration 0012); a restart no longer copies the diagnosis list back over the practice's edits.
+- **ICD-10 per side.** Hip – Left M25.552, Knee – Right M25.561, Shoulder – Right M25.511 (migration 0012); a restart no longer copies the diagnosis list back over the practice's edits. *(Superseded 8 Oct: the practice's ICD-10 list was confirmed — one code for both sides (M25551, M25562, M25512), written without the dot; migrations 0016 and 0017.)*
 - **No future visits.** A visit can't be dated after today (screen and server).
 - **Backups show their real status** (`ops/backup.sh` → `backend/data/backup-status.json` → Practice & sending › Backups).
 - **Activity log** is read a page at a time and filtered by type and day on the server; loading the workspace isn't logged.
 - **Diagnoses › Export JSON / Import JSON** — a template as a file (`kind: lorraine-diagnosis-template`), and a new template created from one.
 - **Add user** on Users & activity; sending is faster (one browser per approval); diagnosis wording prints in capitals.
+
+## Appendix · 8 Oct client feedback (as built)
+
+- **RFS without the side.** Box 14 starts from the diagnosis without the side ("Low Back Pain") and is edited per authorization to match the VA's wording; box 18's starting text has no side; box 13 stays the catalogue code. Box 22 is always today when the RFS is previewed or sent; box 1–4 follow the records. Box 3 is the facility's name and address — each VA facility's address is edited on Practice & sending (a restart never puts the old one back). Migration 0013 updated unsent drafts and Atlanta's address.
+- **One time zone.** `PRACTICE_TIMEZONE` (America/New_York): every "today" on the server (visit dates, RFS and cover dates, date-of-birth and period checks) is the practice's (`app/core/clock.py`, needs `tzdata`); API times are marked UTC and every screen shows US Eastern (`frontend/src/lib/practiceTime.ts`).
+- **Progress notes.** Name in two lines; upright title; Patient · Auth # · Date on one line and Last four under it; the practice's logo (`backend/config/clinics/deyoe/logo.png`) under that beside the banner and "Diagnosis … Pain severity"; dark check marks; Comments beside Physician's Prognosis (field layout `aside`); signature and date raised and larger; footer lines one size. Type of pain loses Cramps, Swelling and Other on every template (migration 0014, `oct8_notes`); the last visit's note has the practice's new wording.
+- **Cover sheet** total pages and date are editable on Preview (`packet.cover_overrides`, migration 0015); empty = automatic.
+- **Smaller:** diagnosis search matches whole words; Blairsville cover closing order; Save visit says what's missing; "Initial visit only" removed; date of birth at least 17 years ago; at most 24 approved visits.
+- **ICD-10 as the practice's list.** All 20 codes exactly as on its list, without the dot: M5450, M5451, R519, M542, M25551, M25562, M25512, G8929, R430, M47896, M549, M797 — one code for both sides of hip, knee and shoulder (migration 0016 undoes 0012; 0017 removes the dot from every saved code). Diagnoses › Edit template accepts a code with or without the dot and saves it without.
+- **Deploying this:** `requirements.txt` gained `tzdata`, so rebuild the backend (`ops/start.sh` / `docker compose up --build`); migrations 0013–0017 run on start. After deploying, hard-refresh the browser (Ctrl+F5) so the new screens load.

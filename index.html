@@ -1184,6 +1184,7 @@ Build frontend/src/features/visits/VisitEntryPage.tsx that reproduces the design
       <tr><td>SECRET_KEY</td><td>a long random string</td><td>signs sessions and encrypts the SRFax password and the xAI key saved in the database — if it changes, both must be entered again on Practice &amp; sending</td></tr>
       <tr><td>SEED_ADMIN_EMAIL · _NAME · _PASSWORD</td><td>Lorraine&#x27;s sign-in</td><td>the first administrator, created on the first start only</td></tr>
       <tr><td>BACKUP_STATUS_FILE</td><td>data/backup-status.json</td><td>where ops/backup.sh records its last run; Practice &amp; sending shows it (7 Oct)</td></tr>
+      <tr><td>PRACTICE_TIMEZONE</td><td>America/New_York</td><td>the practice's "today" and the times shown (8 Oct)</td></tr>
       <tr><td>FAX_MODE</td><td>fake · srfax</td><td>fake runs every step without dialling (“Demo — not faxed”); srfax sends with the account saved on Practice &amp; sending</td></tr>
       <tr><td>FAX_ALLOWED_NUMBERS</td><td>[&quot;706-664-0421&quot;]</td><td>outside production only these numbers are dialled (e.g. the client&#x27;s test fax), so a demo packet never reaches a VA</td></tr>
       <tr><td>FAX_POLL_SECONDS · SRFAX_RETRIES · FAX_FAKE_FAIL_NUMBERS</td><td>30 · 3 · []</td><td>how often SRFax is asked for status · SRFax&#x27;s redials · numbers that “fail” in demo mode</td></tr>
@@ -1234,7 +1235,10 @@ Build frontend/src/features/visits/VisitEntryPage.tsx that reproduces the design
     <li>Back up first (<code>ops/backup.sh</code>).</li>
     <li><code>git pull</code> on the release branch, then <code>ops/start.sh</code> — it rebuilds, and the database is updated on start.</li>
     <li>Templates edited on Diagnoses are kept (config only seeds them once); PDFs already sent never change.</li>
+    <li><i>(8 Oct)</i> When <code>backend/requirements.txt</code> changes (e.g. <code>tzdata</code>), the backend image must be rebuilt — <code>ops/start.sh</code> does it; a plain restart doesn't.</li>
   </ol>
+  <h4>8 Oct client feedback — as built</h4>
+  <ul><li><b>RFS without the side</b>: box 14 from the diagnosis without the side, editable per authorization; box 18 text without the side; box 22 always today; box 3 the facility's name and address (address editable on Practice &amp; sending). Migration 0013.</li><li><b>One time zone</b>: PRACTICE_TIMEZONE (America/New_York) for every "today"; every screen shows US Eastern.</li><li><b>Progress notes</b>: new header and patient box, logo under Last four, dark check marks, Comments beside Physician's Prognosis, signature and date raised; Type of pain without Cramps, Swelling, Other (migration 0014); new last-visit note.</li><li><b>Cover sheet</b>: total pages and date editable on Preview (migration 0015).</li><li><b>ICD-10 as the practice's list</b>: all 20 codes without the dot (M5450, M25551 …), one code for both sides of hip, knee and shoulder (migrations 0016–0017).</li><li><b>Deploying</b>: rebuild the backend (new <code>tzdata</code> package); migrations 0013–0017 run on start; hard-refresh the browser.</li></ul>
   <h4>Where things are configured</h4>
   <div class="tblwrap"><table>
     <thead><tr><th>Where</th><th>What</th></tr></thead>

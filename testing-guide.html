@@ -878,6 +878,42 @@ docker compose exec backend python scripts/seed_test_data.py   # inside Docker</
         <span class="expect pass">✓ Users added and turned off · backup status real</span>
       </div>
     </div>
+
+    <div class="scenario">
+      <div class="scenario-header">
+        <span class="scenario-id">W-05</span>
+        <span class="scenario-title">RFS: no side, box 14 editable, box 22 today</span>
+        <span class="badge positive">Positive</span>
+        <span class="scenario-tag">Any seed</span>
+      </div>
+      <div class="scenario-body">
+        <p>8 Oct. John Doe · Pain in Hip – Left.</p>
+        <ol class="steps">
+          <li>Build packet, Include RFS: box 14 reads “Pain in Hip”, box 18 “… IN HIS HIP …” — no LEFT/RIGHT.</li>
+          <li>Change box 14 to the authorization&#x27;s wording; Build and preview: the RFS prints it.</li>
+          <li>Box 22 is today, the same date as the cover sheet; box 3 is the facility&#x27;s name and address.</li>
+        </ol>
+        <span class="expect pass">✓ No side anywhere on the RFS · dates agree</span>
+      </div>
+    </div>
+
+    <div class="scenario">
+      <div class="scenario-header">
+        <span class="scenario-id">W-06</span>
+        <span class="scenario-title">Progress note layout and cover numbers</span>
+        <span class="badge positive">Positive</span>
+        <span class="scenario-tag">Any seed</span>
+      </div>
+      <div class="scenario-body">
+        <p>8 Oct. Any authorization with a final visit.</p>
+        <ol class="steps">
+          <li>Preview the clinical notes: name in two lines, Patient · Auth # · Date on one line, Last four under it, the logo under that, dark check marks, Comments beside Physician&#x27;s Prognosis.</li>
+          <li>Type of pain has no Cramps, Swelling or Other; the last page&#x27;s physician&#x27;s note is the new wording.</li>
+          <li>Cover sheet tab: type Total pages 21 and a date, Save — the cover prints them and the checks show “21 (typed — the fax has …)”; Back to automatic.</li>
+        </ol>
+        <span class="expect pass">✓ Layout as the practice asked · typed cover numbers print</span>
+      </div>
+    </div>
   </div>
 </section>
 
@@ -904,6 +940,9 @@ docker compose exec backend python scripts/seed_test_data.py   # inside Docker</
       <tr><td>N-14</td><td>Edit a patient into another patient's last name, DOB and last four</td><td class="warn">Duplicate warning — saved only if confirmed as a different person</td></tr>
       <tr><td>N-15</td><td>Confirm and send while Dr. DeYoe's signature isn't uploaded (Practice &amp; sending)</td><td class="block">Blocked — “Dr. DeYoe's signature isn't set up yet”; every screen says so</td></tr>
       <tr><td>N-16</td><td>Template builder: save a template with an option, row or column left without a label</td><td class="block">Blocked — says where, e.g. “Section 6 (PLAN), field 1: … at least 1 character”</td></tr>
+      <tr><td>N-24</td><td>Diagnoses › Edit template: ICD-10 code typed as “M54.50” (8 Oct)</td><td class="block">Saved as M5450 — the practice's list writes codes without the dot; “54.5” is refused (“Enter the ICD-10 code like M5450.”)</td></tr>
+      <tr><td>N-23</td><td>Approved visits 99, or a date of birth less than 17 years ago (8 Oct)</td><td class="block">“Check the number — the VA approves at most 24 visits at a time …” / “Check the date of birth — a veteran is at least 17 years old.”</td></tr>
+      <tr><td>N-22</td><td>Diagnosis search “knee” (8 Oct)</td><td class="block">Only the knee templates are listed — nothing else is highlighted for Enter</td></tr>
       <tr><td>N-21</td><td>A visit dated after today (7 Oct)</td><td class="block">“A visit can't be recorded before it happens — the date is in the future.”</td></tr>
       <tr><td>N-20</td><td>Build packet, Edit authorization or Add visit after the packet was approved (7 Oct)</td><td class="block">“This authorization's packet was approved … — it isn't built or changed again”, with Retry and Correct &amp; re-send</td></tr>
       <tr><td>N-19</td><td>Correct &amp; re-send while the sent packet is still on its way (7 Oct)</td><td class="block">“The original packet is still on its way … Wait until it is reported sent or failed”; Open the correction is off</td></tr>
