@@ -238,6 +238,7 @@ Per the source doc: *"Put these in the repo's `CLAUDE.md` (section 15) so every 
 3. Create the settings file: `cp backend/.env.example backend/.env` and fill it in (table below). Generate SECRET_KEY with `python3 -c "import secrets; print(secrets.token_urlsafe(48))"` and keep a copy somewhere safe off the Mac.
 4. Start: `ops/start.sh` (Windows: `ops/start.ps1`) — it runs `docker compose up -d --build`. Open http://localhost:8080.
 5. Sign in with SEED_ADMIN_EMAIL / SEED_ADMIN_PASSWORD, then change the password (Change password, top right).
+   *(9 Oct: add the real people with `docker compose exec backend python scripts/manage_users.py add --email <their email> --name "<name>"` — each gets a set-password email at their own address — then turn the seed account off with `… manage_users.py off --email <SEED_ADMIN_EMAIL>`. `… manage_users.py list` shows every account.)*
 
 ### Settings — `backend/.env`
 
@@ -254,8 +255,9 @@ Per the source doc: *"Put these in the repo's `CLAUDE.md` (section 15) so every 
 | AI_MODE | fake · grok | fake reads Dr. DeYoe's note inside the app and sends nothing; grok uses xAI with the key saved on Practice & sending |
 | GROK_MODEL · GROK_TIMEOUT_SECONDS · GROK_API_KEY | grok-4 · 30 · (empty) | the model if none is saved on the screen · the wait · a fallback key (normally the key is saved on the screen) |
 | SMTP_HOST · _PORT · _USERNAME · _PASSWORD · MAIL_FROM · APP_BASE_URL | smtp.gmail.com · 587 · … | password-reset emails only (Gmail: an app password); APP_BASE_URL is the link in the email |
+| MAIL_REDIRECT_TO | (empty) | development only: every email to this one inbox; empty = each user's own address (9 Oct) |
 | LOCKOUT_ATTEMPTS · LOCKOUT_MINUTES · IDLE_TIMEOUT_MINUTES | 3 · 15 · 15 | lock after wrong passwords · for how long · sign out when idle (0 = off) |
-| COOKIE_SECURE · CORS_ORIGINS · QUICK_SIGN_IN | false · [...] · false | true once served over HTTPS · the web app's address · development only |
+| COOKIE_SECURE · CORS_ORIGINS | false · [...] | true once served over HTTPS · the web app's address *(QUICK_SIGN_IN removed 9 Oct — no password-free sign-in)* |
 | DATABASE_URL · CONFIG_ROOT · FIXTURES_DIR | as in docker-compose.yml | leave as they are |
 
 ### First-time setup in the app (administrator)
@@ -296,6 +298,7 @@ Per the source doc: *"Put these in the repo's `CLAUDE.md` (section 15) so every 
 2. `git pull` on the release branch, then `ops/start.sh` — it rebuilds, and the database is updated on start.
 3. Templates edited on Diagnoses are kept (config only seeds them once); PDFs already sent never change.
 4. *(8 Oct)* When `backend/requirements.txt` changes (e.g. `tzdata`), the backend image must be rebuilt — `ops/start.sh` does it; a plain restart doesn't.
+5. *(9 Oct: the frontend's web server (frontend/nginx.conf) compresses the app (gzip) and lets browsers keep its files — they are renamed on every build, so a deploy is still picked up at once (the page itself is never cached). The first visit downloads about 260 KB; later visits almost nothing. A change to nginx.conf or vite.config.ts needs the frontend image rebuilt (`docker compose up -d --build`).)*
 
 ### Where things are configured
 
@@ -338,6 +341,36 @@ Developers: `make setup` once, then `make dev` (API :8000, web :5173), `make tes
 - **One time zone.** `PRACTICE_TIMEZONE` (America/New_York): every "today" on the server (visit dates, RFS and cover dates, date-of-birth and period checks) is the practice's (`app/core/clock.py`, needs `tzdata`); API times are marked UTC and every screen shows US Eastern (`frontend/src/lib/practiceTime.ts`).
 - **Progress notes.** Name in two lines; upright title; Patient · Auth # · Date on one line and Last four under it; the practice's logo (`backend/config/clinics/deyoe/logo.png`) under that beside the banner and "Diagnosis … Pain severity"; dark check marks; Comments beside Physician's Prognosis (field layout `aside`); signature and date raised and larger; footer lines one size. Type of pain loses Cramps, Swelling and Other on every template (migration 0014, `oct8_notes`); the last visit's note has the practice's new wording.
 - **Cover sheet** total pages and date are editable on Preview (`packet.cover_overrides`, migration 0015); empty = automatic.
-- **Smaller:** diagnosis search matches whole words; Blairsville cover closing order; Save visit says what's missing; "Initial visit only" removed; date of birth at least 17 years ago; at most 24 approved visits.
+- **Smaller:** diagnosis search matches whole words; Blairsville cover closing order; Save visit says what's missing; "Initial visit only" removed; date of birth at least 17 years ago; at most 24 approved visits *(12 since 12 Oct)*.
 - **ICD-10 as the practice's list.** All 20 codes exactly as on its list, without the dot: M5450, M5451, R519, M542, M25551, M25562, M25512, G8929, R430, M47896, M549, M797 — one code for both sides of hip, knee and shoulder (migration 0016 undoes 0012; 0017 removes the dot from every saved code). Diagnoses › Edit template accepts a code with or without the dot and saves it without.
 - **Deploying this:** `requirements.txt` gained `tzdata`, so rebuild the backend (`ops/start.sh` / `docker compose up --build`); migrations 0013–0017 run on start. After deploying, hard-refresh the browser (Ctrl+F5) so the new screens load.
+
+## Appendix · 9 Oct (as built)
+
+- **No password-free sign-in.** "Open the demo as Lorraine", `POST /api/auth/quick-login` and `QUICK_SIGN_IN` are removed.
+- **Reset emails to each user's own address.** `MAIL_REDIRECT_TO` defaults to empty (set it only on a development machine).
+- **Accounts on a server:** `docker compose exec backend python scripts/manage_users.py add --email … --name "…"` (administrator, set-password email to their own address) · `… off --email …` (can't sign in; nothing deleted) · `… list`.
+- **Faster first load:** gzip and long-lived caching in `frontend/nginx.conf`, the libraries in their own files (`vite.config.ts`), and "Signing in… / Loading the clinic's records…" instead of a blank screen after sign-in.
+
+## Appendix · 12 Oct client feedback (as built)
+
+- **Progress note.** DEYOE WELLNESS with ACUPUNCTURE centred under it, the title beside it; the logo to the right of Pain severity; "Auth #" without the colon; Dr. DeYoe's signature on a signature line; more room at the foot of the page (`backend/config/shared/forms/progress_note_master.html`).
+- **Comments removed; physician's note on every visit.** `post_comments` is removed from every template (`oct12_notes` in `app/forms/template_upgrades.py`, migration 0018 saves each as a new version). The visit screen always shows the physician's note, starting from the first, middle ("Patient responded well to treatment. Rx: continue tx plan.") or final wording, and it prints on that visit's page.
+- **RFS** box 3: three spaces between the facility and its address; boxes 13 and 22 one size smaller; box 18's practice lines each one line lower. **Cover sheets** one size larger (21px; 20.5px where the wording is long).
+- **Practice test fax.** A destination "Practice test fax" (706-664-0421 — editable on Practice & sending) with its own cover sheet "TEST FAX — NOT FOR THE VA"; added to an existing clinic at start-up (`_add_missing_cover_sheets` in `app/seed.py`).
+- **At most 12 approved visits** (screen and server). **VA patient ID** is no longer on the patient form (a saved value stays on the record).
+- **Deploying this:** push, then on the server `git pull && docker compose up -d --build`; migration 0018 runs on start; hard-refresh (Ctrl+F5).
+
+## Appendix · 13 Oct client feedback (as built)
+
+- **Progress notes:** no logo (it doesn't show well on a fax — `practice_logo` removed; `backend/config/clinics/deyoe/logo.png` is no longer used); the signature line and date one line lower.
+- **RFS box 4** (VA authorization number) one size larger (15px).
+- **Middle name or initial (optional).** RFS box 1 is the full legal name. `patient.middle_initial` (one letter) is now `middle_name` (up to 40, letters, spaces, `.'-`; migration 0019 keeps saved initials); the API and fixtures use `middleName`. A single letter is saved in capitals, a name as typed. Box 1 prints FIRST MIDDLE LAST; the progress notes still print first and last name.
+- **Deploying this:** `git pull && docker compose up -d --build` (migration 0019 runs on start), then Ctrl+F5.
+- **Real test fax on the test server.** A packet sent with `FAX_MODE=fake` shows Sent and "Demo – not faxed. Nothing was dialed." — nothing reaches SRFax (the practice's first test, 13 Oct). To send real test faxes:
+  1. `backend/.env`: `FAX_MODE=srfax`, `FAX_ALLOWED_NUMBERS=["706-664-0421"]`, and keep `ENVIRONMENT=development` — outside production only the allowed numbers are dialled (`app/fax/sender.py` `blocked_reason`), so a VA number fails with "Not dialled" and nothing is sent. The `SRFAX_ACCOUNT_ID` / `SRFAX_PASSWORD` / `SRFAX_SENDER_FAX` lines are never read (drop them).
+  2. `docker compose up -d --force-recreate backend` (or `--build` when deploying code too).
+  3. Practice & sending: save the SRFax access ID, password and account email; check the sending fax number; the screen shows sending restricted to 706-664-0421.
+  4. Send a **new** authorization on VA facility "Practice test fax" — a packet sent in demo mode stays sent (rule 6). Check the SRFax outbox, the fax arriving on 706-664-0421, and the fax log going to Sent.
+  The yellow demo banner ("nothing is faxed") stays until go-live.
+- **One test number everywhere:** 706-664-0421 (the practice's own fax) is the Practice test fax destination, the Send test fax number on Practice & sending (migration 0020 replaced the made-up 404-555-0142) and the server's `FAX_ALLOWED_NUMBERS`.

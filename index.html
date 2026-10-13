@@ -641,7 +641,7 @@ class TenantSession:
     <tbody>
       <tr><td>tenant · office</td><td>clinic name · office name, address, active</td><td>Clinic and its branches</td></tr>
       <tr><td>app_user · user_membership</td><td>email, password_hash, full_name, is_active · user_id, tenant_id, roles</td><td>Roles per clinic: preparer, approver, administrator</td></tr>
-      <tr><td>patient</td><td>first/middle/last name, date_of_birth, ssn_last_four, title, pronoun, va_patient_id?</td><td>PHI. No full SSN. Deactivate, never delete.</td></tr>
+      <tr><td>patient</td><td>first/middle/last name, date_of_birth, ssn_last_four, title, pronoun, va_patient_id? <i>(not on the form since 12 Oct)</i></td><td>PHI. No full SSN. Deactivate, never delete.</td></tr>
       <tr><td>authorization</td><td>patient_id, va_auth_number, diagnosis_id, va_facility_id, office_id, visits_approved, period_start, period_end, status</td><td>Diagnosis locked once visits exist</td></tr>
       <tr><td>visit</td><td>authorization_id, patient_id, visit_date, sequence_no, pain_level, is_final, form_version, answers (JSON), answer_source (JSON), note_override</td><td>Unique (authorization, date) and (authorization, sequence_no); sequence_no ≤ visits_approved</td></tr>
       <tr><td>packet</td><td>authorization_id, kind, supersedes_packet_id, rfs_template_id, snapshot (JSON), state, prepared_by, approved_by, approved_at</td><td>Frozen after approval</td></tr>
@@ -1174,7 +1174,7 @@ Build frontend/src/features/visits/VisitEntryPage.tsx that reproduces the design
     <li>Get the code: <code>git clone https://github.com/dev-ckln/lorraine-ai-automation.git lorraine-ai</code>, then <code>cd lorraine-ai</code> and check out the release branch.</li>
     <li>Create the settings file: <code>cp backend/.env.example backend/.env</code> and fill it in (table below). Generate SECRET_KEY with <code>python3 -c "import secrets; print(secrets.token_urlsafe(48))"</code> and keep a copy somewhere safe off the Mac.</li>
     <li>Start: <code>ops/start.sh</code> (Windows: <code>ops/start.ps1</code>) — it runs <code>docker compose up -d --build</code>. Open http://localhost:8080.</li>
-    <li>Sign in with SEED_ADMIN_EMAIL / SEED_ADMIN_PASSWORD, then change the password (Change password, top right).</li>
+    <li>Sign in with SEED_ADMIN_EMAIL / SEED_ADMIN_PASSWORD, then change the password (Change password, top right). <i>(9 Oct: add the real people with <code>docker compose exec backend python scripts/manage_users.py add --email … --name "…"</code> — each gets a set-password email — then turn the seed account off with <code>… off --email …</code>.)</i></li>
   </ol>
   <h4>Settings — <code>backend/.env</code></h4>
   <div class="tblwrap"><table>
@@ -1192,7 +1192,8 @@ Build frontend/src/features/visits/VisitEntryPage.tsx that reproduces the design
       <tr><td>GROK_MODEL · GROK_TIMEOUT_SECONDS · GROK_API_KEY</td><td>grok-4 · 30 · (empty)</td><td>the model if none is saved on the screen · the wait · a fallback key (normally the key is saved on the screen)</td></tr>
       <tr><td>SMTP_HOST · _PORT · _USERNAME · _PASSWORD · MAIL_FROM · APP_BASE_URL</td><td>smtp.gmail.com · 587 · …</td><td>password-reset emails only (Gmail: an app password); APP_BASE_URL is the link in the email</td></tr>
       <tr><td>LOCKOUT_ATTEMPTS · LOCKOUT_MINUTES · IDLE_TIMEOUT_MINUTES</td><td>3 · 15 · 15</td><td>lock after wrong passwords · for how long · sign out when idle (0 = off)</td></tr>
-      <tr><td>COOKIE_SECURE · CORS_ORIGINS · QUICK_SIGN_IN</td><td>false · [...] · false</td><td>true once served over HTTPS · the web app&#x27;s address · development only</td></tr>
+      <tr><td>COOKIE_SECURE · CORS_ORIGINS</td><td>false · [...]</td><td>true once served over HTTPS · the web app&#x27;s address <i>(QUICK_SIGN_IN removed 9 Oct — no password-free sign-in)</i></td></tr>
+      <tr><td>MAIL_REDIRECT_TO</td><td>(empty)</td><td>development only: every email to one inbox; empty = each user&#x27;s own address (9 Oct)</td></tr>
       <tr><td>DATABASE_URL · CONFIG_ROOT · FIXTURES_DIR</td><td>as in docker-compose.yml</td><td>leave as they are</td></tr>
     </tbody>
   </table></div>
@@ -1236,6 +1237,7 @@ Build frontend/src/features/visits/VisitEntryPage.tsx that reproduces the design
     <li><code>git pull</code> on the release branch, then <code>ops/start.sh</code> — it rebuilds, and the database is updated on start.</li>
     <li>Templates edited on Diagnoses are kept (config only seeds them once); PDFs already sent never change.</li>
     <li><i>(8 Oct)</i> When <code>backend/requirements.txt</code> changes (e.g. <code>tzdata</code>), the backend image must be rebuilt — <code>ops/start.sh</code> does it; a plain restart doesn't.</li>
+    <li><i>(9 Oct: the frontend&#x27;s web server (frontend/nginx.conf) compresses the app (gzip) and lets browsers keep its files — they are renamed on every build, so a deploy is still picked up at once (the page itself is never cached). The first visit downloads about 260 KB; later visits almost nothing. A change to nginx.conf or vite.config.ts needs the frontend image rebuilt (`docker compose up -d --build`).)</i></li>
   </ol>
   <h4>8 Oct client feedback — as built</h4>
   <ul><li><b>RFS without the side</b>: box 14 from the diagnosis without the side, editable per authorization; box 18 text without the side; box 22 always today; box 3 the facility's name and address (address editable on Practice &amp; sending). Migration 0013.</li><li><b>One time zone</b>: PRACTICE_TIMEZONE (America/New_York) for every "today"; every screen shows US Eastern.</li><li><b>Progress notes</b>: new header and patient box, logo under Last four, dark check marks, Comments beside Physician's Prognosis, signature and date raised; Type of pain without Cramps, Swelling, Other (migration 0014); new last-visit note.</li><li><b>Cover sheet</b>: total pages and date editable on Preview (migration 0015).</li><li><b>ICD-10 as the practice's list</b>: all 20 codes without the dot (M5450, M25551 …), one code for both sides of hip, knee and shoulder (migrations 0016–0017).</li><li><b>Deploying</b>: rebuild the backend (new <code>tzdata</code> package); migrations 0013–0017 run on start; hard-refresh the browser.</li></ul>
