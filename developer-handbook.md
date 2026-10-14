@@ -254,7 +254,7 @@ Per the source doc: *"Put these in the repo's `CLAUDE.md` (section 15) so every 
 | FAX_POLL_SECONDS · SRFAX_RETRIES · FAX_FAKE_FAIL_NUMBERS | 30 · 3 · [] | how often SRFax is asked for status · SRFax's redials · numbers that “fail” in demo mode |
 | AI_MODE | fake · grok | fake reads Dr. DeYoe's note inside the app and sends nothing; grok uses xAI with the key saved on Practice & sending |
 | GROK_MODEL · GROK_TIMEOUT_SECONDS · GROK_API_KEY | grok-4 · 30 · (empty) | the model if none is saved on the screen · the wait · a fallback key (normally the key is saved on the screen) |
-| SMTP_HOST · _PORT · _USERNAME · _PASSWORD · MAIL_FROM · APP_BASE_URL | smtp.gmail.com · 587 · … | password-reset emails only (Gmail: an app password); APP_BASE_URL is the link in the email |
+| SMTP_HOST · _PORT · _USERNAME · _PASSWORD · MAIL_FROM · APP_BASE_URL | smtp.gmail.com · 587 · … | password-reset emails only (Gmail: an app password); APP_BASE_URL is the link in the email *(14 Oct: the practice's own Gmail, deyoewellnessacupuncture@gmail.com, as SMTP_USERNAME and MAIL_FROM)* |
 | MAIL_REDIRECT_TO | (empty) | development only: every email to this one inbox; empty = each user's own address (9 Oct) |
 | LOCKOUT_ATTEMPTS · LOCKOUT_MINUTES · IDLE_TIMEOUT_MINUTES | 3 · 15 · 15 | lock after wrong passwords · for how long · sign out when idle (0 = off) |
 | COOKIE_SECURE · CORS_ORIGINS | false · [...] | true once served over HTTPS · the web app's address *(QUICK_SIGN_IN removed 9 Oct — no password-free sign-in)* |
@@ -374,3 +374,8 @@ Developers: `make setup` once, then `make dev` (API :8000, web :5173), `make tes
   4. Send a **new** authorization on VA facility "Practice test fax" — a packet sent in demo mode stays sent (rule 6). Check the SRFax outbox, the fax arriving on 706-664-0421, and the fax log going to Sent.
   The yellow demo banner ("nothing is faxed") stays until go-live.
 - **One test number everywhere:** 706-664-0421 (the practice's own fax) is the Practice test fax destination, the Send test fax number on Practice & sending (migration 0020 replaced the made-up 404-555-0142) and the server's `FAX_ALLOWED_NUMBERS`.
+
+## Appendix · 14 Oct (as built)
+
+- **Reset emails from the practice's Gmail.** `SMTP_USERNAME` and `MAIL_FROM` = deyoewellnessacupuncture@gmail.com, `SMTP_PASSWORD` = the practice's Google app password (server `.env` only), `MAIL_REDIRECT_TO` empty — each email goes to the account that asked (Poonam: test.ckln@gmail.com; Lorraine: deyoewellnessacupuncture@gmail.com), from the practice's address. Restart the backend after changing `.env` (`docker compose up -d --force-recreate backend`).
+- **A changed password cancels any reset link still waiting** (`_cancel_reset_links` in `app/core/passwords.py`); a reset or a new link already did.

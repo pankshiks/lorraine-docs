@@ -388,6 +388,26 @@ Do not start M1, M5–M7 production screens or any backend module (M0, M2, M3, M
   </dl>
 </article>
 
+<article class="fix P1" id="F18">
+  <h3><span class="fid">F18</span>13 Oct client feedback: no logo, signature lower, box 4 larger, middle name; test fax set-up<span class="pill P1">P1</span><span class="pill">13 Oct</span><span class="pill st done">Status: Done</span></h3>
+  <dl>
+    <dt>Screens</dt><dd>S4 · S11 · S12 · S19 · PDFs</dd>
+    <dt>Problem</dt><dd>The practice&#x27;s fourth review: the logo didn&#x27;t show well on a fax, the signature needed to come down a line, the VA authorization number on the RFS was small, and RFS box 1 needs the full legal name although the patient form only took a middle initial. The first test fax showed &quot;Demo – not faxed&quot; (the test server was in demo mode), the Send test fax number was a made-up 404-555-0142, and Build packet refused the cover sheet after an authorization was moved to Practice test fax.</dd>
+    <dt>Why</dt><dd>What the VA receives must carry the veteran&#x27;s full legal name and read clearly on a fax; tests must reach the practice&#x27;s own fax and never the VA.</dd>
+    <dt>Done when</dt><dd><ul><li>Progress notes: no logo; the signature line and date one line lower.</li><li>RFS box 4 (VA authorization number) one size larger (15px).</li><li>Patient form: &quot;Middle name or initial (optional)&quot;; RFS box 1 prints FIRST MIDDLE LAST (patient.middle_name, migration 0019; saved initials kept).</li><li>Build packet uses the cover sheet it shows when the authorization&#x27;s VA facility changed after the draft was saved.</li><li>Send test fax goes to 706-664-0421 (migration 0020); real faxing on the test server: FAX_MODE=srfax with FAX_ALLOWED_NUMBERS=[&quot;706-664-0421&quot;] — only that number is dialled.</li></ul></dd>
+  </dl>
+</article>
+
+<article class="fix P2" id="F19">
+  <h3><span class="fid">F19</span>14 Oct: password-reset emails from the practice&#x27;s Gmail, each to its own account<span class="pill P2">P2</span><span class="pill">14 Oct</span><span class="pill st done">Status: Done — waiting for the practice&#x27;s app password</span></h3>
+  <dl>
+    <dt>Screens</dt><dd>S1 · S20</dd>
+    <dt>Problem</dt><dd>Reset emails went out through the developer&#x27;s Gmail. The two administrators (Poonam, Lorraine) must each get their own reset email from the practice&#x27;s address, and a password changed while signed in left an earlier reset link usable.</dd>
+    <dt>Why</dt><dd>Sign-in emails should come from the practice; a reset link must only ever reach and work for its own account.</dd>
+    <dt>Done when</dt><dd><ul><li>SMTP_USERNAME and MAIL_FROM = deyoewellnessacupuncture@gmail.com; SMTP_PASSWORD = the practice&#x27;s Google app password in the server&#x27;s .env only (never committed, logged or returned).</li><li>Each reset email goes to the account that asked; each link resets that account only; one use, 30 minutes.</li><li>Changing a password cancels any reset link still waiting.</li><li>Tests: both administrators, the sender, each link for its own account, the app password never shown.</li></ul></dd>
+  </dl>
+</article>
+
 <section class="pend">
   <h3>Parked: don't work on these now</h3>
   <ul><li><b>Responsive tablet/mobile layouts</b>: The tool runs in a browser on the office Mac; mobile apps are out of scope. Keep desktop layouts clean at 1280px+ and don&#x27;t break at 1024px. Nothing more for now.</li><li><b>Grok integration</b>: Milestone 3. Until then S10 shows the &#x27;not connected&#x27; state (F9).</li><li><b>SRFax sending</b>: Milestone 3. Needs the SRFax API details and a test fax destination (not 404-738-1714).</li><li><b>New features from open-ended feedback</b>: Log any new request on feedback.html and raise it with Poonam before building; the budget is fixed.</li><li><b>Cover-sheet wording when no RFS is sent</b>: The Atlanta &#x27;Request for Services&#x27; cover sheet has pre-printed text saying an RFS is attached. Don&#x27;t change or cover it; Poonam/Shikha will ask the practice.</li></ul>
@@ -763,6 +783,39 @@ try{navigator.clipboard.writeText(t).then(function(){done(true)},function(){done
         "Approved visits at most 12; VA patient ID removed from the patient form."
       ],
       "status": "Done"
+    },
+    {
+      "id": "F18",
+      "priority": "P1",
+      "when": "13 Oct",
+      "title": "13 Oct client feedback: no logo, signature lower, box 4 larger, middle name; test fax set-up",
+      "screens": "S4 · S11 · S12 · S19 · PDFs",
+      "problem": "The practice's fourth review: the logo didn't show well on a fax, the signature needed to come down a line, the VA authorization number on the RFS was small, and RFS box 1 needs the full legal name although the patient form only took a middle initial. The first test fax showed \"Demo – not faxed\" (the test server was in demo mode), the Send test fax number was a made-up 404-555-0142, and Build packet refused the cover sheet after an authorization was moved to Practice test fax.",
+      "why": "What the VA receives must carry the veteran's full legal name and read clearly on a fax; tests must reach the practice's own fax and never the VA.",
+      "done_when": [
+        "Progress notes: no logo; the signature line and date one line lower.",
+        "RFS box 4 (VA authorization number) one size larger (15px).",
+        "Patient form: \"Middle name or initial (optional)\"; RFS box 1 prints FIRST MIDDLE LAST (patient.middle_name, migration 0019; saved initials kept).",
+        "Build packet uses the cover sheet it shows when the authorization's VA facility changed after the draft was saved.",
+        "Send test fax goes to 706-664-0421 (migration 0020); real faxing on the test server: FAX_MODE=srfax with FAX_ALLOWED_NUMBERS=[\"706-664-0421\"] — only that number is dialled."
+      ],
+      "status": "Done"
+    },
+    {
+      "id": "F19",
+      "priority": "P2",
+      "when": "14 Oct",
+      "title": "14 Oct: password-reset emails from the practice's Gmail, each to its own account",
+      "screens": "S1 · S20",
+      "problem": "Reset emails went out through the developer's Gmail. The two administrators (Poonam, Lorraine) must each get their own reset email from the practice's address, and a password changed while signed in left an earlier reset link usable.",
+      "why": "Sign-in emails should come from the practice; a reset link must only ever reach and work for its own account.",
+      "done_when": [
+        "SMTP_USERNAME and MAIL_FROM = deyoewellnessacupuncture@gmail.com; SMTP_PASSWORD = the practice's Google app password in the server's .env only (never committed, logged or returned).",
+        "Each reset email goes to the account that asked; each link resets that account only; one use, 30 minutes.",
+        "Changing a password cancels any reset link still waiting.",
+        "Tests: both administrators, the sender, each link for its own account, the app password never shown."
+      ],
+      "status": "Done — waiting for the practice's app password"
     }
   ],
   "parked": [
