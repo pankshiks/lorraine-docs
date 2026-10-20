@@ -233,6 +233,8 @@ Per the source doc: *"Put these in the repo's `CLAUDE.md` (section 15) so every 
 
 ### Install
 
+*(14 Oct: the same steps, written out command by command for a Mac — including keeping it awake, the backup schedule and a developer set-up — are in the repository README, section "Set up on a Mac".)*
+
 1. On the office Mac: check FileVault is on; install Docker Desktop (set it to start at login) and git. sqlite3, used by the backup, comes with macOS.
 2. Get the code: `git clone https://github.com/dev-ckln/lorraine-ai-automation.git lorraine-ai`, then `cd lorraine-ai` and check out the release branch.
 3. Create the settings file: `cp backend/.env.example backend/.env` and fill it in (table below). Generate SECRET_KEY with `python3 -c "import secrets; print(secrets.token_urlsafe(48))"` and keep a copy somewhere safe off the Mac.
@@ -379,3 +381,20 @@ Developers: `make setup` once, then `make dev` (API :8000, web :5173), `make tes
 
 - **Reset emails from the practice's Gmail.** `SMTP_USERNAME` and `MAIL_FROM` = deyoewellnessacupuncture@gmail.com, `SMTP_PASSWORD` = the practice's Google app password (server `.env` only), `MAIL_REDIRECT_TO` empty — each email goes to the account that asked (Poonam: test.ckln@gmail.com; Lorraine: deyoewellnessacupuncture@gmail.com), from the practice's address. Restart the backend after changing `.env` (`docker compose up -d --force-recreate backend`).
 - **A changed password cancels any reset link still waiting** (`_cancel_reset_links` in `app/core/passwords.py`); a reset or a new link already did.
+
+## Appendix · 15 Oct client feedback (as built)
+
+- **RFS box 15:** no hint text in the Build packet field (the practice doesn't use the box).
+- **RFS box 18 larger:** 14px (was 10.5px after shrink-to-fit). `rfs.html` prints each line of the reason and the closing as its own row; a blank line is a `.gap` of 0.55em, so the practice's spacing (7 and 12 Oct) keeps its places in less height. Shrink-to-fit still applies.
+- **Progress notes:** the signature line one more line lower (`.signature` margin-bottom 0), just above the footer.
+- **Downloads (client question):** Preview › Download all 3 files; after sending, Fax log and Authorization detail link the files as sent. Always three PDFs (rule 5).
+
+## Appendix · 20 Oct — 17 new diagnosis templates ship with the code
+
+- **Why:** a template made on Admin › Diagnoses lives only in that install's database (`backend/data/`, not in git), so a fresh install and the client's server didn't have the 17 made for the practice.
+- **What ships:** each one's catalogue entry (`fixtures/diagnoses.v2.json`), intake (`fixtures/templates-intake.v2.json`, received 2026-10-20) and form (`backend/config/clinics/deyoe/diagnoses/<slug>/v1/template.json` — no HTML form needed). 37 diagnoses in all: Chronic Pain Syndrome, Chronic Tension Headache, Impingement Syndrome of Left / Right Shoulder, Lumbago with Sciatica – Left / Right, Other Idiopathic Peripheral Autonomic Neuropathy – Left / Right, Pain in Unspecified Hip – Left / Right, Pain in Unspecified Joint – Left / Right, Radiculopathy – Left / Right, Spinal Stenosis – Left / Right, Type 2 Diabetes Mellitus with Diabetic Neuropathy, plus the original 20.
+- **How an install gets them:** a fresh install seeds all 37. An existing install adds any it lacks on the next start (`_add_missing_note_templates` in `app/seed.py`); one it already has — seeded, made or edited on screen — is never replaced.
+- **Corrected in the shipped copies:** scan-reading slips that would print on the fax (Acupressll'e, Maooal, foUowing/folowing, slretchilg, CCervical, releas, Diabeties Mellitis). The local app still has its own copies — fix them there on Edit template if wanted.
+- **Not shipped:** test edits on 5 of the original 20 in the local app (Dorsalgia – Left: "just for testing", placeholder heading and small print; Other Spondylosis – Left / Right and Pain in Shoulder – Left / Right: extra "4./5./6. Discussed" grids repeating the 1./2./3. lines).
+- **To check with the practice:** several new forms still have Cramps / Swelling / Other in Type of pain and an Acupressure (and, for Chronic Tension Headache, Therapeutic stretching) row — the practice removed these from the original 20 on 6 and 8 Oct; ICD-10 codes (Impingement Left and Right both M7541; Lumbago with Sciatica M5440 for both sides; Spinal Stenosis M4802 is cervical while the area is L5-S / hip / SI); Radiculopathy – Right's body area says LEFT ARM & HAND.
+- **Adding more later:** export the template (Diagnoses › Export JSON) and add it the same way, or import it on each install.

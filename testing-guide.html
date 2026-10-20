@@ -952,6 +952,42 @@ docker compose exec backend python scripts/seed_test_data.py   # inside Docker</
         <span class="expect pass">✓ Note on every visit · test fax never reaches the VA · 12 visits at most</span>
       </div>
     </div>
+    <div class="scenario">
+      <div class="scenario-header">
+        <span class="scenario-id">W-08</span>
+        <span class="scenario-title">15 Oct changes: box 15, box 18, signature, downloads</span>
+        <span class="badge positive">Positive</span>
+        <span class="scenario-tag">Any seed</span>
+      </div>
+      <div class="scenario-body">
+        <p>15 Oct. A made-up patient with a final visit, e.g. Benjamin Doe, 8 visits.</p>
+        <ol class="steps">
+          <li>Build packet, Include RFS: box 15 (Requested CPT/HCPCS code) is empty — no “e.g. 97810, 97813” hint.</li>
+          <li>Build and preview › RFS: box 18&#x27;s words are clearly larger than before (14px), the two practice lines centred with a gap before each, everything inside the VA&#x27;s box and above ATTESTATION.</li>
+          <li>Clinical notes: the signature line and date sit just above the DEYOE WELLNESS ACUPUNCTURE footer; nothing is cut off.</li>
+          <li>Download all 3 files: three PDFs (cover sheet, notes, RFS) — never one merged file. After sending, the Fax log and the authorization page link the same files as sent.</li>
+        </ol>
+        <span class="expect pass">✓ No box 15 hint · box 18 larger · signature lower · three PDFs</span>
+      </div>
+    </div>
+    <div class="scenario">
+      <div class="scenario-header">
+        <span class="scenario-id">W-09</span>
+        <span class="scenario-title">All 37 diagnoses on a fresh install and after an update</span>
+        <span class="badge positive">Positive</span>
+        <span class="scenario-tag">Any seed</span>
+      </div>
+      <div class="scenario-body">
+        <p>20 Oct. The 17 templates made on the template builder ship with the code. Made-up patients only.</p>
+        <ol class="steps">
+          <li>Fresh install (new clone, empty <code>backend/data/</code>): Diagnoses lists 37 — the original 20 (received 09/22/2026) and the 17 new ones (received 10/20/2026), every one set up.</li>
+          <li>Existing install (e.g. the client&#x27;s server): <code>git pull &amp;&amp; docker compose up -d --build</code>, Ctrl+F5 — the new ones it didn&#x27;t have appear; a template it already had, or edited on Edit template, is unchanged.</li>
+          <li>New authorization: the diagnosis search finds e.g. “radiculopathy”, “stenosis”, “diabetes”.</li>
+          <li>Record a final visit on Radiculopathy – Left, Build and preview: the notes page prints RADICULOPATHY, the Acupressure / Manual Therapy rows spelled correctly (no “Acupressll&#x27;e”, “Maooal”, “foUowing”).</li>
+        </ol>
+        <span class="expect pass">✓ 37 diagnoses everywhere · nothing an install already had is replaced · clean wording on the fax</span>
+      </div>
+    </div>
   </div>
 </section>
 

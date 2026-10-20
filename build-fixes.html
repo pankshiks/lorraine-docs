@@ -408,6 +408,26 @@ Do not start M1, M5–M7 production screens or any backend module (M0, M2, M3, M
   </dl>
 </article>
 
+<article class="fix P2" id="F20">
+  <h3><span class="fid">F20</span>15 Oct client feedback: RFS box 15 hint, box 18 larger, signature lower<span class="pill P2">P2</span><span class="pill">15 Oct</span><span class="pill st done">Status: Done</span></h3>
+  <dl>
+    <dt>Screens</dt><dd>S11 · PDFs</dd>
+    <dt>Problem</dt><dd>Box 15&#x27;s &quot;e.g. 97810, 97813&quot; hint could make staff think the box must be filled; box 18&#x27;s words shrank to 10.5px to fit the VA&#x27;s box; the practice wanted Dr. DeYoe&#x27;s signature one more line lower.</dd>
+    <dt>Why</dt><dd>The RFS must be easy to read on a fax and the screen must not suggest boxes the practice doesn&#x27;t use.</dd>
+    <dt>Done when</dt><dd><ul><li>Box 15 field has no hint text.</li><li>Box 18 prints at 14px: one row per line, blank lines as shorter gaps; spacing kept, shrink-to-fit kept.</li><li>Progress notes: the signature line and date one more line lower, just above the footer.</li></ul></dd>
+  </dl>
+</article>
+
+<article class="fix P1" id="F21">
+  <h3><span class="fid">F21</span>17 new diagnosis templates ship with the code<span class="pill P1">P1</span><span class="pill">20 Oct</span><span class="pill st done">Status: Done</span></h3>
+  <dl>
+    <dt>Screens</dt><dd>S6 · S16 · PDFs</dd>
+    <dt>Problem</dt><dd>Templates made on the template builder for the practice existed only in the local database, so a fresh install or the client&#x27;s server wouldn&#x27;t show them.</dd>
+    <dt>Why</dt><dd>The practice needs every diagnosis it uses on its own install.</dd>
+    <dt>Done when</dt><dd><ul><li>The 17 are in fixtures and config; a fresh install lists 37 diagnoses and prints them.</li><li>An existing install adds the missing ones on start and never replaces its own.</li><li>Scan-reading slips corrected in the shipped copies; test edits on the original 20 not shipped.</li></ul></dd>
+  </dl>
+</article>
+
 <section class="pend">
   <h3>Parked: don't work on these now</h3>
   <ul><li><b>Responsive tablet/mobile layouts</b>: The tool runs in a browser on the office Mac; mobile apps are out of scope. Keep desktop layouts clean at 1280px+ and don&#x27;t break at 1024px. Nothing more for now.</li><li><b>Grok integration</b>: Milestone 3. Until then S10 shows the &#x27;not connected&#x27; state (F9).</li><li><b>SRFax sending</b>: Milestone 3. Needs the SRFax API details and a test fax destination (not 404-738-1714).</li><li><b>New features from open-ended feedback</b>: Log any new request on feedback.html and raise it with Poonam before building; the budget is fixed.</li><li><b>Cover-sheet wording when no RFS is sent</b>: The Atlanta &#x27;Request for Services&#x27; cover sheet has pre-printed text saying an RFS is attached. Don&#x27;t change or cover it; Poonam/Shikha will ask the practice.</li></ul>
@@ -816,6 +836,36 @@ try{navigator.clipboard.writeText(t).then(function(){done(true)},function(){done
         "Tests: both administrators, the sender, each link for its own account, the app password never shown."
       ],
       "status": "Done — waiting for the practice's app password"
+    },
+    {
+      "id": "F20",
+      "priority": "P2",
+      "when": "15 Oct",
+      "title": "15 Oct client feedback: RFS box 15 hint, box 18 larger, signature lower",
+      "screens": "S11 · PDFs",
+      "problem": "Box 15's \"e.g. 97810, 97813\" hint could make staff think the box must be filled; box 18's words shrank to 10.5px to fit the VA's box; the practice wanted Dr. DeYoe's signature one more line lower.",
+      "why": "The RFS must be easy to read on a fax and the screen must not suggest boxes the practice doesn't use.",
+      "done_when": [
+        "Box 15 field has no hint text.",
+        "Box 18 prints at 14px: one row per line, blank lines as shorter gaps; spacing kept, shrink-to-fit kept.",
+        "Progress notes: the signature line and date one more line lower, just above the footer."
+      ],
+      "status": "Done"
+    },
+    {
+      "id": "F21",
+      "priority": "P1",
+      "when": "20 Oct",
+      "title": "17 new diagnosis templates ship with the code",
+      "screens": "S6 · S16 · PDFs",
+      "problem": "Templates made on the template builder for the practice existed only in the local database, so a fresh install or the client's server wouldn't show them.",
+      "why": "The practice needs every diagnosis it uses on its own install.",
+      "done_when": [
+        "The 17 are in fixtures and config; a fresh install lists 37 diagnoses and prints them.",
+        "An existing install adds the missing ones on start and never replaces its own.",
+        "Scan-reading slips corrected in the shipped copies; test edits on the original 20 not shipped."
+      ],
+      "status": "Done"
     }
   ],
   "parked": [
