@@ -92,7 +92,7 @@
 </style>
 </head>
 <body>
-<nav class="dnav" aria-label="DeYoe documents"><div class="in"><b>DeYoe docs</b><a href="index.html">Developer handbook (main)</a><a href="screen-spec.html">Screen spec</a><a href="data-model.html">Data model</a><a href="current-process.html">Current process</a><a href="changelog.html">Changelog</a><a href="build-fixes.html" class="on">Build fixes</a><a href="feedback.html">Client feedback</a><a href="testing-guide.html">Testing guide</a></div></nav>
+<nav class="dnav" aria-label="DeYoe documents"><div class="in"><b>DeYoe docs</b><a href="index.html">Developer handbook (main)</a><a href="screen-spec.html">Screen spec</a><a href="data-model.html">Data model</a><a href="current-process.html">Current process</a><a href="changelog.html">Changelog</a><a href="build-fixes.html" class="on">Build fixes</a><a href="feedback.html">Client feedback</a><a href="user-guide.html">User guide</a><a href="testing-guide.html">Testing guide</a></div></nav>
 <div class="wrap">
 <header class="masthead">
   <p class="eyebrow">DeYoe Wellness Acupuncture — for the development team</p>
@@ -425,6 +425,26 @@ Do not start M1, M5–M7 production screens or any backend module (M0, M2, M3, M
     <dt>Problem</dt><dd>Templates made on the template builder for the practice existed only in the local database, so a fresh install or the client&#x27;s server wouldn&#x27;t show them.</dd>
     <dt>Why</dt><dd>The practice needs every diagnosis it uses on its own install.</dd>
     <dt>Done when</dt><dd><ul><li>The 17 are in fixtures and config; a fresh install lists 37 diagnoses and prints them.</li><li>An existing install adds the missing ones on start and never replaces its own.</li><li>Scan-reading slips corrected in the shipped copies; test edits on the original 20 not shipped.</li></ul></dd>
+  </dl>
+</article>
+
+<article class="fix P1" id="F22">
+  <h3><span class="fid">F22</span>Patient data kept away from Claude Code and other tools<span class="pill P1">P1</span><span class="pill">21 Oct</span><span class="pill st done">Status: Done</span></h3>
+  <dl>
+    <dt>Screens</dt><dd>Install · ops</dd>
+    <dt>Problem</dt><dd>After go-live the database and the PDFs as sent hold real patient records inside the project folder, where Claude Code (used to set up and update the practice&#x27;s install) could open them.</dd>
+    <dt>Why</dt><dd>Golden rule 1 — no patient data to anyone; using AI with patient data needs a BAA first.</dd>
+    <dt>Done when</dt><dd><ul><li>DEYOE_DATA_DIR puts the data folder outside the project on the practice&#x27;s Mac; backups follow it. <i>(removed 23 Oct — the data stays in backend/data)</i></li><li>.claude/settings.json denies reading the data folder, databases, sent PDFs, backups and the signature folder; sqlite3 and docker cp denied; docker exec asks.</li><li>CLAUDE.md and README tell Claude and the installer how; the handbook has the move steps.</li></ul></dd>
+  </dl>
+</article>
+
+<article class="fix P1" id="F23">
+  <h3><span class="fid">F23</span>5 Nov client feedback: ICD-10 code beside each diagnosis, in the picker and on every screen<span class="pill P1">P1</span><span class="pill">5 Nov</span><span class="pill st done">Status: Done</span></h3>
+  <dl>
+    <dt>Screens</dt><dd>S6 · S8</dd>
+    <dt>Problem</dt><dd>The picker showed only the diagnosis name, so the code could not be checked against the VA authorization until the packet was built, when visits had already locked the diagnosis.</dd>
+    <dt>Why</dt><dd>A wrong diagnosis locks after the first visit and means entering the authorization again.</dd>
+    <dt>Done when</dt><dd><ul><li>The picker shows name and code on one line, in the list and once chosen, without the dot.</li><li>Typing a code finds the template, with or without the dot.</li><li>The locked diagnosis on Edit authorization shows the code.</li><li>The Dashboard, Patients list, patient and authorization pages, packet steps, visit screen and breadcrumbs show the code beside the diagnosis; the Diagnoses table and PDFs are unchanged.</li><li>Rollout: tested on our side first, then a call with the practice to update its Mac (git pull on main, then ops/start.sh).</li></ul></dd>
   </dl>
 </article>
 
@@ -864,6 +884,38 @@ try{navigator.clipboard.writeText(t).then(function(){done(true)},function(){done
         "The 17 are in fixtures and config; a fresh install lists 37 diagnoses and prints them.",
         "An existing install adds the missing ones on start and never replaces its own.",
         "Scan-reading slips corrected in the shipped copies; test edits on the original 20 not shipped."
+      ],
+      "status": "Done"
+    },
+    {
+      "id": "F22",
+      "priority": "P1",
+      "when": "21 Oct",
+      "title": "Patient data kept away from Claude Code and other tools",
+      "screens": "Install · ops",
+      "problem": "After go-live the database and the PDFs as sent hold real patient records inside the project folder, where Claude Code (used to set up and update the practice's install) could open them.",
+      "why": "Golden rule 1 — no patient data to anyone; using AI with patient data needs a BAA first.",
+      "done_when": [
+        "DEYOE_DATA_DIR puts the data folder outside the project on the practice's Mac; backups follow it. (removed 23 Oct — the data stays in backend/data)",
+        ".claude/settings.json denies reading the data folder, databases, sent PDFs, backups and the signature folder; sqlite3 and docker cp denied; docker exec asks.",
+        "CLAUDE.md and README tell Claude and the installer how; the handbook has the move steps."
+      ],
+      "status": "Done"
+    },
+    {
+      "id": "F23",
+      "priority": "P1",
+      "when": "5 Nov",
+      "title": "5 Nov client feedback: ICD-10 code beside each diagnosis, in the picker and on every screen",
+      "screens": "S6 · S8",
+      "problem": "The picker showed only the diagnosis name, so the code could not be checked against the VA authorization until the packet was built, when visits had already locked the diagnosis.",
+      "why": "A wrong diagnosis locks after the first visit and means entering the authorization again.",
+      "done_when": [
+        "The picker shows name and code on one line, in the list and once chosen, without the dot.",
+        "Typing a code finds the template, with or without the dot.",
+        "The locked diagnosis on Edit authorization shows the code.",
+        "The Dashboard, Patients list, patient and authorization pages, packet steps, visit screen and breadcrumbs show the code beside the diagnosis; the Diagnoses table and PDFs are unchanged.",
+        "Rollout: tested on our side first, then a call with the practice to update its Mac (git pull on main, then ops/start.sh)."
       ],
       "status": "Done"
     }

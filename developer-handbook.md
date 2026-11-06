@@ -323,7 +323,7 @@ Per the source doc: *"Put these in the repo's `CLAUDE.md` (section 15) so every 
 | The backend won't start | `docker compose logs backend`: in production it refuses the built-in SECRET_KEY, the demo password or FAX_MODE=fake. |
 | Locked out / forgot password | Three wrong passwords lock for 15 minutes; “Forgot password” emails a link (needs SMTP). |
 
-Developers: `make setup` once, then `make dev` (API :8000, web :5173), `make test`, `make lint`, `make e2e`; CI runs the same on every push. Fax and AI are fakes in development.
+Developers: `make setup` once (*21 Oct: it also installs Chromium for the PDFs and creates `backend/data/`; full steps in CLAUDE.md › Setup & Installation*), then `make dev` (API :8000, web :5173), `make test`, `make lint`, `make e2e`; CI runs the same on every push. Fax and AI are fakes in development.
 
 
 ## Appendix · 7 Oct walkthrough changes (as built)
@@ -398,3 +398,39 @@ Developers: `make setup` once, then `make dev` (API :8000, web :5173), `make tes
 - **Not shipped:** test edits on 5 of the original 20 in the local app (Dorsalgia – Left: "just for testing", placeholder heading and small print; Other Spondylosis – Left / Right and Pain in Shoulder – Left / Right: extra "4./5./6. Discussed" grids repeating the 1./2./3. lines).
 - **To check with the practice:** several new forms still have Cramps / Swelling / Other in Type of pain and an Acupressure (and, for Chronic Tension Headache, Therapeutic stretching) row — the practice removed these from the original 20 on 6 and 8 Oct; ICD-10 codes (Impingement Left and Right both M7541; Lumbago with Sciatica M5440 for both sides; Spinal Stenosis M4802 is cervical while the area is L5-S / hip / SI); Radiculopathy – Right's body area says LEFT ARM & HAND.
 - **Adding more later:** export the template (Diagnoses › Export JSON) and add it the same way, or import it on each install.
+
+## Appendix · 21 Oct — patient data never reaches Claude Code or anyone else
+
+*Changed 23 Oct (user decision): the data stays in `backend/data/` on every install — the `DEYOE_DATA_DIR` setting below was removed. The Claude Code rules and CLAUDE.md's patient-data rules still apply.*
+
+- **Where the data lives:** the database and the PDFs as sent are in the *data folder*: `DEYOE_DATA_DIR` in the project's `.env` (Docker Compose's own settings — see `.env.example`), else `backend/data/`. **On the practice's Mac it is outside the project folder**, e.g. `~/DeYoeData`, so any tool started in the project folder — Claude Code included — doesn't see it. `ops/backup.sh` reads the same setting.
+- **Moving an existing install:** `ops/stop.sh` → `mkdir -p ~/DeYoeData` → move everything from `backend/data/` into it → `DEYOE_DATA_DIR=/Users/<you>/DeYoeData` in `.env` → `ops/start.sh` → sign in and check the latest packets.
+- **Enforced in Claude Code:** `.claude/settings.json` (committed) denies reading or editing the data folder, `*.db` files, the PDFs in `documents/`, backups and `docs/RFS-form/`, denies `sqlite3` and `docker cp`, and asks before `docker compose exec` / `docker exec`.
+- **CLAUDE.md › For Claude › Patient data:** never open, query, copy or summarise patient records; look into problems through `docker compose logs` (IDs, never names), the screens and a made-up patient.
+- **For the practice:** no AI tool with real patient data unless the practice has a Business Associate Agreement with that provider (Anthropic, xAI); `AI_MODE` stays `fake`; no screenshots of real patients to us — use Jane Doe / John Doe to show a problem.
+
+## Appendix · 23 Oct — user guide and installing on the practice's Mac
+
+- **User guide (client-facing):** `docs/project-flow/user-guide.html`, linked from every page's top menu, and shared with Lorraine as a link. It covers the everyday steps, every screen and the Admin pages. Update it when a screen or button changes.
+- **Installing on the practice's Mac:** the practice clones `main`, opens Claude Code (Claude desktop app › Code) on the `lorraine-ai` folder and pastes the prompt below. Claude installs Docker Desktop (the practice clicks through its terms and enters the Mac password), creates `backend/.env` with a new secret key and admin password, starts the app and confirms. Patient data stays in `backend/data/`; `.claude/settings.json` keeps Claude Code out of it. This is a test install (demo faxing, no email): going live still needs the Gmail app password, the SRFax login, production mode and the demo data removed.
+
+```text
+Please install everything this project needs on my Mac and get it running. I'm not technical: explain each step in one plain sentence. Whenever something needs me to click a button, accept terms, or type my Mac password, stop, tell me exactly what to do, and wait until I reply "done".
+
+First read CLAUDE.md in this folder completely — "Setup & Installation" and "For Claude", especially "Patient data — never read, never share" — and follow it for path A (Docker). Never open, read or copy anything in backend/data, any database file, or any PDF the app has sent.
+
+1. Latest version: run "git status". If there are no local changes, run "git checkout main" and "git pull". If there are local changes, stop and tell me.
+2. Check whether this Mac has an Apple chip or an Intel chip ("uname -m": arm64 = Apple chip, x86_64 = Intel) and tell me.
+3. Docker Desktop: if "docker info" works, skip to step 4. If Homebrew is installed, run "brew install --cask docker"; otherwise download Docker Desktop for my chip (https://desktop.docker.com/mac/main/arm64/Docker.dmg or https://desktop.docker.com/mac/main/amd64/Docker.dmg) into ~/Downloads, mount it, copy Docker.app to /Applications and unmount it. Run "open -a Docker"; tell me to accept the terms, choose the recommended settings, skip the sign-in, enter my Mac password if asked, and turn on Settings › General › "Start Docker Desktop when you sign in". Wait until "docker info" works (every 15 seconds, up to 5 minutes; if docker isn't found use /Applications/Docker.app/Contents/Resources/bin/docker).
+4. git: if a git command opens Apple's "install command line developer tools" dialog, tell me to click Install and wait.
+5. backend/.env: if it exists, leave it alone. Otherwise copy backend/.env.example to backend/.env and set a new random SECRET_KEY, SEED_ADMIN_EMAIL=deyoewellnessacupuncture@gmail.com, SEED_ADMIN_NAME=Lorraine Fordham, a strong random SEED_ADMIN_PASSWORD (show it to me once), ENVIRONMENT=development, FAX_MODE=fake, AI_MODE=fake, SMTP_HOST= (empty), APP_BASE_URL=http://localhost:8080. Never show me any other secret.
+6. Start with "ops/start.sh". Wait until http://localhost:8000/api/health answers and http://localhost:8080 opens; on errors use the "Common errors" table in CLAUDE.md and explain in plain words.
+7. Finish with the confirmation message from CLAUDE.md and open http://localhost:8080 in my browser.
+```
+
+## Appendix · 5 Nov client feedback (as built)
+
+- **Diagnosis picker shows the code.** Each template appears as its name and ICD-10 code on one line (`diagnosisLabelWithCode` in `frontend/src/lib/fixtures.ts`), in the list and once chosen, on New authorization, Edit authorization and AI assist. Typing a code finds it, with or without the dot. Codes come from the diagnosis list, so an edit on Diagnoses or a new template shows up by itself.
+- **Everywhere on screen.** Screens and breadcrumbs that name an authorization's diagnosis show the code too (`diagnosisLabelWithCode`). Name only: the Diagnoses table, which has an ICD-10 column, and sentences naming the template (`diagnosisLabel`). PDFs are unchanged.
+- **Rollout:** tested on our side first, then a call with the practice to update its Mac: `git pull` on `main`, then `ops/start.sh`, then Cmd+Shift+R in the browser. No database change.
+- **Decided 5 Nov:** no dot; both sides keep the template's code, as on the practice's list; names stay as in the template.

@@ -1,0 +1,316 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<!-- Client-facing guide for the practice (Lorraine). Same text as the shared handover link. -->
+<title>DeYoe Wellness Handover</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Literata:opsz,wght@7..72,500;7..72,650&family=Public+Sans:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: a single reading column with a sticky contents rail on wide screens; each screen of the app is a section. */
+:root {
+  --bg: #f6f8f9;
+  --paper: #ffffff;
+  --ink: #18252c;
+  --muted: #55656d;
+  --line: #d9e2e6;
+  --accent: #1d6f7a;
+  --accent-soft: #e3f1f2;
+  --warn: #8a5a00;
+  --warn-soft: #fbf1dc;
+  --display: "Literata", Georgia, "Times New Roman", serif;
+  --body: "Public Sans", -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #11181c; --paper: #172126; --ink: #e5edf0; --muted: #9eb0b8; --line: #2a3a41;
+    --accent: #6cc2cc; --accent-soft: #1b3236; --warn: #f0c46b; --warn-soft: #33290f; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #11181c; --paper: #172126; --ink: #e5edf0; --muted: #9eb0b8; --line: #2a3a41;
+  --accent: #6cc2cc; --accent-soft: #1b3236; --warn: #f0c46b; --warn-soft: #33290f; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--ink); font-family: var(--body); font-size: 16px; line-height: 1.6;
+  padding-block: 32px 64px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.wrap { max-width: 1080px; margin: 0 auto; display: grid; grid-template-columns: 220px minmax(0, 1fr); gap: 40px; }
+@media (max-width: 860px) { .wrap { grid-template-columns: minmax(0, 1fr); } .toc { position: static; } }
+.toc { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 24px); align-self: start; font-size: 14px; }
+.toc p { margin: 0 0 8px; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+.toc ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }
+.toc a { color: var(--ink); text-decoration: none; display: block; padding: 3px 8px; border-radius: 6px; }
+.toc a:hover, .toc a:focus-visible { background: var(--accent-soft); color: var(--accent); outline: none; }
+main { min-width: 0; display: grid; gap: 28px; }
+header.top { display: grid; gap: 10px; padding-bottom: 8px; }
+.eyebrow { font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--accent); font-weight: 700; }
+h1, h2, h3 { font-family: var(--display); font-weight: 650; text-wrap: balance; margin: 0; }
+h1 { font-size: clamp(30px, 5vw, 42px); line-height: 1.15; }
+h2 { font-size: 25px; line-height: 1.25; }
+h3 { font-size: 17px; font-family: var(--body); font-weight: 700; }
+.lede { font-size: 18px; color: var(--muted); max-width: 64ch; margin: 0; }
+section { background: var(--paper); border: 1px solid var(--line); border-radius: 12px; padding: 24px clamp(18px, 3vw, 32px); display: grid; gap: 14px; scroll-margin-top: 16px; }
+section > p, section li { max-width: 68ch; }
+p { margin: 0; }
+ul, ol { margin: 0; padding-left: 22px; display: grid; gap: 6px; }
+b, strong { font-weight: 600; }
+.ui { font-weight: 600; color: var(--accent); }
+.flow { list-style: none; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; counter-reset: step; }
+.flow li { counter-increment: step; background: var(--accent-soft); border-radius: 10px; padding: 14px; display: grid; gap: 4px; align-content: start; }
+.flow li::before { content: "Step " counter(step); font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); font-weight: 700; }
+.flow b { font-size: 15px; }
+.flow span { font-size: 14px; color: var(--muted); }
+.steps { counter-reset: s; list-style: none; padding: 0; gap: 10px; }
+.steps > li { counter-increment: s; position: relative; padding-left: 38px; min-height: 26px; }
+.steps > li::before { content: counter(s); position: absolute; left: 0; top: 0; width: 26px; height: 26px; border-radius: 50%; background: var(--accent); color: var(--paper); font-size: 13px; font-weight: 700; display: grid; place-items: center; }
+.note { border-left: 4px solid var(--accent); background: var(--accent-soft); padding: 12px 14px; border-radius: 0 8px 8px 0; }
+.note.warn { border-left-color: var(--warn); background: var(--warn-soft); }
+.note.warn strong { color: var(--warn); }
+.tablewrap { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-size: 15px; }
+th, td { text-align: left; padding: 9px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+td:first-child { white-space: nowrap; font-weight: 600; }
+.menu { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 12px; }
+.menu div { border: 1px solid var(--line); border-radius: 10px; padding: 14px; display: grid; gap: 6px; }
+.menu h3 { font-size: 15px; }
+.menu ul { font-size: 15px; }
+footer { color: var(--muted); font-size: 14px; text-align: center; }
+@media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <nav class="toc" aria-label="Contents">
+    <p>Contents</p>
+    <ol>
+      <li><a href="#everyday">Your everyday steps</a></li>
+      <li><a href="#signin">Signing in</a></li>
+      <li><a href="#layout">Finding your way</a></li>
+      <li><a href="#dashboard">Dashboard</a></li>
+      <li><a href="#patients">Patients</a></li>
+      <li><a href="#authorizations">Authorizations</a></li>
+      <li><a href="#visits">Recording visits</a></li>
+      <li><a href="#packet">Building a packet</a></li>
+      <li><a href="#send">Reviewing and sending</a></li>
+      <li><a href="#faxlog">After sending</a></li>
+      <li><a href="#admin">Admin pages</a></li>
+      <li><a href="#rules">Good habits</a></li>
+      <li><a href="#help">Getting help</a></li>
+    </ol>
+  </nav>
+
+  <main>
+    <header class="top">
+      <span class="eyebrow">DeYoe Wellness Acupuncture · VA packet tool</span>
+      <h1>Handover guide</h1>
+      <p class="lede">How to use the packet tool day to day: from a new VA authorization to the cover sheet, clinical notes and RFS faxed to the VA, and how to look after the practice's settings.</p>
+    </header>
+
+    <section id="everyday">
+      <h2>Your everyday steps</h2>
+      <p>Every VA authorization follows the same path. Each step below has its own section in this guide.</p>
+      <ol class="flow">
+        <li><b>Patient</b><span>Find the patient, or add a new one.</span></li>
+        <li><b>Authorization</b><span>Enter the VA authorization and choose the diagnosis.</span></li>
+        <li><b>Visits</b><span>Record each visit; mark the last one as final.</span></li>
+        <li><b>Packet</b><span>Build and preview the cover sheet, notes and RFS.</span></li>
+        <li><b>Send</b><span>Check the fax number and confirm. Follow it in the Fax log.</span></li>
+      </ol>
+    </section>
+
+    <section id="signin">
+      <h2>Signing in</h2>
+      <ul>
+        <li>Open the program in your browser and sign in with your email address and password.</li>
+        <li><b>First time:</b> change your password straight away with <span class="ui">Change password</span> at the top right.</li>
+        <li><b>Forgot your password?</b> Click <span class="ui">Forgot password</span> on the sign-in page. A link arrives by email; it works once and for 30 minutes.</li>
+        <li>Three wrong passwords lock the account for 15 minutes.</li>
+      </ul>
+    </section>
+
+    <section id="layout">
+      <h2>Finding your way</h2>
+      <p>The menu on the left is always there. The top part is for everyday work; the <b>Admin</b> part is for settings.</p>
+      <div class="tablewrap">
+        <table>
+          <thead><tr><th>Menu</th><th>What it's for</th></tr></thead>
+          <tbody>
+            <tr><td>Dashboard</td><td>What needs your attention today.</td></tr>
+            <tr><td>Patients</td><td>Find, add and open patients, their authorizations and visits.</td></tr>
+            <tr><td>Fax log</td><td>Every fax sent, its status, and the files exactly as faxed.</td></tr>
+            <tr><td>Diagnoses</td><td>The diagnosis templates: what each progress note asks and prints.</td></tr>
+            <tr><td>Cover sheets &amp; RFS</td><td>The five cover sheets and the three RFS office versions.</td></tr>
+            <tr><td>Practice &amp; sending</td><td>Practice details, Dr. DeYoe's signature, SRFax, VA fax numbers, test fax, backups.</td></tr>
+            <tr><td>Users &amp; activity</td><td>Who can sign in, and a record of everything done in the program.</td></tr>
+            <tr><td>Archived patients</td><td>Patients you have archived. They can be restored.</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>At the top of most screens, the patient's name, last four and date of birth are shown, so you always know whose record is open. The line under the title (for example <i>Jane Doe · Low Back Pain – Left M5450 / Build packet</i>) takes you back a step when you click it.</p>
+    </section>
+
+    <section id="dashboard">
+      <h2>Dashboard</h2>
+      <p>Your starting point. The boxes at the top count what needs doing; click one to see the list.</p>
+      <ul>
+        <li><b>In progress</b>: authorizations with visits still being recorded.</li>
+        <li><b>Nearing last visit</b>: authorizations close to their approved number of visits.</li>
+        <li><b>Ready to send</b>: packets built and waiting for you to confirm.</li>
+        <li><b>Failed / waiting faxes</b>: faxes that didn't go through, or are still on their way.</li>
+        <li><b>Recently sent</b>: the latest packets faxed.</li>
+      </ul>
+      <p>Click any row to open that authorization. The diagnosis code shows beside each diagnosis here and on the patient, authorization and packet screens.</p>
+    </section>
+
+    <section id="patients">
+      <h2>Patients</h2>
+      <h3>Find a patient</h3>
+      <p>Go to <span class="ui">Patients</span> and type in <span class="ui">Find a patient</span>: a name, a VA number or the last four. Click anywhere on a row to open the patient.</p>
+      <h3>Add a patient</h3>
+      <ol class="steps">
+        <li>Click <span class="ui">+ Add patient</span>.</li>
+        <li>Enter first name, <b>middle name or initial</b> (optional), last name, date of birth, last four of the SSN, title (Mr./Ms./Mrs.) and his/her.</li>
+        <li>Click <span class="ui">Save patient</span>. If the same name, date of birth and last four already exist, the program shows that patient first so you don't add someone twice.</li>
+      </ol>
+      <p>The RFS prints the full legal name, including the middle name when there is one. Only the last four of the SSN is ever stored.</p>
+      <p>To change details later, open the patient and click <span class="ui">Edit patient</span>. The RFS and cover sheet always use the details as they are now.</p>
+    </section>
+
+    <section id="authorizations">
+      <h2>Authorizations</h2>
+      <p>Each VA authorization is entered once. Its visits and packet belong to it.</p>
+      <ol class="steps">
+        <li>Open the patient and click <span class="ui">New authorization</span>.</li>
+        <li>Enter the VA authorization number (it starts with VA00), the approved number of visits (at most 12), and the period.</li>
+        <li>Choose the <b>diagnosis</b>: start typing a name or code, for example "knee" or "M25562", and pick the right side. Each diagnosis shows its code beside its name, so <b>check it against the VA authorization</b>; the diagnosis locks after the first visit is recorded.</li>
+        <li>Choose the <b>office</b> and the <b>VA facility</b> the packet is faxed to.</li>
+        <li>Click <span class="ui">Create authorization</span>.</li>
+      </ol>
+      <p>To correct something later, open the authorization and click <span class="ui">Edit authorization</span>. Once a packet has been sent, the authorization is locked.</p>
+      <div class="note"><strong>For tests:</strong> choose the VA facility <b>Practice test fax</b>. It faxes the practice's own number, never the VA.</div>
+    </section>
+
+    <section id="visits">
+      <h2>Recording visits</h2>
+      <ol class="steps">
+        <li>Open the authorization and click <span class="ui">Record a visit</span>.</li>
+        <li>Enter the visit date and the pain level (0–10). Answer the questions for this visit; they start from the template's usual answers, so change only what's different.</li>
+        <li>Check <b>Dr. DeYoe's note</b>. It is filled in with the standard wording for the first, middle or final visit and can be changed for any visit.</li>
+        <li>On the last visit, turn on <span class="ui">Mark as final visit</span>. The last page then shows "Last visit" and the final note.</li>
+        <li>Click <span class="ui">Save visit</span>. If something is missing, the message beside the button says what.</li>
+      </ol>
+      <p>A visit can't be dated in the future. To correct a visit, open it from the authorization and save it again.</p>
+    </section>
+
+    <section id="packet">
+      <h2>Building a packet</h2>
+      <p>When the final visit is saved, the packet can be built: a <b>cover sheet</b>, the <b>clinical notes</b> (one page per visit) and, when needed, the <b>RFS</b> (VA Form 10-10172).</p>
+      <ol class="steps">
+        <li>Open the authorization and click <span class="ui">Build packet</span>.</li>
+        <li>Check the packet type and the <b>cover sheet</b>.</li>
+        <li>Tick <span class="ui">Include RFS</span> only when Dr. DeYoe feels the patient needs more visits. The RFS boxes are filled in for you; check them, and type box 14 (diagnosis description) as the VA wrote it.</li>
+        <li>Click <span class="ui">Build and preview</span>.</li>
+      </ol>
+      <h3>Preview</h3>
+      <ul>
+        <li>Each file has its own tab: cover sheet, clinical notes, RFS. What you see is exactly what will be faxed.</li>
+        <li>On the cover sheet tab you can type the total pages or the date; leave them empty to have them filled in automatically.</li>
+        <li><span class="ui">Download all 3 files</span> saves the PDFs, for example for an HSRM upload. They are always three separate files, as the VA requires.</li>
+      </ul>
+    </section>
+
+    <section id="send">
+      <h2>Reviewing and sending</h2>
+      <ol class="steps">
+        <li>From the preview, go to <span class="ui">Review and send</span>.</li>
+        <li>Check the <b>fax number</b> and the destination. A Blairsville packet is also sent to Atlanta automatically.</li>
+        <li>Click <span class="ui">Confirm and send</span>. Nothing is ever faxed without this click.</li>
+        <li>The result page follows each fax: <b>Queued</b> while SRFax is sending, then <b>Sent</b> or <b>Failed</b>.</li>
+      </ol>
+      <div class="note warn"><strong>Before you click Confirm and send:</strong> look at the fax number once more. When you're testing, it should be the practice test fax, not a VA number.</div>
+    </section>
+
+    <section id="faxlog">
+      <h2>After sending: the Fax log</h2>
+      <ul>
+        <li><span class="ui">Fax log</span> lists every fax with its status. Filter by date, destination or status.</li>
+        <li>The <b>Cover</b>, <b>Notes</b> and <b>RFS</b> links open the files exactly as they were faxed. They never change.</li>
+        <li><b>A fax failed?</b> The reason is shown. Fix the cause if needed (for example the fax number on Practice &amp; sending), then click <span class="ui">Retry</span>. Before retrying, check the SRFax website in case it went through after all.</li>
+        <li><b>Something was wrong in a sent packet?</b> Sent packets are never edited. Use <span class="ui">Correct &amp; re-send</span>: it starts a new packet linked to the old one, which you fix, preview and send again. If it doesn't open, please let us know.</li>
+      </ul>
+    </section>
+
+    <section id="admin">
+      <h2>Admin pages</h2>
+      <p>Only administrators see these. Changes are saved in the activity log.</p>
+      <div class="menu">
+        <div>
+          <h3>Diagnoses</h3>
+          <ul>
+            <li>All diagnosis templates with their ICD-10 codes.</li>
+            <li><span class="ui">Create new template</span>: start from a copy of a similar diagnosis or a blank one.</li>
+            <li><span class="ui">Edit template</span> then <span class="ui">Save as a new version</span>. New visits use it; sent faxes keep their pages.</li>
+            <li><span class="ui">Export JSON</span> / <span class="ui">Import JSON</span> to copy a template as a file.</li>
+          </ul>
+        </div>
+        <div>
+          <h3>Practice &amp; sending</h3>
+          <ul>
+            <li>Practice details printed on every document.</li>
+            <li>Dr. DeYoe's signature (nothing can be sent without it).</li>
+            <li>SRFax details; the password is never shown again.</li>
+            <li>VA facility fax numbers and addresses.</li>
+            <li><span class="ui">Send test fax</span> to the practice's own number.</li>
+            <li>Backups: when the last one ran.</li>
+          </ul>
+        </div>
+        <div>
+          <h3>Users &amp; activity</h3>
+          <ul>
+            <li><span class="ui">+ Add user</span>: name, email and role. They choose their own password from an emailed link.</li>
+            <li>Turn an account off when someone leaves.</li>
+            <li>The activity log: who did what, and when.</li>
+          </ul>
+        </div>
+        <div>
+          <h3>Cover sheets &amp; RFS · Archived patients</h3>
+          <ul>
+            <li>Check the cover sheets and the RFS versions for each office.</li>
+            <li>Archived patients are kept, never deleted, and can be restored.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section id="rules">
+      <h2>Good habits</h2>
+      <ul>
+        <li><b>Test with made-up patients</b> such as Jane Doe, and the <b>Practice test fax</b> destination.</li>
+        <li><b>Never send screenshots of real patients</b> to anyone, including us. To show a problem, use a made-up patient.</li>
+        <li><b>Check the fax number</b> before every Confirm and send.</li>
+        <li><b>Keep the Mac on and awake</b> so faxes are followed up and the nightly backup runs, and keep the backup drive plugged in.</li>
+        <li><b>Sign out</b> when you leave the computer, and keep your password to yourself.</li>
+      </ul>
+    </section>
+
+    <section id="help">
+      <h2>Getting help</h2>
+      <ul>
+        <li>If something looks wrong, note the screen you were on and what you clicked, and send us a photo of the message on screen, without patient details.</li>
+        <li>If a page looks blank or old after an update, refresh it with <b>Cmd + Shift + R</b>.</li>
+        <li>Contact Poonam and the team by your usual email.</li>
+      </ul>
+    </section>
+
+    <footer>DeYoe Wellness Acupuncture · VA packet tool · handover guide, October 2026</footer>
+  </main>
+</div>
+
+</body>
+</html>
